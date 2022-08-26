@@ -1,0 +1,17 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/ApiServer.Mvc/.vs
+/ApiServer.Mvc/ApiServer.EntityFrameworkCore/bin/Debug/net6.0
+/ApiServer.Mvc/ApiServer.EntityFrameworkCore/obj
+/ApiServer.Mvc/ApiServer.Model/bin/Debug/net6.0
+/ApiServer.Mvc/ApiServer.Model/obj
+/ApiServer.Mvc/ApiServer.Mvc/bin/Debug/net6.0
+/ApiServer.Mvc/ApiServer.Mvc/obj
+/ApiServer.Mvc/ApiServer.NUnit/bin/Debug/net6.0
+/ApiServer.Mvc/ApiServer.NUnit/obj/Debug/net6.0
+/ApiServer.Mvc/ApiServer.Repository/bin/Debug/net6.0
+/ApiServer.Mvc/ApiServer.Repository/obj/Debug/net6.0
+/ApiServer.Mvc/ApiServer.NUnit/obj
+/ApiServer.Mvc/ApiServer.Repository/obj

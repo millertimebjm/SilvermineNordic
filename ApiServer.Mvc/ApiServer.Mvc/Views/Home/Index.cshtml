@@ -1,0 +1,25 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+@if (TempData["loginFailed"] != null && (string)TempData["loginFailed"] == "loginFailed")
+{
+    <div class="alert alert-danger alert-dismissable" role="alert">
+        Login failed.
+    </div>
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
+
+<div class="text-center">
+    <h1 class="display-4">Login</h1>
+    @using (Html.BeginForm("login", "home", FormMethod.Post))
+    {
+        <p><input name="username" placeholder="Email" type="text" /></p>
+        <p><input name="password" placeholder="Password" type="password" /></p>
+        <p><button type="submit">Login</button></p>
+    }   
+</div>

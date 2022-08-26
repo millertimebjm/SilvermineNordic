@@ -1,0 +1,43 @@
+﻿@{
+    ViewData["Title"] = "Manager";
+}
+@model ManagerModel
+
+@if (Model.PostResult != null && Model.PostResult.Value)
+{
+    <div class="alert alert-primary" role="alert">
+        Items saved successfully.
+    </div>
+}
+else if (Model.PostResult != null && !Model.PostResult.Value)
+{
+    <div class="alert alert-danger" role="alert">
+        The Items could not saved.
+    </div>
+}
+
+<div class="text-center">
+    <h1 class="display-4">Items</h1>
+    @{
+        var index = 0;
+    }
+    @using (Html.BeginForm("managerpost", "home", FormMethod.Post))
+    {
+        <div class="row gx-5 px-5 py-5">
+            @foreach (var item in await Model.ItemsTask)
+            {
+                <div class="col-lg-4 col-md-6 col-sm-12 center" style="border: 2px solid #000;border-radius: 15px;">
+                    <p><input type="hidden" name="items[@index].ItemId" value="@item.ItemId" /><input type="hidden" name="items[@index].Identifier" value="@item.Identifier" />@item.Identifier</p>
+                    <p><input type="text" name="items[@index].Value" value="@item.Value" /></p>
+                </div>
+                index++;
+            }
+            <div class="col-lg-4 col-md-6 col-sm-12 center" style="border: 2px solid #000;border-radius: 15px;">
+                <p><input type="text" name="items[@index].Identifier" /></p>
+                <p><input type="text" name="items[@index].Value" /></p>
+            </div>
+        </div>
+
+        <p><button type="submit">Submit</button></p>
+    }
+</div>
