@@ -15,11 +15,11 @@ namespace ApiServer.EntityFrameworkCore
             _contextOptions = optionsBuilder.Options;
         }
 
-        public Item GetItemAsync(Guid userId, Guid itemId, string identifier)
+        public Item? GetItemAsync(Guid itemId, string identifier)
         {
             using (var context = new ApiServerDbContext(_contextOptions))
             {
-                return context.Items.SingleOrDefault(_ => _.UserId == userId && _.ItemId == itemId && _.Identifier == identifier);
+                return context.Items.SingleOrDefault(_ => _.ItemId == itemId && _.Identifier == identifier);
             }
         }
 
@@ -41,6 +41,10 @@ namespace ApiServer.EntityFrameworkCore
 
         public Item SetItemAsync(Item item)
         {
+            if (item.ItemId == Guid.Empty)
+            {
+                item.ItemId = Guid.NewGuid();
+            }
             using (var context = new ApiServerDbContext(_contextOptions))
             {
                 var oldItem = context.Items.SingleOrDefault(_ => _.ItemId == item.ItemId);

@@ -64,7 +64,7 @@ namespace ApiServer.Mvc.Controllers
             {
                 ItemsTask = _repository.GetItemsAsync(Guid.Parse(userId)),
                 UserTask = _repository.GetUserAsync(Guid.Parse(userId)),
-                PostResult = TempData["saved"] != null && ((string)TempData["saved"]) == "saved" ? true : null,
+                PostResult = TempData["saved"] != null && ((string)TempData["saved"]) == "saved" ? PostResultEnum.SaveSuccess : TempData["deleted"] != null && ((string)TempData["deleted"]) == "deleted" ? PostResultEnum.DeleteSuccess : null,
             };
 
             return View(model);
@@ -72,7 +72,30 @@ namespace ApiServer.Mvc.Controllers
 
         public IActionResult ManagerPost(IEnumerable<Item> items)
         {
+            var userId = HttpContext.Session.GetString("user");
+            if (userId == null)
+            {
+                return RedirectToAction("Index");
+            }
+            foreach (var item in items.Where(_ => !string.IsNullOrWhiteSpace(_.Identifier)))
+            {
+                item.UserId = Guid.Parse(HttpContext.Session.GetString("user"));
+                _repository.SetItemAsync(item);
+            }
+            
             TempData["saved"] = "saved";
+            return RedirectToAction("Manager");
+        }
+
+        [HttpGet("{id}")]
+        public IActionResult DeleteItem(Guid id)
+        {
+            var userId = HttpContext.Session.GetString("user");
+            if (userId == null)
+            {
+                return RedirectToAction("Index");
+            }
+            TempData["deleted"] = "deleted";
             return RedirectToAction("Manager");
         }
 
@@ -91,10 +114,25 @@ namespace ApiServer.Mvc.Controllers
                     {
                         UserId = userId,
                         ItemId = Guid.NewGuid(),
-                        Identifier = "Item1 Identifier",
-                        Value = "Item1 Value",
-                    }
-                }
+                        Identifier = "Item1-Identifier",
+                        Value = "Item1-Value",
+                        ItemKeys = new List<ItemKey>()
+                        {
+                            new ItemKey()
+                            {
+                                ItemKeyId = Guid.NewGuid(),
+                                Key = Guid.NewGuid(),
+                                Note = "Item's First Key",
+                            },
+                            new ItemKey()
+                            {
+                                ItemKeyId = Guid.NewGuid(),
+                                Key = Guid.NewGuid(),
+                                Note = "Item's Second Key",
+                            },
+                        },
+                    },
+                },
             });
         }
     }

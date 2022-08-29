@@ -3,41 +3,55 @@
 }
 @model ManagerModel
 
-@if (Model.PostResult != null && Model.PostResult.Value)
+@if (Model.PostResult != null && Model.PostResult == PostResultEnum.SaveSuccess)
 {
     <div class="alert alert-primary" role="alert">
         Items saved successfully.
     </div>
 }
-else if (Model.PostResult != null && !Model.PostResult.Value)
+else if (Model.PostResult != null && Model.PostResult == PostResultEnum.DeleteSuccess)
 {
     <div class="alert alert-danger" role="alert">
-        The Items could not saved.
+        The Item has been deleted.
     </div>
 }
 
-<div class="text-center">
-    <h1 class="display-4">Items</h1>
-    @{
-        var index = 0;
-    }
-    @using (Html.BeginForm("managerpost", "home", FormMethod.Post))
-    {
-        <div class="row gx-5 px-5 py-5">
-            @foreach (var item in await Model.ItemsTask)
-            {
-                <div class="col-lg-4 col-md-6 col-sm-12 center" style="border: 2px solid #000;border-radius: 15px;">
-                    <p><input type="hidden" name="items[@index].ItemId" value="@item.ItemId" /><input type="hidden" name="items[@index].Identifier" value="@item.Identifier" />@item.Identifier</p>
-                    <p><input type="text" name="items[@index].Value" value="@item.Value" /></p>
-                </div>
-                index++;
-            }
-            <div class="col-lg-4 col-md-6 col-sm-12 center" style="border: 2px solid #000;border-radius: 15px;">
-                <p><input type="text" name="items[@index].Identifier" /></p>
-                <p><input type="text" name="items[@index].Value" /></p>
-            </div>
-        </div>
+<h1></h1>
 
-        <p><button type="submit">Submit</button></p>
-    }
-</div>
+@{
+    var index = 0;
+}
+@using (Html.BeginForm("managerpost", "home", FormMethod.Post))
+{
+    <div style="display: flex; flex-wrap: wrap; justify-content: space-around">
+
+        @foreach (var item in await Model.ItemsTask)
+        {
+            <div class="shadow-lg p-3 mb-5 bg-white rounded col-lg-3 col-md-6 center" style="margin: 10px; ">
+                <p>
+                    <input type="hidden" name="items[@index].ItemId" value="@item.ItemId" />
+                    <input type="hidden" name="items[@index].Identifier" value="@item.Identifier" />
+                    <input type="hidden" name="items[@index].Value" value="@item.Value" />
+                    <b><u>Identifier</u></b><br />
+                    <span style="font-size: .8rem">@item.Identifier</span>
+                </p>
+                <p>
+                    <b><u>Value</u></b><br />
+                    <span style="font-size: .8rem">@item.Value</span>
+                </p>
+                <p>
+                    <div class="row"><div class="col-6"><input type="button" class="btn btn-warning" value="Edit Item" /></div><div class="col-6 text-end"><a href="@Url.Action("DeleteItem", "Home", new { id = item.ItemId })" data-toggle="confirmation" data-title="Are you sure you want to delete this item?"><input type="button" class="btn btn-danger" value="Delete Item" /></a></div></div>
+                    <br />
+                    <div class="row" style="font-size: .8rem"><div class="col-4">Keys<br />0</div><div class="col-4">Accessed<br />(7 days)<br />0</div><div class="col-4">Accessed<br />(28 days)<br />0</div></div>
+            </div>
+            index++;
+        }
+
+        <div class="shadow-lg p-3 mb-5 bg-white rounded col-md-3 col-sm-6 center" style="margin: 10px; ">
+            <p>Identifier<br /><input type="text" maxlength="100" class="input-sm" name="items[@index].Identifier" /></p>
+            <p>Value<br /><input type="text" name="items[@index].Value" class="input-sm" /></p>
+            <p><input type="submit" class="btn btn-success" value="Save Item" /></p>
+        </div>
+    </div>
+}
+
