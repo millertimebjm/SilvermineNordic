@@ -28,12 +28,12 @@ namespace ApiServer.Mvc.Controllers
         [HttpGet("{identifier}/{key}")]
         public IActionResult Get(string identifier, Guid key)
         {
-            var item = _repository.GetItemAsync(key, identifier);
+            var item = _repository.GetItemAsync(identifier, key);
             if (item != null)
             {
                 return Ok(item.Value);
             }
-            return new NotFoundResult();
+            return NotFound();
         }
 
         //// POST api/<ValuesController>

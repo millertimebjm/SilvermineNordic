@@ -27,11 +27,26 @@ namespace ApiServer.EntityFrameworkCore
                 entity.HasOne(u => u.User)
                     .WithMany(i => i.Items)
                     .HasForeignKey(u => u.UserId);
-                //.HasConstraintName("FK_Board_Player");
 
                 entity.HasMany(ik => ik.ItemKeys)
                     .WithOne(i => i.Item)
                     .HasForeignKey(ik => ik.ItemId);
+            });
+
+            modelBuilder.Entity<User>(entity =>
+            {
+                entity
+                    .HasMany(u => u.Items)
+                    .WithOne(i => i.User)
+                    .HasForeignKey(i => i.UserId);
+            });
+
+            modelBuilder.Entity<ItemKey>(entity =>
+            {
+                entity
+                    .HasOne(ik => ik.Item)
+                    .WithMany(i => i.ItemKeys)
+                    .HasForeignKey(i => i.ItemId);
             });
         }
     }

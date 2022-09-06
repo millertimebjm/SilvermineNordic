@@ -42,7 +42,7 @@ else if (Model.PostResult != null && Model.PostResult == PostResultEnum.DeleteSu
                 <p>
                     <div class="row"><div class="col-6"><input type="button" class="btn btn-warning" value="Edit Item" /></div><div class="col-6 text-end"><a href="@Url.Action("DeleteItem", "Home", new { id = item.ItemId })" data-toggle="confirmation" data-title="Are you sure you want to delete this item?"><input type="button" class="btn btn-danger" value="Delete Item" /></a></div></div>
                     <br />
-                    <div class="row" style="font-size: .8rem"><div class="col-4">Keys<br />0</div><div class="col-4">Accessed<br />(7 days)<br />0</div><div class="col-4">Accessed<br />(28 days)<br />0</div></div>
+                    <div class="row" style="font-size: .8rem"><div class="col-4">Keys<br />@item.ItemKeys.Count()</div><div class="col-4">Accessed<br />(7 days)<br />0</div><div class="col-4">Accessed<br />(28 days)<br />0</div></div>
             </div>
             index++;
         }

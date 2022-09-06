@@ -103,6 +103,7 @@ namespace ApiServer.Mvc.Controllers
         {
             var _repository = new EntityFrameworkCoreRepository("asdf");
             var userId = Guid.NewGuid();
+            var itemId = Guid.NewGuid();
             _repository.SetUserAsync(new User()
             {
                 UserId = userId,
@@ -113,7 +114,7 @@ namespace ApiServer.Mvc.Controllers
                     new Item()
                     {
                         UserId = userId,
-                        ItemId = Guid.NewGuid(),
+                        ItemId = itemId,
                         Identifier = "Item1-Identifier",
                         Value = "Item1-Value",
                         ItemKeys = new List<ItemKey>()
@@ -123,12 +124,14 @@ namespace ApiServer.Mvc.Controllers
                                 ItemKeyId = Guid.NewGuid(),
                                 Key = Guid.NewGuid(),
                                 Note = "Item's First Key",
+                                ItemId = itemId,
                             },
                             new ItemKey()
                             {
                                 ItemKeyId = Guid.NewGuid(),
                                 Key = Guid.NewGuid(),
                                 Note = "Item's Second Key",
+                                ItemId = itemId,
                             },
                         },
                     },

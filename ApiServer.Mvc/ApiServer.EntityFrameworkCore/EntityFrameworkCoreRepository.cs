@@ -15,11 +15,11 @@ namespace ApiServer.EntityFrameworkCore
             _contextOptions = optionsBuilder.Options;
         }
 
-        public Item? GetItemAsync(Guid itemId, string identifier)
+        public Item? GetItemAsync(string identifier, Guid key)
         {
             using (var context = new ApiServerDbContext(_contextOptions))
             {
-                return context.Items.SingleOrDefault(_ => _.ItemId == itemId && _.Identifier == identifier);
+                return context.Items.SingleOrDefault(_ => _.Identifier == identifier && _.ItemKeys.Select(ik => ik.Key).Contains(key));
             }
         }
 
@@ -83,7 +83,11 @@ namespace ApiServer.EntityFrameworkCore
         {
             using (var context = new ApiServerDbContext(_contextOptions))
             {
-                return await context.Items.Where(_ => _.UserId == userId).ToListAsync();
+                return await context
+                    .Items
+                    .Include(i => i.ItemKeys)
+                    .Where(_ => _.UserId == userId)
+                    .ToListAsync();
             }
         }
     }
