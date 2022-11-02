@@ -23,7 +23,7 @@ namespace ApiServer.EntityFrameworkCore
             }
         }
 
-        public async Task<User> GetUserAsync(Guid userId)
+        public async Task<User?> GetUserAsync(Guid userId)
         {
             using (var context = new ApiServerDbContext(_contextOptions))
             {
@@ -31,7 +31,7 @@ namespace ApiServer.EntityFrameworkCore
             }
         }
 
-        public User GetUserAsync(string username, string password)
+        public User? GetUserAsync(string username, string password)
         {
             using (var context = new ApiServerDbContext(_contextOptions))
             {
