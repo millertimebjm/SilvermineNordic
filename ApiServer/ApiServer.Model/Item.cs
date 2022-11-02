@@ -8,7 +8,7 @@ namespace ApiServer.Model
         [Key]
         public Guid ItemId { get; set; }
         public string Identifier { get; set; }
-        public string Value { get; set; }
+        public string? Value { get; set; }
         public Guid UserId { get; set; }
         public User User { get; set; }
         public List<ItemKey> ItemKeys { get; set; }

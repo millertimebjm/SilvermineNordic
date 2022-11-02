@@ -7,7 +7,7 @@ namespace ApiServer.Model
         [Key]
         public Guid UserId { get; set; }
         public string Username { get; set; }
-        public string Password { get; set; }
+        public string? Password { get; set; }
         public List<Item> Items { get; set; }
 
         public override int GetHashCode()
