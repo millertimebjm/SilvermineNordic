@@ -31,3 +31,5 @@
 /ApiServer/ApiServer.Repository/obj
 /ApiServer/ApiServer.WebApi/bin/Debug/net6.0
 /ApiServer/ApiServer.WebApi/obj
+/ApiServer/ApiServer.Blazorwasm/bin/Debug/net6.0/wwwroot/_framework
+/ApiServer/ApiServer.Blazorwasm/bin/Debug/net6.0

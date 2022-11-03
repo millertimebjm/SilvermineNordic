@@ -34,9 +34,9 @@ namespace ApiServer.Mvc.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login(string username, string password)
+        public async Task<IActionResult> Login(string username, string password)
         {
-            var user = _repository.GetUserAsync(username, password);
+            var user = await _repository.GetUserAsync(username, password);
             if (user == null)
             {
                 TempData["loginFailed"] = "loginFailed";
@@ -99,12 +99,12 @@ namespace ApiServer.Mvc.Controllers
             return RedirectToAction("Manager");
         }
 
-        public static void Init()
+        public async static Task Init()
         {
             var _repository = new EntityFrameworkCoreRepository("asdf");
             var userId = Guid.NewGuid();
             var itemId = Guid.NewGuid();
-            _repository.SetUserAsync(new User()
+            await _repository.SetUserAsync(new User()
             {
                 UserId = userId,
                 Username = "a",
