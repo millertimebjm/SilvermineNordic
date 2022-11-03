@@ -1,42 +1,41 @@
 ﻿using ApiServer.Model;
+using ApiServer.Repository;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiServer.WebApi.Controllers
 {
-    [Route("users/{userId}/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class ItemsController : ControllerBase
     {
-        [HttpGet]
-        public async Task<IEnumerable<Item>> Get(Guid userId)
+        private readonly IRepository _repository;
+
+        public ItemsController(IRepository repository) : base()
         {
-            return new List<Item>()
-            {
-                new Item()
-                {
-                    ItemId = new Guid(),
-                    Identifier = "Identifier1",
-                    Value = null,
-                },
-                new Item()
-                {
-                    ItemId = new Guid(),
-                    Identifier = "Identifier2",
-                    Value = null,
-                },
-            };
+            _repository = repository;
         }
 
-        [HttpGet("{identifier}/{key}")]
-        public async Task<Item> Get(Guid userId, Guid key)
+        [HttpGet("list/{userId}")]
+        public async Task<IEnumerable<Item>> List(Guid userId)
         {
-            return new Item()
+            return await _repository.GetItemsAsync(userId);
+        }
+
+        [HttpGet("{key}")]
+        public async Task<Item?> Get(Guid key)
+        {
+            return await _repository.GetItemByKeyAsync(key);
+        }
+
+        [HttpPost("{userId}")]
+        public async Task<Item> Post(Guid userId, [FromBody] string identifier)
+        {
+            return await _repository.SetItemAsync(new Item()
             {
-                UserId = new Guid(),
-                Identifier = "Identifier1",
-                ItemId = new Guid(),
-                Value = "Value1",
-            };
+                UserId = userId,
+                Identifier = identifier,
+                Value = null,
+            });
         }
     }
 }

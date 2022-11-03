@@ -15,11 +15,11 @@ namespace ApiServer.EntityFrameworkCore
             _contextOptions = optionsBuilder.Options;
         }
 
-        public Item? GetItemAsync(string identifier, Guid key)
+        public async Task<Item?> GetItemByKeyAsync(Guid key)
         {
             using (var context = new ApiServerDbContext(_contextOptions))
             {
-                return context.Items.SingleOrDefault(_ => _.Identifier == identifier && _.ItemKeys.Select(ik => ik.Key).Contains(key));
+                return context.Items.SingleOrDefault(_ =>  _.ItemKeys.Select(ik => ik.Key).Contains(key));
             }
         }
 
@@ -27,26 +27,47 @@ namespace ApiServer.EntityFrameworkCore
         {
             using (var context = new ApiServerDbContext(_contextOptions))
             {
-                return await context.Users.SingleOrDefaultAsync(_ => _.UserId == userId);
+                var user = await context.Users.SingleOrDefaultAsync(_ => _.UserId == userId);
+                if (user != null)
+                {
+                    user.Password = null;
+                }
+                return user;
             }
         }
 
-        public User? GetUserAsync(string username, string password)
+        public async Task<User?> GetUserAsync(string username, string password)
         {
             using (var context = new ApiServerDbContext(_contextOptions))
             {
-                return context.Users.SingleOrDefault(_ => _.Username == username && _.Password == password);
+                var user = context.Users.SingleOrDefault(_ => _.Username == username && _.Password == password);
+                if (user != null)
+                {
+                    user.Password = null;
+                }
+                return user;
             }
         }
 
-        public Item SetItemAsync(Item item)
+        public Task<bool> GetUserExists(string username)
         {
-            if (item.ItemId == Guid.Empty)
-            {
-                item.ItemId = Guid.NewGuid();
-            }
             using (var context = new ApiServerDbContext(_contextOptions))
             {
+                return context.Users.AnyAsync(_ => _.Username == username);
+            }
+        }
+
+        public async Task<Item> SetItemAsync(Item item)
+        {
+
+            item.ItemId = Guid.NewGuid();
+            
+            using (var context = new ApiServerDbContext(_contextOptions))
+            {
+                if (context.Users.Any(_ => _.UserId == item.UserId))
+                {
+                    throw new ArgumentException("User Id not valid.");
+                }
                 var oldItem = context.Items.SingleOrDefault(_ => _.ItemId == item.ItemId);
                 if (oldItem != null)
                 {
@@ -56,16 +77,16 @@ namespace ApiServer.EntityFrameworkCore
                 {
                     context.Items.Add(item);
                 }
-                context.SaveChanges();
-                return context.Items.Single(_ => _.ItemId == item.ItemId);
+                await context.SaveChangesAsync();
+                return await context.Items.SingleAsync(_ => _.ItemId == item.ItemId);
             }
         }
 
-        public User SetUserAsync(User user)
+        public async Task<User> SetUserAsync(User user)
         {
             using (var context = new ApiServerDbContext(_contextOptions))
             {
-                var oldUser = context.Users.SingleOrDefault(_ => _.UserId == user.UserId);
+                var oldUser = await context.Users.SingleOrDefaultAsync(_ => _.UserId == user.UserId);
                 if (oldUser != null)
                 {
                     oldUser.Password = user.Password;
@@ -74,8 +95,8 @@ namespace ApiServer.EntityFrameworkCore
                 {
                     context.Users.Add(user);
                 }
-                context.SaveChanges();
-                return context.Users.Single(_ => _.UserId == user.UserId);
+                await context.SaveChangesAsync();
+                return await context.Users.SingleAsync(_ => _.UserId == user.UserId);
             }
         }
 
@@ -83,11 +104,16 @@ namespace ApiServer.EntityFrameworkCore
         {
             using (var context = new ApiServerDbContext(_contextOptions))
             {
-                return await context
+                var items = await context
                     .Items
-                    .Include(i => i.ItemKeys)
                     .Where(_ => _.UserId == userId)
                     .ToListAsync();
+
+                foreach (var item in items)
+                {
+                    item.Value = null;
+                }
+                return items;
             }
         }
     }

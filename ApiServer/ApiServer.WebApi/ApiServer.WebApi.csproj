@@ -12,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ApiServer.EntityFrameworkCore\ApiServer.EntityFrameworkCore.csproj" />
     <ProjectReference Include="..\ApiServer.Model\ApiServer.Model.csproj" />
   </ItemGroup>
 
