@@ -4,7 +4,7 @@ namespace ApiServer.Repository
 {
     public interface IRepository
     {
-        Task<Item?> GetItemByKeyAsync(Guid key);
+        Task<string?> GetItemValueByKeyAsync(Guid key);
         Task<Item> SetItemAsync(Item item);
         Task<User?> GetUserAsync(Guid userId);
         Task<User> SetUserAsync(User user);

@@ -11,5 +11,24 @@ namespace ApiServer.Model
         public string Note { get; set; }
         public Item Item { get; set; }
         public Guid ItemId { get; set; }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj as ItemKey != null)
+            {
+                return Equals((ItemKey)obj);
+            }
+            return base.Equals(obj);
+        }
+
+        public bool Equals(ItemKey itemKey)
+        {
+            return itemKey.ItemKeyId == ItemKeyId;
+        }
     }
 }

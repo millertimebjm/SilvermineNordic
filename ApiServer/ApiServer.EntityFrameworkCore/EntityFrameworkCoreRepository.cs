@@ -15,11 +15,12 @@ namespace ApiServer.EntityFrameworkCore
             _contextOptions = optionsBuilder.Options;
         }
 
-        public async Task<Item?> GetItemByKeyAsync(Guid key)
+        public async Task<string> GetItemValueByKeyAsync(Guid key)
         {
             using (var context = new ApiServerDbContext(_contextOptions))
             {
-                return context.Items.SingleOrDefault(_ =>  _.ItemKeys.Select(ik => ik.Key).Contains(key));
+                var item = context.Items.SingleOrDefault(_ =>  _.ItemKeys.Select(ik => ik.ItemKeyId).Contains(key));
+                return item.Value;
             }
         }
 
@@ -112,6 +113,7 @@ namespace ApiServer.EntityFrameworkCore
                 foreach (var item in items)
                 {
                     item.Value = null;
+                    item.UserId = new Guid();
                 }
                 return items;
             }
