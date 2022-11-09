@@ -29,23 +29,23 @@ namespace ApiServer.WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<User?> Post([FromBody] string username, [FromBody] string password)
+        public async Task<User?> Post([FromBody] User user)
         {
-            if (username == null || password == null)
+            if (user.Username == null || user.Password == null)
             {
                 throw new ArgumentNullException();
             }
 
-            var hashSaltPassword = ComputeHash(Encoding.UTF8.GetBytes(password), Encoding.UTF8.GetBytes(_salt));
-            if (await _repository.GetUserExists(username))
+            var hashSaltPassword = ComputeHash(Encoding.UTF8.GetBytes(user.Password), Encoding.UTF8.GetBytes(_salt));
+            if (await _repository.GetUserExists(user.Username))
             {
-                return await _repository.GetUserAsync(username, hashSaltPassword);
+                return await _repository.GetUserAsync(user.Username, hashSaltPassword);
             }
             else
             {
                 return await _repository.SetUserAsync(new User()
                 {
-                    Username = username,
+                    Username = user.Username,
                     Password = hashSaltPassword,
                 });
             }
@@ -60,8 +60,10 @@ namespace ApiServer.WebApi.Controllers
         public static string GenerateSalt()
         {
             var bytes = new byte[128 / 8];
-            var rng = new RNGCryptoServiceProvider();
-            rng.GetBytes(bytes);
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(bytes);
+            }
             return Convert.ToBase64String(bytes);
         }
     }

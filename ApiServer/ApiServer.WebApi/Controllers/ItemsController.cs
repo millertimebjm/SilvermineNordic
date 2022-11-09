@@ -22,9 +22,9 @@ namespace ApiServer.WebApi.Controllers
         }
 
         [HttpGet("{key}")]
-        public async Task<Item?> Get(Guid key)
+        public async Task<string?> Get(Guid key)
         {
-            return await _repository.GetItemByKeyAsync(key);
+            return await _repository.GetItemValueByKeyAsync(key);
         }
 
         [HttpPost("{userId}")]

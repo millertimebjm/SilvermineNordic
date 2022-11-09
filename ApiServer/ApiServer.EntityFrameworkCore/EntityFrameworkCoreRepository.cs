@@ -94,10 +94,13 @@ namespace ApiServer.EntityFrameworkCore
                 }
                 else
                 {
+                    user.UserId = Guid.NewGuid();
                     context.Users.Add(user);
                 }
                 await context.SaveChangesAsync();
-                return await context.Users.SingleAsync(_ => _.UserId == user.UserId);
+                var newUser = await context.Users.SingleAsync(_ => _.UserId == user.UserId);
+                newUser.Password = null;
+                return newUser;
             }
         }
 

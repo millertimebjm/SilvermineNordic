@@ -2,6 +2,7 @@
 using ApiServer.Model;
 using ApiServer.Repository;
 using Microsoft.EntityFrameworkCore;
+using System.Runtime.CompilerServices;
 
 namespace ApiServer.NUnit
 {
@@ -114,6 +115,58 @@ namespace ApiServer.NUnit
         {
             var value = await _repository.GetItemValueByKeyAsync(ItemKey1.ItemKeyId);
             Assert.AreEqual(value, Item1.Value);
+        }
+
+        [Test]
+        public async Task SetUserAsync_NewUser()
+        {
+            var user = new User()
+            {
+                UserId = new Guid(),
+                Username = "SetUserAsync_NewUser",
+                Password = "SetUserAsync_NewUser",
+            };
+            var copiedUser = new User()
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                Password = user.Password,
+            };
+            var insertedUser = await _repository.SetUserAsync(copiedUser);
+            Assert.AreEqual(user.Username, insertedUser.Username);
+            Assert.AreNotEqual(user.UserId, insertedUser.UserId);
+        }
+
+        [Test]
+        public async Task SetUserAsync_NoPresetUserId()
+        {
+            User user = new User()
+            {
+                UserId = Guid.NewGuid(),
+                Username = "SetUserAsync_NoPresetUserId",
+                Password = "SetUserAsync_NoPresetUserId",
+            };
+            var copiedUser = new User()
+            {
+                UserId = user.UserId,
+                Username = user.Username,
+                Password = user.Password,
+            };
+            var insertedUser = await _repository.SetUserAsync(copiedUser);
+            Assert.AreNotEqual(user.UserId, insertedUser.UserId);
+        }
+
+        [Test]
+        public async Task SetUserAsync_PasswordNotReturned()
+        {
+            User user = new User()
+            {
+                UserId = Guid.NewGuid(),
+                Username = "SetUserAsync_NoPresetUserId",
+                Password = "SetUserAsync_NoPresetUserId",
+            };
+            var insertedUser = await _repository.SetUserAsync(user);
+            Assert.IsNull(user.Password);
         }
     }
 }
