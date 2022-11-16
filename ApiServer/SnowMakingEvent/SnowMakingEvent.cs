@@ -62,7 +62,7 @@ namespace SnowMakingEvent
                         log.LogInformation("Threshold for notification NOT reached!");
                     }
 
-                    var response = await SetTableData(log, sensorData, temperatureInCelciusString, humidityString);
+                    var response = await SetTableData(sensorData, temperatureInCelciusString, humidityString);
                     log.LogInformation($"Storage Table Update Response: {response.Status} - {response.ReasonPhrase} - {response.Content}");
 
                     return new OkObjectResult("Event processed.");
@@ -76,7 +76,7 @@ namespace SnowMakingEvent
             return new BadRequestObjectResult("Query parameters not formatted correctly.");
         }
 
-        private async Task<Response> SetTableData(ILogger log, SnowMakingModel model, string temperatureInCelciusQueryParameter, string humidityQueryParameter)
+        private async Task<Response> SetTableData(SnowMakingModel model, string temperatureInCelciusQueryParameter, string humidityQueryParameter)
         {
             model.LastTemperatureInCelcius = temperatureInCelciusQueryParameter;
             model.LastHumidity = humidityQueryParameter;
