@@ -77,7 +77,7 @@ namespace ApiServer.NUnit
         [Test]
         public async Task GetUserAsync_UserId()
         {
-            User repositoryUser = await _repository.GetUserAsync(User1.UserId);
+            User repositoryUser = await _repository.GetUserAsync(User1.UserId.Value);
             using (var context = new ApiServerDbContext(_contextOptions))
             {
                 User dbUser = context.Users.Single(_ => _.UserId == User1.UserId);
@@ -101,7 +101,7 @@ namespace ApiServer.NUnit
         [Test]
         public async Task GetItemsAsync_UserId()
         {
-            var repositoryItems = await _repository.GetItemsAsync(User1.UserId);
+            var repositoryItems = await _repository.GetItemsAsync(User1.UserId.Value);
             Assert.IsTrue(repositoryItems.Contains(Item1));
             foreach (var item in repositoryItems)
             {

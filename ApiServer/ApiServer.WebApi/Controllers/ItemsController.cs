@@ -1,5 +1,6 @@
 ﻿using ApiServer.Model;
 using ApiServer.Repository;
+using ApiServer.WebApi.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ApiServer.WebApi.Controllers
@@ -16,9 +17,9 @@ namespace ApiServer.WebApi.Controllers
         }
 
         [HttpGet("list/{userId}")]
-        public async Task<IEnumerable<Item>> List(Guid userId)
+        public async Task<IEnumerable<ItemModel>> List(Guid userId)
         {
-            return await _repository.GetItemsAsync(userId);
+            return (await _repository.GetItemsAsync(userId)).Select(_ => new ItemModel(_));
         }
 
         [HttpGet("{key}")]
@@ -28,14 +29,14 @@ namespace ApiServer.WebApi.Controllers
         }
 
         [HttpPost("{userId}")]
-        public async Task<Item> Post(Guid userId, [FromBody] string identifier)
+        public async Task<ItemModel> Post(Guid userId, [FromBody] string identifier)
         {
-            return await _repository.SetItemAsync(new Item()
+            return new ItemModel(await _repository.SetItemAsync(new Item()
             {
                 UserId = userId,
                 Identifier = identifier,
                 Value = null,
-            });
+            }));
         }
     }
 }

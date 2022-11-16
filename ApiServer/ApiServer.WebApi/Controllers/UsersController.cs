@@ -1,5 +1,6 @@
 ﻿using ApiServer.Model;
 using ApiServer.Repository;
+using ApiServer.WebApi.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Cryptography;
@@ -23,13 +24,13 @@ namespace ApiServer.WebApi.Controllers
         }
 
         [HttpGet("{userId}")]
-        public async Task<User?> Get(Guid userId)
+        public async Task<UserModel?> Get(Guid userId)
         {
-            return await _repository.GetUserAsync(userId);
+            return new UserModel(await _repository.GetUserAsync(userId));
         }
 
         [HttpPost]
-        public async Task<User?> Post([FromBody] User user)
+        public async Task<UserModel?> Post([FromBody] UsernamePasswordModel user)
         {
             if (user.Username == null || user.Password == null)
             {
@@ -39,15 +40,15 @@ namespace ApiServer.WebApi.Controllers
             var hashSaltPassword = ComputeHash(Encoding.UTF8.GetBytes(user.Password), Encoding.UTF8.GetBytes(_salt));
             if (await _repository.GetUserExists(user.Username))
             {
-                return await _repository.GetUserAsync(user.Username, hashSaltPassword);
+                return new UserModel(await _repository.GetUserAsync(user.Username, hashSaltPassword));
             }
             else
             {
-                return await _repository.SetUserAsync(new User()
+                return new UserModel(await _repository.SetUserAsync(new User()
                 {
                     Username = user.Username,
                     Password = hashSaltPassword,
-                });
+                }));
             }
         }
 
