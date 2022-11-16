@@ -51,6 +51,7 @@ namespace SnowMakingEvent
                 using (StreamReader streamReader = new StreamReader(req.Body))
                 {
                     requestBody = await streamReader.ReadToEndAsync();
+                    log.LogInformation($"RequestBody: {requestBody}");
                 }
                 dynamic data = JsonConvert.DeserializeObject(requestBody);
                 if (data != null)
