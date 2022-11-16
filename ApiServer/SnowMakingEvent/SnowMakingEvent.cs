@@ -41,8 +41,8 @@ namespace SnowMakingEvent
         {
             log.LogInformation($"C# HTTP trigger function processed a {req.Method.ToUpper()} request.");
 
-            var temperatureInCelciusString = req.Query[TemperatureInCelciusQueryParameterName].ToString();
-            var humidityString = req.Query[HumidityQueryParameterName].ToString();
+            var temperatureInCelciusString = req.Query["temperatureInCelcius"].ToString();
+            var humidityString = req.Query["humidity"].ToString();
 
             if (string.IsNullOrWhiteSpace(temperatureInCelciusString)
                 && string.IsNullOrWhiteSpace(humidityString))
@@ -56,11 +56,11 @@ namespace SnowMakingEvent
                 dynamic data = JsonConvert.DeserializeObject(requestBody);
                 if (data != null)
                 {
-                    temperatureInCelciusString = data[TemperatureInCelciusQueryParameterName];
+                    temperatureInCelciusString = data.temperatureInCelcius;
                 }
                 if (data != null)
                 {
-                    humidityString = data[HumidityQueryParameterName];
+                    humidityString = data.humidity;
                 }
             }
 
