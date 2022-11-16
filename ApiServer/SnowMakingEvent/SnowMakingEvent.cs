@@ -12,6 +12,8 @@ using Azure.Data.Tables;
 using Azure;
 using SnowMakingEvent.Models;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Primitives;
+using System.Linq;
 
 namespace SnowMakingEvent
 {
@@ -27,7 +29,7 @@ namespace SnowMakingEvent
 
         public SnowMakingEvent()
         {
-            _client = new TableClient("[redacted]", "SnowMaking");
+            _client = new TableClient("", "SnowMaking");
         }
 
         // http://localhost:7077/api/SnowMakingEvent?temperatureInCelcius=25&humidity=25
@@ -37,11 +39,31 @@ namespace SnowMakingEvent
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
         {
-            log.LogInformation("C# HTTP trigger function processed a request.");
+            log.LogInformation($"C# HTTP trigger function processed a {req.Method.ToUpper()} request.");
 
             var temperatureInCelciusString = req.Query[TemperatureInCelciusQueryParameterName].ToString();
+            var humidityString = req.Query[HumidityQueryParameterName].ToString();
+
+            if (string.IsNullOrWhiteSpace(temperatureInCelciusString)
+                && string.IsNullOrWhiteSpace(humidityString))
+            {
+                string requestBody = String.Empty;
+                using (StreamReader streamReader = new StreamReader(req.Body))
+                {
+                    requestBody = await streamReader.ReadToEndAsync();
+                }
+                dynamic data = JsonConvert.DeserializeObject(requestBody);
+                if (data != null)
+                {
+                    temperatureInCelciusString = data[TemperatureInCelciusQueryParameterName];
+                }
+                if (data != null)
+                {
+                    humidityString = data[HumidityQueryParameterName];
+                }
+            }
+
             log.LogInformation($"{TemperatureInCelciusQueryParameterName} value entered as {temperatureInCelciusString}.");
-            var humidityString = req.Query[HumidityQueryParameterName];
             log.LogInformation($"{HumidityQueryParameterName} value entered as {humidityString}.");
 
             if (decimal.TryParse(temperatureInCelciusString, out var temperatureInCelcius)
@@ -104,6 +126,11 @@ namespace SnowMakingEvent
                 return true;
             }
             return false;
+        }
+
+        public static bool doesPropertyExist(dynamic obj, string property)
+        {
+            return ((Type)obj.GetType()).GetProperties().Where(p => p.Name.Equals(property)).Any();
         }
     }
 }
