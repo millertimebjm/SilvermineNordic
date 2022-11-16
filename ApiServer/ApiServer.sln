@@ -15,7 +15,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiServer.NUnit", "ApiServe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiServer.WebApi", "ApiServer.WebApi\ApiServer.WebApi.csproj", "{687CA36E-B8AC-4D3D-B24A-ED7FC465DA38}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiServer.Blazorwasm", "ApiServer.Blazorwasm\ApiServer.Blazorwasm.csproj", "{C919A470-E1A0-4D75-BEEF-2EE0B3023474}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiServer.Blazorwasm", "ApiServer.Blazorwasm\ApiServer.Blazorwasm.csproj", "{C919A470-E1A0-4D75-BEEF-2EE0B3023474}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SnowMakingEvent", "SnowMakingEvent\SnowMakingEvent.csproj", "{D8B5C145-0462-4F03-8B0F-A29D589AA509}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{C919A470-E1A0-4D75-BEEF-2EE0B3023474}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C919A470-E1A0-4D75-BEEF-2EE0B3023474}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C919A470-E1A0-4D75-BEEF-2EE0B3023474}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D8B5C145-0462-4F03-8B0F-A29D589AA509}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D8B5C145-0462-4F03-8B0F-A29D589AA509}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D8B5C145-0462-4F03-8B0F-A29D589AA509}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D8B5C145-0462-4F03-8B0F-A29D589AA509}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
