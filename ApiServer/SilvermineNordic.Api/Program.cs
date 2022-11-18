@@ -1,5 +1,5 @@
 using Microsoft.EntityFrameworkCore;
-using SilvermineNordic.Api.Services;
+using SilvermineNordic.Repository.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

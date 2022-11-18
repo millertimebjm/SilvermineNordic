@@ -3,18 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiServer.Mvc", "ApiServer.Mvc\ApiServer.Mvc.csproj", "{656F7B59-5D1D-4A1A-99EF-329AB737AFFF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiServer.EntityFrameworkCore", "ApiServer.EntityFrameworkCore\ApiServer.EntityFrameworkCore.csproj", "{F02AD454-56C5-4B60-8D19-EEECF6900700}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiServer.Repository", "ApiServer.Repository\ApiServer.Repository.csproj", "{6BC34EE1-C99C-4ADC-B4AD-5589A9D5E379}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiServer.Model", "ApiServer.Model\ApiServer.Model.csproj", "{126B1BAA-7E1F-4803-9835-98A62C7B7151}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiServer.NUnit", "ApiServer.NUnit\ApiServer.NUnit.csproj", "{89EBC01A-27C2-44C1-9420-8ACCFED620EB}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiServer.WebApi", "ApiServer.WebApi\ApiServer.WebApi.csproj", "{687CA36E-B8AC-4D3D-B24A-ED7FC465DA38}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnowMakingEvent", "SnowMakingEvent\SnowMakingEvent.csproj", "{D8B5C145-0462-4F03-8B0F-A29D589AA509}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverminNordic.Admin", "SilverminNordic.Admin\SilverminNordic.Admin.csproj", "{9A26C070-34E5-44C5-964C-A4FE8AB35BBF}"
@@ -23,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Api", "Sil
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Repository", "SilvermineNordic.Repository\SilvermineNordic.Repository.csproj", "{4CE79355-4014-4CF3-A601-5712F79E7C8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilvermineNordic.Functions", "SilvermineNordic.Functions\SilvermineNordic.Functions.csproj", "{737A2BC4-2300-4487-9B6F-1DC80E54CAFC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilvermineNordic.Functions", "SilvermineNordic.Functions\SilvermineNordic.Functions.csproj", "{E5DA9C0B-18F5-413B-97F9-68BAD7DE1F11}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,30 +19,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{656F7B59-5D1D-4A1A-99EF-329AB737AFFF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{656F7B59-5D1D-4A1A-99EF-329AB737AFFF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{656F7B59-5D1D-4A1A-99EF-329AB737AFFF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{656F7B59-5D1D-4A1A-99EF-329AB737AFFF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F02AD454-56C5-4B60-8D19-EEECF6900700}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F02AD454-56C5-4B60-8D19-EEECF6900700}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F02AD454-56C5-4B60-8D19-EEECF6900700}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F02AD454-56C5-4B60-8D19-EEECF6900700}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6BC34EE1-C99C-4ADC-B4AD-5589A9D5E379}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6BC34EE1-C99C-4ADC-B4AD-5589A9D5E379}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6BC34EE1-C99C-4ADC-B4AD-5589A9D5E379}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6BC34EE1-C99C-4ADC-B4AD-5589A9D5E379}.Release|Any CPU.Build.0 = Release|Any CPU
-		{126B1BAA-7E1F-4803-9835-98A62C7B7151}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{126B1BAA-7E1F-4803-9835-98A62C7B7151}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{126B1BAA-7E1F-4803-9835-98A62C7B7151}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{126B1BAA-7E1F-4803-9835-98A62C7B7151}.Release|Any CPU.Build.0 = Release|Any CPU
-		{89EBC01A-27C2-44C1-9420-8ACCFED620EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{89EBC01A-27C2-44C1-9420-8ACCFED620EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{89EBC01A-27C2-44C1-9420-8ACCFED620EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{89EBC01A-27C2-44C1-9420-8ACCFED620EB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{687CA36E-B8AC-4D3D-B24A-ED7FC465DA38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{687CA36E-B8AC-4D3D-B24A-ED7FC465DA38}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{687CA36E-B8AC-4D3D-B24A-ED7FC465DA38}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{687CA36E-B8AC-4D3D-B24A-ED7FC465DA38}.Release|Any CPU.Build.0 = Release|Any CPU
 		{D8B5C145-0462-4F03-8B0F-A29D589AA509}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{D8B5C145-0462-4F03-8B0F-A29D589AA509}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8B5C145-0462-4F03-8B0F-A29D589AA509}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -71,10 +35,10 @@ Global
 		{4CE79355-4014-4CF3-A601-5712F79E7C8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CE79355-4014-4CF3-A601-5712F79E7C8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4CE79355-4014-4CF3-A601-5712F79E7C8E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{737A2BC4-2300-4487-9B6F-1DC80E54CAFC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{737A2BC4-2300-4487-9B6F-1DC80E54CAFC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{737A2BC4-2300-4487-9B6F-1DC80E54CAFC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{737A2BC4-2300-4487-9B6F-1DC80E54CAFC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5DA9C0B-18F5-413B-97F9-68BAD7DE1F11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5DA9C0B-18F5-413B-97F9-68BAD7DE1F11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5DA9C0B-18F5-413B-97F9-68BAD7DE1F11}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5DA9C0B-18F5-413B-97F9-68BAD7DE1F11}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
