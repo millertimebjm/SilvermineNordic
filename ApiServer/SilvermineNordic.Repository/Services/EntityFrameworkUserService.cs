@@ -12,7 +12,7 @@ namespace SilvermineNordic.Repository.Services
         }
 
 
-        public Task AddUserAsync(User user)
+        public Task<User> AddUserAsync(User user)
         {
             throw new NotImplementedException();
         }
@@ -27,7 +27,7 @@ namespace SilvermineNordic.Repository.Services
             throw new NotImplementedException();
         }
 
-        public Task UpdateUserAsync(User user)
+        public Task<User> UpdateUserAsync(User user)
         {
             throw new NotImplementedException();
         }

@@ -3,17 +3,17 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:44757",
-      "sslPort": 44367
+      "applicationUrl": "http://localhost:40154",
+      "sslPort": 44332
     }
   },
   "profiles": {
-    "SilverminNordic.Admin": {
+    "SilvermineNordic.Admin": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "inspectUri": "{wsProtocol}://{url.hostname}:{url.port}/_framework/debug/ws-proxy?browser={browserInspectUri}",
-      "applicationUrl": "https://localhost:7203;http://localhost:5203",
+      "applicationUrl": "https://localhost:7010;http://localhost:5176",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

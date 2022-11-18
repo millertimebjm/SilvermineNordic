@@ -4,8 +4,8 @@ namespace SilvermineNordic.Repository.Services
 {
     public interface IRepositoryUser
     {
-        public Task AddUserAsync(User user);
-        public Task UpdateUserAsync(User user);
+        public Task<User> AddUserAsync(User user);
+        public Task<User> UpdateUserAsync(User user);
         public Task DeleteUserAsync(User user);
         public Task<User> GetUserAsync(string email);
     }

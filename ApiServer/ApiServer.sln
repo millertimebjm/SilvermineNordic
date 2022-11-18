@@ -3,15 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32616.157
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SnowMakingEvent", "SnowMakingEvent\SnowMakingEvent.csproj", "{D8B5C145-0462-4F03-8B0F-A29D589AA509}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilverminNordic.Admin", "SilverminNordic.Admin\SilverminNordic.Admin.csproj", "{9A26C070-34E5-44C5-964C-A4FE8AB35BBF}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Api", "SilvermineNordic.Api\SilvermineNordic.Api.csproj", "{7D5007A6-D910-4C03-B073-1C3772AE6D98}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Repository", "SilvermineNordic.Repository\SilvermineNordic.Repository.csproj", "{4CE79355-4014-4CF3-A601-5712F79E7C8E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilvermineNordic.Functions", "SilvermineNordic.Functions\SilvermineNordic.Functions.csproj", "{E5DA9C0B-18F5-413B-97F9-68BAD7DE1F11}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Functions", "SilvermineNordic.Functions\SilvermineNordic.Functions.csproj", "{E5DA9C0B-18F5-413B-97F9-68BAD7DE1F11}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Admin", "SilvermineNordic.Admin\SilvermineNordic.Admin.csproj", "{2F0BB52C-A87E-4CA5-A892-4723B60901FE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilvermineNordic.Api", "SilvermineNordic.Api\SilvermineNordic.Api.csproj", "{75B02092-480F-49D3-9DA1-60A7BA4A1669}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -19,18 +17,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D8B5C145-0462-4F03-8B0F-A29D589AA509}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D8B5C145-0462-4F03-8B0F-A29D589AA509}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D8B5C145-0462-4F03-8B0F-A29D589AA509}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D8B5C145-0462-4F03-8B0F-A29D589AA509}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9A26C070-34E5-44C5-964C-A4FE8AB35BBF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9A26C070-34E5-44C5-964C-A4FE8AB35BBF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9A26C070-34E5-44C5-964C-A4FE8AB35BBF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9A26C070-34E5-44C5-964C-A4FE8AB35BBF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7D5007A6-D910-4C03-B073-1C3772AE6D98}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7D5007A6-D910-4C03-B073-1C3772AE6D98}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7D5007A6-D910-4C03-B073-1C3772AE6D98}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7D5007A6-D910-4C03-B073-1C3772AE6D98}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4CE79355-4014-4CF3-A601-5712F79E7C8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4CE79355-4014-4CF3-A601-5712F79E7C8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4CE79355-4014-4CF3-A601-5712F79E7C8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -39,6 +25,14 @@ Global
 		{E5DA9C0B-18F5-413B-97F9-68BAD7DE1F11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5DA9C0B-18F5-413B-97F9-68BAD7DE1F11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5DA9C0B-18F5-413B-97F9-68BAD7DE1F11}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F0BB52C-A87E-4CA5-A892-4723B60901FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F0BB52C-A87E-4CA5-A892-4723B60901FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F0BB52C-A87E-4CA5-A892-4723B60901FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F0BB52C-A87E-4CA5-A892-4723B60901FE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{75B02092-480F-49D3-9DA1-60A7BA4A1669}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{75B02092-480F-49D3-9DA1-60A7BA4A1669}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{75B02092-480F-49D3-9DA1-60A7BA4A1669}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{75B02092-480F-49D3-9DA1-60A7BA4A1669}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
