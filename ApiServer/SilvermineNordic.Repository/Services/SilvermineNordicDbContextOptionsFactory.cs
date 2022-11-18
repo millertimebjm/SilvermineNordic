@@ -7,27 +7,27 @@ namespace SilvermineNordic.Repository.Services
         InMemory = 0,
         SqlServer = 1,
     }
-    public class SilvermineNordicDbContextFactory : ISilvermineNordicDbContextFactory
+    public class SilvermineNordicDbContextOptionsFactory : ISilvermineNordicDbContextOptionsFactory
     {
         public readonly string _connectionString;
         public readonly DbContextTypeEnum _type;
-        public SilvermineNordicDbContextFactory(string connectionString, DbContextTypeEnum type)
+        public SilvermineNordicDbContextOptionsFactory(string connectionString, DbContextTypeEnum type)
         {
             _connectionString = connectionString;
             _type = type;
         }
 
-        public SilvermineNordicDbContext GetDbContext()
+        public DbContextOptions<SilvermineNordicDbContext> GetDbContextOptions()
         {
-            DbContextOptionsBuilder<SilvermineNordicDbContext> builder = new DbContextOptionsBuilder<SilvermineNordicDbContext>();
+            var builder = new DbContextOptionsBuilder<SilvermineNordicDbContext>();
             switch (_type)
             {
                 case DbContextTypeEnum.InMemory:
                     builder.UseInMemoryDatabase(_connectionString);
-                    return new SilvermineNordicDbContext(builder.Options);
+                    return builder.Options;
                 case DbContextTypeEnum.SqlServer:
                     builder.UseSqlServer(_connectionString);
-                    return new SilvermineNordicDbContext(builder.Options);
+                    return builder.Options;
                 default:
                     throw new NotImplementedException();
             }

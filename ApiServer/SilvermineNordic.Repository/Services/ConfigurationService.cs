@@ -1,5 +1,5 @@
 ﻿
-namespace SilvermineNordic.Functions
+namespace SilvermineNordic.Repository
 {
     public class ConfigurationService : IConfiguration
     {

@@ -14,27 +14,13 @@ namespace SilvermineNordic.Functions
 {
     public class SensorReadingEvent
     {
-        //[FunctionName("Function1")]
-        //public static async Task<IActionResult> Run(
-        //    [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-        //    ILogger log)
-        //{
-        //    log.LogInformation("C# HTTP trigger function processed a request.");
-
-        //    ISilvermineNordicDbContextFactory asdf = null;
-
-        //    string name = req.Query["name"];
-
-        //    string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-        //    dynamic data = JsonConvert.DeserializeObject(requestBody);
-        //    name = name ?? data?.name;
-
-        //    string responseMessage = string.IsNullOrEmpty(name)
-        //        ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-        //        : $"Hello, {name}. This HTTP triggered function executed successfully.";
-
-        //    return new OkObjectResult(responseMessage);
-        //}
+        private readonly IRepositorySensorReading _sensorReadingService;
+        private readonly IRepositoryThreshold _thresholdService;
+        public SensorReadingEvent(IRepositorySensorReading sensorReadingService, IRepositoryThreshold thresholdService)
+        {
+            _sensorReadingService = sensorReadingService;
+            _thresholdService = thresholdService;
+        }
 
         // http://localhost:7077/api/SensorReadingEvent?temperatureInCelcius=25&humidity=25
         // http://localhost:7077/api/SensorReadingEvent?temperatureInCelcius=15&humidity=15
@@ -68,8 +54,8 @@ namespace SilvermineNordic.Functions
                 }
             }
 
-            log.LogInformation($"{TemperatureInCelciusQueryParameterName} value entered as {temperatureInCelciusString}.");
-            log.LogInformation($"{HumidityQueryParameterName} value entered as {humidityString}.");
+            log.LogInformation($"TemperatureInCelcius value entered as {temperatureInCelciusString}.");
+            log.LogInformation($"Humidity value entered as {humidityString}.");
 
             if (decimal.TryParse(temperatureInCelciusString, out var temperatureInCelcius)
                 && decimal.TryParse(humidityString, out var humidity))
@@ -77,9 +63,10 @@ namespace SilvermineNordic.Functions
                 try
                 {
                     var sensorData = await _sensorReadingService.GetLatestSensorReadingAsync();
+                    var thresholdData = await _thresholdService.GetThreshold();
 
-                    var isInZoneBefore = IsInZone(sensorData.TemperatureInCelcius, sensorData.Humidity);
-                    var isInZoneAfter = IsInZone(temperatureInCelcius, humidity);
+                    var isInZoneBefore = IsInZone(thresholdData, sensorData.TemperatureInCelcius, sensorData.Humidity);
+                    var isInZoneAfter = IsInZone(thresholdData, temperatureInCelcius, humidity);
                     if (isInZoneBefore != isInZoneAfter)
                     {
                         log.LogInformation("Threshold for notification has been reached!");
@@ -107,12 +94,12 @@ namespace SilvermineNordic.Functions
             return new BadRequestObjectResult("Query parameters not formatted correctly.");
         }
 
-        private static bool IsInZone(decimal lastTemperatureInCelcius, decimal lastHumidity)
+        private static bool IsInZone(Threshold thresholdData, decimal lastTemperatureInCelcius, decimal lastHumidity)
         {
-            if (lastTemperatureInCelcius > TemperatureInCelciusLowThreshold
-                && lastTemperatureInCelcius < TemperatureInCelciusHighThreshold
-                && lastHumidity > HumidityLowThreshold
-                && lastHumidity < HumidityHighThreshold)
+            if (lastTemperatureInCelcius > thresholdData.TemperatureInCelciusLowThreshold
+                && lastTemperatureInCelcius < thresholdData.TemperatureInCelciusHighThreshold
+                && lastHumidity > thresholdData.HumidityLowThreshold
+                && lastHumidity < thresholdData.HumidityHighThreshold)
             {
                 return true;
             }

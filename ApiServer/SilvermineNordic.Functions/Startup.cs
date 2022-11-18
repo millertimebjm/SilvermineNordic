@@ -1,6 +1,10 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
+using Microsoft.Azure.WebJobs.Host.Bindings;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using SilvermineNordic.Repository;
 using SilvermineNordic.Repository.Services;
 
 [assembly: FunctionsStartup(typeof(SilvermineNordic.Functions.Startup))]
@@ -10,9 +14,12 @@ namespace SilvermineNordic.Functions
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            //FunctionsHostBuilderContext context = builder.GetContext();
+            var executionContextOptions = builder.Services.BuildServiceProvider()
+                .GetRequiredService<IOptions<ExecutionContextOptions>>().Value;
+
             var config = new ConfigurationBuilder()
-                //.SetBasePath(context.ApplicationRootPath)
+                .SetBasePath(executionContextOptions.AppDirectory)
+                .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
@@ -21,17 +28,18 @@ namespace SilvermineNordic.Functions
             string snowMakingStorageName = config.GetConnectionStringOrSetting("SnowMakingStorageName");
             string snowMakingSqlConnectionString = config.GetConnectionStringOrSetting("SnowMakingSqlConnectionString");
 
-            builder.Services.AddSingleton<IConfiguration>(_ => 
+            builder.Services.AddSingleton<Repository.IConfiguration>(_ => 
                 new ConfigurationService(storageConnectionString: snowMakingStorageConnectionString,
                     storageName: snowMakingStorageName,
                     sqlConnectionString: snowMakingSqlConnectionString));
 
-            //builder.Services.AddDbContextPool<SilvermineNordicDbContext>(
-            //    //options => options.UseInMemoryDatabase("SilverminNordicConnectionString"));
-            //    options => options.UseSqlServer(snowMakingSqlConnectionString));
+            //ISilvermineNordicDbContextOptionsFactory dbContextOptionsfactory =
+            //    new SilvermineNordicDbContextOptionsFactory(snowMakingSqlConnectionString, DbContextTypeEnum.SqlServer);
 
-            //builder.Services.AddScoped<IRepositorySensorReading, EntityFrameworkSensorReadingService>();
-            //builder.Services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
+            builder.Services.AddDbContext<SilvermineNordicDbContext>();
+
+            builder.Services.AddScoped<IRepositorySensorReading, EntityFrameworkSensorReadingService>();
+            builder.Services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
         }
     }
 }
