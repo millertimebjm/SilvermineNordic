@@ -22,9 +22,18 @@ namespace SilvermineNordic.Functions
             _thresholdService = thresholdService;
         }
 
-        // http://localhost:7077/api/SensorReadingEvent?temperatureInCelcius=25&humidity=25
-        // http://localhost:7077/api/SensorReadingEvent?temperatureInCelcius=15&humidity=15
-        [FunctionName("SensorReadingEvent")]
+// local.settings.json
+//{
+//  "IsEncrypted": false,
+//  "ConnectionStrings": {
+//    "SnowMakingSqlConnectionString": ""
+//  },
+//  "Values": {  }
+//}
+
+    // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=25&humidity=25
+    // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=15&humidity=15
+    [FunctionName("SensorReadingEvent")]
         public async Task<IActionResult> Run(
             [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
             ILogger log)
