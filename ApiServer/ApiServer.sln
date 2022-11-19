@@ -9,9 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Functions"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Admin", "SilvermineNordic.Admin\SilvermineNordic.Admin.csproj", "{2F0BB52C-A87E-4CA5-A892-4723B60901FE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilvermineNordic.Api", "SilvermineNordic.Api\SilvermineNordic.Api.csproj", "{75B02092-480F-49D3-9DA1-60A7BA4A1669}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Api", "SilvermineNordic.Api\SilvermineNordic.Api.csproj", "{75B02092-480F-49D3-9DA1-60A7BA4A1669}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Arduino", "Arduino", "{3D5195C9-D0B5-4A5B-801A-AA899F030AEA}"
+	ProjectSection(SolutionItems) = preProject
+		ArduinoSensor.txt = ArduinoSensor.txt
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

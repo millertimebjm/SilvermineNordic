@@ -11,9 +11,9 @@ namespace SilvermineNordic.Repository.Services
             _dbContext = dbContext;
         }
 
-        public async Task<Threshold> GetThreshold()
+        public async Task<IEnumerable<Threshold>> GetThresholds()
         {
-            return await _dbContext.Thresholds.SingleAsync();
+            return await _dbContext.Thresholds.ToListAsync();
         }
 
         public async Task<Threshold> UpdateThreshold(Threshold threshold)

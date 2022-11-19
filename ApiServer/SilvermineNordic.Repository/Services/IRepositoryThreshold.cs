@@ -5,6 +5,6 @@ namespace SilvermineNordic.Repository.Services
     public interface IRepositoryThreshold
     {
         public Task<Threshold> UpdateThreshold(Threshold threshold);
-        public Task<Threshold> GetThreshold();
+        public Task<IEnumerable<Threshold>> GetThresholds();
     }
 }

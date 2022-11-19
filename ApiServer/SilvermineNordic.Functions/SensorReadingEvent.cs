@@ -9,6 +9,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Repository.Models;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SilvermineNordic.Functions
 {
@@ -72,7 +74,7 @@ namespace SilvermineNordic.Functions
                 try
                 {
                     var sensorData = await _sensorReadingService.GetLatestSensorReadingAsync();
-                    var thresholdData = await _thresholdService.GetThreshold();
+                    var thresholdData = await _thresholdService.GetThresholds();
 
                     var isInZoneBefore = IsInZone(thresholdData, sensorData.TemperatureInCelcius, sensorData.Humidity);
                     var isInZoneAfter = IsInZone(thresholdData, temperatureInCelcius, humidity);
@@ -103,12 +105,12 @@ namespace SilvermineNordic.Functions
             return new BadRequestObjectResult("Query parameters not formatted correctly.");
         }
 
-        private static bool IsInZone(Threshold thresholdData, decimal lastTemperatureInCelcius, decimal lastHumidity)
+        private static bool IsInZone(IEnumerable<Threshold> thresholdData, decimal temperatureInCelcius, decimal humidity)
         {
-            if (lastTemperatureInCelcius > thresholdData.TemperatureInCelciusLowThreshold
-                && lastTemperatureInCelcius < thresholdData.TemperatureInCelciusHighThreshold
-                && lastHumidity > thresholdData.HumidityLowThreshold
-                && lastHumidity < thresholdData.HumidityHighThreshold)
+            if (thresholdData.Any(_ => _.TemperatureInCelciusLowThreshold <= temperatureInCelcius
+                && _.TemperatureInCelciusHighThreshold > temperatureInCelcius
+                && _.HumidityLowThreshold <= humidity
+                && _.HumidityHighThreshold > humidity))
             {
                 return true;
             }
