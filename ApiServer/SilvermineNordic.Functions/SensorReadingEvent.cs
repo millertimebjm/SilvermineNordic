@@ -76,8 +76,8 @@ namespace SilvermineNordic.Functions
                     var sensorData = await _sensorReadingService.GetLatestSensorReadingAsync();
                     var thresholdData = await _thresholdService.GetThresholds();
 
-                    var isInZoneBefore = IsInZone(thresholdData, sensorData.TemperatureInCelcius, sensorData.Humidity);
-                    var isInZoneAfter = IsInZone(thresholdData, temperatureInCelcius, humidity);
+                    var isInZoneBefore = InTheZoneService.IsInZone(thresholdData, sensorData.TemperatureInCelcius, sensorData.Humidity);
+                    var isInZoneAfter = InTheZoneService.IsInZone(thresholdData, temperatureInCelcius, humidity);
                     if (isInZoneBefore != isInZoneAfter)
                     {
                         log.LogInformation("Threshold for notification has been reached!");
@@ -103,18 +103,6 @@ namespace SilvermineNordic.Functions
             }
 
             return new BadRequestObjectResult("Query parameters not formatted correctly.");
-        }
-
-        private static bool IsInZone(IEnumerable<Threshold> thresholdData, decimal temperatureInCelcius, decimal humidity)
-        {
-            if (thresholdData.Any(_ => _.TemperatureInCelciusLowThreshold <= temperatureInCelcius
-                && _.TemperatureInCelciusHighThreshold > temperatureInCelcius
-                && _.HumidityLowThreshold <= humidity
-                && _.HumidityHighThreshold > humidity))
-            {
-                return true;
-            }
-            return false;
         }
     }
 }

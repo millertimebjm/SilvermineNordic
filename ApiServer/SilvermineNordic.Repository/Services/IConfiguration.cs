@@ -6,5 +6,6 @@ namespace SilvermineNordic.Repository
         public string GetStorageConnectionString();
         public string GetStorageName();
         public string GetSqlConnectionString();
+        public string GetOpenWeatherApiKey();
     }
 }

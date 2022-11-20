@@ -1,0 +1,11 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+  },
+  "ConnectionStrings": {
+    "SnowMakingSqlConnectionString": "Server=tcp:silverminenordic.database.windows.net,1433;Initial Catalog=SilvermineNordic;Persist Security Info=False;User ID=silverminenordic;Password=236aYDJRUEA&m&;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+    "OpenWeatherApiForecastApiKey": "29134f4f482cd70025f959d1aad59210"
+  }
+}

@@ -1,4 +1,6 @@
 ﻿@page "/"
+@using SilvermineNordic.Repository.Models;
+@inject HttpClient Http
 
 <PageTitle>Dashboard</PageTitle>
 
@@ -476,35 +478,35 @@
                       <div class="col-sm-12">
                         <div class="statistics-details d-flex align-items-center justify-content-between">
                           <div>
-                            <p class="statistics-title">Bounce Rate</p>
-                            <h3 class="rate-percentage">32.53%</h3>
-                            <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>-0.5%</span></p>
+                            <p class="statistics-title">Last Reading</p>
+                                <h3 class="rate-percentage">@TimeSinceLastSensorReadingString</h3>
+                            @*<p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>-0.5%</span></p>*@
                           </div>
                           <div>
-                            <p class="statistics-title">Page Views</p>
-                            <h3 class="rate-percentage">7,682</h3>
-                            <p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+0.1%</span></p>
+                            <p class="statistics-title">Last Temp</p>
+                            <h3 class="rate-percentage">@TemperatureLastSensorReadingString</h3>
+                            @*<p class="text-success d-flex"><i class="mdi mdi-menu-up"></i><span>+0.1%</span></p>*@
                           </div>
                           <div>
+                            <p class="statistics-title">Last Humidity</p>
+                            <h3 class="rate-percentage">@HumidityLastSensorReadingString</h3>
+                            @*<p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>68.8</span></p>*@
+                          </div>
+                          <div class="d-none d-md-block">
+                            <p class="statistics-title">Snow Making Zone</p>
+                            <h3 class="rate-percentage">@InTheZoneString</h3>
+                            @*<p class="text-success d-flex"><i class="mdi mdi-menu-down"></i><span>+0.8%</span></p>*@
+                          </div>
+                          @*<div class="d-none d-md-block">
                             <p class="statistics-title">New Sessions</p>
                             <h3 class="rate-percentage">68.8</h3>
                             <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>68.8</span></p>
-                          </div>
-                          <div class="d-none d-md-block">
+                          </div>*@
+                          @*<div class="d-none d-md-block">
                             <p class="statistics-title">Avg. Time on Site</p>
                             <h3 class="rate-percentage">2m:35s</h3>
                             <p class="text-success d-flex"><i class="mdi mdi-menu-down"></i><span>+0.8%</span></p>
-                          </div>
-                          <div class="d-none d-md-block">
-                            <p class="statistics-title">New Sessions</p>
-                            <h3 class="rate-percentage">68.8</h3>
-                            <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>68.8</span></p>
-                          </div>
-                          <div class="d-none d-md-block">
-                            <p class="statistics-title">Avg. Time on Site</p>
-                            <h3 class="rate-percentage">2m:35s</h3>
-                            <p class="text-success d-flex"><i class="mdi mdi-menu-down"></i><span>+0.8%</span></p>
-                          </div>
+                          </div>*@
                         </div>
                       </div>
                     </div> 
@@ -1182,5 +1184,55 @@
     <!-- page-body-wrapper ends -->
 
 @code {
+    private SensorReading sensorReading;
+    private List<Threshold> thresholds;
+    private string? TimeSinceLastSensorReadingString;
+    private string TemperatureLastSensorReadingString;
+    private string HumidityLastSensorReadingString;
+    private string InTheZoneString;
 
+    protected override async Task OnInitializedAsync()
+    {
+        sensorReading = await Http.GetFromJsonAsync<SensorReading>("https://localhost:7243/sensorreading/last");
+        thresholds = await Http.GetFromJsonAsync<List<Threshold>>("https://localhost:7243/thresholds");
+        if (sensorReading != null && thresholds != null)
+        {
+            TimeSinceLastSensorReadingString = ToHumanReadableString(DateTime.UtcNow - sensorReading.DateTimestampUtc);
+            TemperatureLastSensorReadingString = decimal.Round(sensorReading.TemperatureInCelcius * 1.8m + 32, 1).ToString() + "°F";
+            HumidityLastSensorReadingString = decimal.Round(sensorReading.Humidity, 1).ToString();
+            InTheZoneString = SilvermineNordic.Repository.Services.InTheZoneService.IsInZone(thresholds, sensorReading.TemperatureInCelcius, sensorReading.Humidity) ? "Yes" : "No";
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // execute conditionally for loading data, otherwise this will load
+        // every time the page refreshes
+        if (firstRender)
+        {
+            // Do work to load page data and set properties
+            
+        }
+    }
+
+    public string ToHumanReadableString(TimeSpan t)
+    {
+        if (t.TotalSeconds <= 1)
+        {
+            return $@"{t:s\.ff}s";
+        }
+        if (t.TotalMinutes <= 1)
+        {
+            return $@"{t:%s}s";
+        }
+        if (t.TotalHours <= 1)
+        {
+            return $@"{t:%m}m";
+        }
+        if (t.TotalDays <= 1)
+        {
+            return $@"{t:%h}h";
+        }
+        return $@"{t:%d}d";
+    }
 }

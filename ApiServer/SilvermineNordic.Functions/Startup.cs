@@ -31,7 +31,8 @@ namespace SilvermineNordic.Functions
             builder.Services.AddSingleton<Repository.IConfiguration>(_ => 
                 new ConfigurationService(storageConnectionString: snowMakingStorageConnectionString,
                     storageName: snowMakingStorageName,
-                    sqlConnectionString: snowMakingSqlConnectionString));
+                    sqlConnectionString: snowMakingSqlConnectionString,
+                    openWeatherApiKey: null));
 
             //ISilvermineNordicDbContextOptionsFactory dbContextOptionsfactory =
             //    new SilvermineNordicDbContextOptionsFactory(snowMakingSqlConnectionString, DbContextTypeEnum.SqlServer);
