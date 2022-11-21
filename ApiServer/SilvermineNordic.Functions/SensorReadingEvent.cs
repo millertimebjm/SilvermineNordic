@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Repository.Models;
+using System.Collections.Generic;
 
 namespace SilvermineNordic.Functions
 {
@@ -17,32 +18,35 @@ namespace SilvermineNordic.Functions
         private readonly IRepositorySensorReading _sensorReadingService;
         private readonly IRepositoryThreshold _thresholdService;
         private readonly ISms _smsService;
+        private readonly IWeatherForecast _weatherForecastService;
+
         public SensorReadingEvent(
-            IRepositorySensorReading sensorReadingService, 
-            IRepositoryThreshold thresholdService, 
-            ISms smsService
-            )
+            IRepositorySensorReading sensorReadingService,
+            IRepositoryThreshold thresholdService,
+            ISms smsService,
+            IWeatherForecast weatherForecastService)
         {
             _sensorReadingService = sensorReadingService;
             _thresholdService = thresholdService;
             _smsService = smsService;
+            _weatherForecastService = weatherForecastService;
         }
 
-// local.settings.json
-//{
-//  "IsEncrypted": false,
-//  "ConnectionStrings": {
-//    "SnowMakingSqlConnectionString": ""
-//  },
-//  "Values": {  }
-//}
+        // local.settings.json
+        //{
+        //  "IsEncrypted": false,
+        //  "ConnectionStrings": {
+        //    "SnowMakingSqlConnectionString": ""
+        //  },
+        //  "Values": {  }
+        //}
 
-    // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=25&humidity=25
-    // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=15&humidity=15
-    [FunctionName("SensorReadingEvent")]
+        // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=25&humidity=25
+        // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=15&humidity=15
+        [FunctionName("SensorReadingEvent")]
         public async Task<IActionResult> Run(
-            [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-            ILogger log)
+           [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+           ILogger log)
         {
             log.LogInformation($"C# HTTP trigger function processed a {req.Method.ToUpper()} request.");
 
@@ -79,18 +83,47 @@ namespace SilvermineNordic.Functions
                 {
                     var sensorData = await _sensorReadingService.GetLatestSensorReadingAsync();
                     var thresholdData = await _thresholdService.GetThresholds();
+                    var currentWeather = await _weatherForecastService.GetCurrentWeather();
 
-                    var isInZoneBefore = InTheZoneService.IsInZone(thresholdData, sensorData.TemperatureInCelcius, sensorData.Humidity);
-                    var isInZoneAfter = InTheZoneService.IsInZone(thresholdData, temperatureInCelcius, humidity);
-                    if (isInZoneBefore != isInZoneAfter)
+                    var isInZoneSensorBefore = InTheZoneService.IsInZone(thresholdData, sensorData.TemperatureInCelcius, sensorData.Humidity);
+                    var isInZoneSensorAfter = InTheZoneService.IsInZone(thresholdData, temperatureInCelcius, humidity);
+                    var isInZoneWeather = InTheZoneService.IsInZone(thresholdData, currentWeather.Main.Temp, currentWeather.Main.Humidity);
+                    if (isInZoneSensorBefore != isInZoneSensorAfter || isInZoneWeather != isInZoneSensorBefore)
                     {
-                        log.LogInformation("Threshold for notification has been reached!");
-                        await _smsService.SendSms("+17155239481", "Threshold for notification has been reached!");
+                        var message = "";
+                        if (!isInZoneSensorBefore && isInZoneSensorAfter && isInZoneWeather)
+                        {
+                            message = "Sensor and Weather say it is now snow making time!";
+                        }
+                        else if (!isInZoneSensorBefore && isInZoneSensorAfter && !isInZoneWeather)
+                        {
+                            message = "Sensor says it's time to make snow, Weather says not yet.";
+                        }
+                        else if (!isInZoneSensorBefore && !isInZoneSensorAfter && isInZoneWeather)
+                        {
+                            message = "Weather says it's time to make snow, Sensor says not yet.";
+                        }
+                        else if (isInZoneSensorBefore && !isInZoneSensorAfter && !isInZoneWeather)
+                        {
+                            message = "Weather says snow making time is done, Sensor says not yet.";
+                        }
+                        else if (isInZoneSensorBefore && !isInZoneSensorAfter && isInZoneWeather)
+                        {
+                            message = "Sensor says snow making time is done, Weather says not yet.";
+                        }
+                        else if (isInZoneSensorBefore && isInZoneSensorAfter && !isInZoneWeather)
+                        {
+                            message = "Weather says snow making time is done, Sensor says not yet.";
+                        }
+
+                        var nextZoneChange = await _weatherForecastService.GetNextZoneChange(thresholdData, isInZoneSensorAfter || isInZoneWeather);
+                        message += $" Next change forecasted for {nextZoneChange.Value.ToLocalTime().ToShortDateString()} {nextZoneChange.Value.ToLocalTime().ToShortTimeString()}";
+                        log.LogInformation(message);
+                        await _smsService.SendSms("+17155239481", message);
                     }
                     else
                     {
                         log.LogInformation("Threshold for notification NOT reached.");
-                        await _smsService.SendSms("+17155239481", "Threshold for notification NOT reached.");
                     }
 
                     var insertedSensorReading = await _sensorReadingService.AddSensorReadingAsync(new SensorReading()
