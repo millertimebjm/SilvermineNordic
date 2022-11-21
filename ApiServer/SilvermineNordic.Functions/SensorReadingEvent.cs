@@ -75,6 +75,7 @@ namespace SilvermineNordic.Functions
                     var sensorData = await _sensorReadingService.GetLatestSensorReadingAsync();
                     var thresholdData = await _thresholdService.GetThresholds();
                     var currentWeather = await _weatherForecastService.GetCurrentWeather();
+                    log.LogInformation($"Current Weather is TemperatureInCelcius: {currentWeather.Main.Temp} | Humidity: {currentWeather.Main.Humidity}");
 
                     var isInZoneSensorBefore = InTheZoneService.IsInZone(thresholdData, sensorData.TemperatureInCelcius, sensorData.Humidity);
                     var isInZoneSensorAfter = InTheZoneService.IsInZone(thresholdData, temperatureInCelcius, humidity);
@@ -108,9 +109,10 @@ namespace SilvermineNordic.Functions
                         }
 
                         var nextZoneChange = await _weatherForecastService.GetNextZoneChange(thresholdData, isInZoneSensorAfter || isInZoneWeather);
-                        message += $" Next change forecasted for {nextZoneChange.Value.ToLocalTime().ToShortDateString()} {nextZoneChange.Value.ToLocalTime().ToShortTimeString()}";
+                        message += $" Next change forecasted for {ConvertUtcToAmericaChicago(nextZoneChange.Value).ToShortDateString()} {ConvertUtcToAmericaChicago(nextZoneChange.Value).ToShortTimeString()}";
                         log.LogInformation(message);
                         await _smsService.SendSms("+17155239481", message);
+                        await _smsService.SendSms("+17155792999", message);
                     }
                     else
                     {
@@ -119,6 +121,7 @@ namespace SilvermineNordic.Functions
 
                     var insertedSensorReading = await _sensorReadingService.AddSensorReadingAsync(new SensorReading()
                     {
+                        Type = SensorReadingTypeEnum.Sensor.ToString(),
                         TemperatureInCelcius = temperatureInCelcius,
                         Humidity = humidity,
                     });
@@ -133,6 +136,13 @@ namespace SilvermineNordic.Functions
             }
 
             return new BadRequestObjectResult("Query parameters not formatted correctly.");
+        }
+
+        private static DateTime ConvertUtcToAmericaChicago(DateTime input)
+        {
+            string timezoneName = "America/Chicago";
+            var localTimeZone = TimeZoneInfo.FindSystemTimeZoneById(timezoneName);
+            return input.Add(localTimeZone.BaseUtcOffset);
         }
     }
 }

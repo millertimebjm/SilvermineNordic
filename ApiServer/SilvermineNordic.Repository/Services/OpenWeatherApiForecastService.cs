@@ -17,7 +17,7 @@ namespace SilvermineNordic.Repository.Services
         {
             //https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
 
-            var url = $"https://api.openweathermap.org/data/2.5/forecast?lat=44.772712650825966&lon=91.58243961934646&appid={_configuration.GetOpenWeatherApiKey()}&mode=json&units=metric";
+            var url = $"https://api.openweathermap.org/data/2.5/forecast?lat=44.772712650825966&lon=-91.58243961934646&appid={_configuration.GetOpenWeatherApiKey()}&mode=json&units=metric";
             using var client = _httpClientFactory.CreateClient();
             var model = await client.GetFromJsonAsync<WeatherForecastListModel>(url);
             return model;
@@ -25,7 +25,7 @@ namespace SilvermineNordic.Repository.Services
 
         public async Task<CurrentWeatherModel> GetCurrentWeather()
         {
-            var url = $"https://api.openweathermap.org/data/2.5/weather?lat=44.772712650825966&lon=91.58243961934646&appid={_configuration.GetOpenWeatherApiKey()}&mode=json&units=metric";
+            var url = $"https://api.openweathermap.org/data/2.5/weather?lat=44.772712650825966&lon=-91.58243961934646&appid={_configuration.GetOpenWeatherApiKey()}&mode=json&units=metric";
             using var client = _httpClientFactory.CreateClient();
             var model = await client.GetFromJsonAsync<CurrentWeatherModel>(url);
             return model;

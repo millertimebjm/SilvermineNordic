@@ -16,7 +16,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Arduino", "Arduino", "{3D51
 		ArduinoSensor.txt = ArduinoSensor.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilvermineNordic.Tests", "SilvermineNordic.Tests\SilvermineNordic.Tests.csproj", "{B894C078-5ECE-4C84-99FE-4D1CB1D976B1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Tests", "SilvermineNordic.Tests\SilvermineNordic.Tests.csproj", "{B894C078-5ECE-4C84-99FE-4D1CB1D976B1}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{60977E9A-FD53-4175-AB85-61B7A913FADD}"
+	ProjectSection(SolutionItems) = preProject
+		..\..\..\..\Users\bmiller\Downloads\SilvermineNordicSnowMakingNotification.drawio = ..\..\..\..\Users\bmiller\Downloads\SilvermineNordicSnowMakingNotification.drawio
+		..\..\..\..\Users\bmiller\Downloads\SilvermineNordicSnowMakingNotification.png = ..\..\..\..\Users\bmiller\Downloads\SilvermineNordicSnowMakingNotification.png
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

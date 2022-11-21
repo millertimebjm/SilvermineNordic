@@ -29,8 +29,6 @@ string openWeatherApiKey = config.GetConnectionString("OpenWeatherApiForecastApi
 builder.Services.AddSingleton<SilvermineNordic.Repository.IConfiguration>(_ =>
                 new ConfigurationService()
                 {
-                    StorageConnectionString = null,
-                    StorageName = null,
                     SqlConnectionString = snowMakingSqlConnectionString,
                     OpenWeatherApiKey = openWeatherApiKey
                 });
@@ -78,19 +76,20 @@ app.MapGet("/weatherforecast", async () =>
 
 app.MapGet("/weatherforecast/nextzonechange", async () =>
 {
-    var weatherForecast = await weatherForecastService.GetWeatherForecast();
-    var sensorThreshold = await sensorThresholdService.GetThresholds();
-    var lastSensorReading = await sensorReadingService.GetLatestSensorReadingAsync();
+    var weatherForecastTask = weatherForecastService.GetWeatherForecast();
+    var sensorThresholdTask = sensorThresholdService.GetThresholds();
+    var lastSensorReadingTask = sensorReadingService.GetLatestSensorReadingAsync();
+    await Task.WhenAll(weatherForecastTask, sensorThresholdTask, lastSensorReadingTask);
     
-    var currentZone = InTheZoneService.IsInZone(sensorThreshold, lastSensorReading.TemperatureInCelcius, lastSensorReading.Humidity);
+    var currentZone = InTheZoneService.IsInZone(sensorThresholdTask.Result, lastSensorReadingTask.Result.TemperatureInCelcius, lastSensorReadingTask.Result.Humidity);
 
     int nextWeatherForecastIndex = 0;
-    while (currentZone == InTheZoneService.IsInZone(sensorThreshold, weatherForecast.List[nextWeatherForecastIndex].Main.Temp, weatherForecast.List[nextWeatherForecastIndex].Main.Humidity)
-        || weatherForecast.List[nextWeatherForecastIndex] == weatherForecast.List.Last())
+    while (currentZone == InTheZoneService.IsInZone(sensorThresholdTask.Result, weatherForecastTask.Result.List[nextWeatherForecastIndex].Main.Temp, weatherForecastTask.Result.List[nextWeatherForecastIndex].Main.Humidity)
+        || weatherForecastTask.Result.List[nextWeatherForecastIndex] == weatherForecastTask.Result.List.Last())
     {
         nextWeatherForecastIndex++;
     }
-    return weatherForecast.List[nextWeatherForecastIndex].DateTimeUtc;
+    return weatherForecastTask.Result.List[nextWeatherForecastIndex].DateTimeUtc;
 }).WithName("GetNextZoneChange");
 
 app.MapGet("thresholds", async () =>
