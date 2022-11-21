@@ -7,5 +7,7 @@ namespace SilvermineNordic.Repository
         public string GetStorageName();
         public string GetSqlConnectionString();
         public string GetOpenWeatherApiKey();
+        public string GetAzureSmsConnectionString();
+        public string GetAzureSmsFromPhone();
     }
 }

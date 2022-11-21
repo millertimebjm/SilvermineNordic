@@ -20,5 +20,32 @@ namespace SilvermineNordic.Repository.Services
             }
             return false;
         }
+
+        public static decimal? ClosestInTheZoneTemperature(IEnumerable<Threshold> thresholdData, decimal temperatureInCelcius, decimal humidity)
+        {
+            var threshold = thresholdData.SingleOrDefault(_ => _.HumidityLowThreshold < humidity && _.HumidityHighThreshold > humidity);
+            if (threshold == null)
+            {
+                return null;
+            }
+            if (temperatureInCelcius > threshold.TemperatureInCelciusHighThreshold)
+            {
+                return threshold.TemperatureInCelciusHighThreshold;
+            }
+            if (temperatureInCelcius < threshold.TemperatureInCelciusLowThreshold)
+            {
+                return threshold.TemperatureInCelciusLowThreshold;
+            }
+            if (Math.Abs(temperatureInCelcius - threshold.TemperatureInCelciusLowThreshold) > Math.Abs(temperatureInCelcius - threshold.TemperatureInCelciusHighThreshold))
+            {
+                return threshold.TemperatureInCelciusHighThreshold;
+            }
+            if (Math.Abs(temperatureInCelcius - threshold.TemperatureInCelciusLowThreshold) < Math.Abs(temperatureInCelcius - threshold.TemperatureInCelciusHighThreshold))
+            {
+                return threshold.TemperatureInCelciusLowThreshold;
+            }
+
+            return null;
+        }
     }
 }

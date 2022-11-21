@@ -27,10 +27,13 @@ string snowMakingSqlConnectionString = config.GetConnectionString("SnowMakingSql
 string openWeatherApiKey = config.GetConnectionString("OpenWeatherApiForecastApiKey");
 
 builder.Services.AddSingleton<SilvermineNordic.Repository.IConfiguration>(_ =>
-                new ConfigurationService(storageConnectionString: null,
-                    storageName: null,
-                    sqlConnectionString: snowMakingSqlConnectionString,
-                    openWeatherApiKey: openWeatherApiKey));
+                new ConfigurationService()
+                {
+                    StorageConnectionString = null,
+                    StorageName = null,
+                    SqlConnectionString = snowMakingSqlConnectionString,
+                    OpenWeatherApiKey = openWeatherApiKey
+                });
 
 builder.Services.AddDbContext<SilvermineNordicDbContext>();
 

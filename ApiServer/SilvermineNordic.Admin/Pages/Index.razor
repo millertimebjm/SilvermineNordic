@@ -497,11 +497,11 @@
                             <h3 class="rate-percentage">@InTheZoneString</h3>
                             @*<p class="text-success d-flex"><i class="mdi mdi-menu-down"></i><span>+0.8%</span></p>*@
                           </div>
-                          @*<div class="d-none d-md-block">
-                            <p class="statistics-title">New Sessions</p>
-                            <h3 class="rate-percentage">68.8</h3>
-                            <p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>68.8</span></p>
-                          </div>*@
+                          <div class="d-none d-md-block">
+                            <p class="statistics-title">Closest Temp</p>
+                            <h3 class="rate-percentage">@ClosestTemperatureThresholdString</h3>
+                            @*<p class="text-danger d-flex"><i class="mdi mdi-menu-down"></i><span>68.8</span></p>*@
+                          </div>
                           @*<div class="d-none d-md-block">
                             <p class="statistics-title">Avg. Time on Site</p>
                             <h3 class="rate-percentage">2m:35s</h3>
@@ -1184,23 +1184,32 @@
     <!-- page-body-wrapper ends -->
 
 @code {
+    //private string ApiUrl = "https://localhost:7243";
+    private string ApiUrl = "https://silverminenordicapi.azurewebsites.net";
     private SensorReading sensorReading;
     private List<Threshold> thresholds;
     private string? TimeSinceLastSensorReadingString;
     private string TemperatureLastSensorReadingString;
     private string HumidityLastSensorReadingString;
     private string InTheZoneString;
+    private string ClosestTemperatureThresholdString;
 
     protected override async Task OnInitializedAsync()
     {
-        sensorReading = await Http.GetFromJsonAsync<SensorReading>("https://localhost:7243/sensorreading/last");
-        thresholds = await Http.GetFromJsonAsync<List<Threshold>>("https://localhost:7243/thresholds");
+        sensorReading = await Http.GetFromJsonAsync<SensorReading>(ApiUrl + "/sensorreading/last");
+        thresholds = await Http.GetFromJsonAsync<List<Threshold>>(ApiUrl + "/thresholds");
         if (sensorReading != null && thresholds != null)
         {
             TimeSinceLastSensorReadingString = ToHumanReadableString(DateTime.UtcNow - sensorReading.DateTimestampUtc);
             TemperatureLastSensorReadingString = decimal.Round(sensorReading.TemperatureInCelcius * 1.8m + 32, 1).ToString() + "°F";
             HumidityLastSensorReadingString = decimal.Round(sensorReading.Humidity, 1).ToString();
             InTheZoneString = SilvermineNordic.Repository.Services.InTheZoneService.IsInZone(thresholds, sensorReading.TemperatureInCelcius, sensorReading.Humidity) ? "Yes" : "No";
+            var closestTemperature = SilvermineNordic.Repository.Services.InTheZoneService.ClosestInTheZoneTemperature(thresholds, sensorReading.TemperatureInCelcius, sensorReading.Humidity);
+            if (closestTemperature != null)
+            {
+                ClosestTemperatureThresholdString = decimal.Round(closestTemperature.Value * 1.8m + 32, 1).ToString() + "°F";
+            }
+
         }
     }
 

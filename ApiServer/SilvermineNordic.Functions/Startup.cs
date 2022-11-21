@@ -27,12 +27,19 @@ namespace SilvermineNordic.Functions
             string snowMakingStorageConnectionString = config.GetConnectionStringOrSetting("SnowMakingStorageConnectionString");
             string snowMakingStorageName = config.GetConnectionStringOrSetting("SnowMakingStorageName");
             string snowMakingSqlConnectionString = config.GetConnectionStringOrSetting("SnowMakingSqlConnectionString");
+            string azureSmsConnectionString = config.GetConnectionStringOrSetting("AzureSmsConnectionString");
+            string azureSmsFromPhone = config.GetConnectionStringOrSetting("AzureSmsFromPhone");
 
-            builder.Services.AddSingleton<Repository.IConfiguration>(_ => 
-                new ConfigurationService(storageConnectionString: snowMakingStorageConnectionString,
-                    storageName: snowMakingStorageName,
-                    sqlConnectionString: snowMakingSqlConnectionString,
-                    openWeatherApiKey: null));
+            builder.Services.AddSingleton<Repository.IConfiguration>(_ =>
+                new ConfigurationService()
+                {
+                    StorageConnectionString = snowMakingStorageConnectionString,
+                    StorageName = snowMakingStorageName,
+                    SqlConnectionString = snowMakingSqlConnectionString,
+                    OpenWeatherApiKey = null,
+                    AzureSmsConnectionString = azureSmsConnectionString,
+                    AzureSmsFromPhone = azureSmsFromPhone,
+                });
 
             //ISilvermineNordicDbContextOptionsFactory dbContextOptionsfactory =
             //    new SilvermineNordicDbContextOptionsFactory(snowMakingSqlConnectionString, DbContextTypeEnum.SqlServer);
@@ -41,6 +48,7 @@ namespace SilvermineNordic.Functions
 
             builder.Services.AddScoped<IRepositorySensorReading, EntityFrameworkSensorReadingService>();
             builder.Services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
+            builder.Services.AddSingleton<ISms, AzureSmsService>();
         }
     }
 }

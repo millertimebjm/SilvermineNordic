@@ -9,8 +9,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Repository.Models;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SilvermineNordic.Functions
 {
@@ -18,10 +16,16 @@ namespace SilvermineNordic.Functions
     {
         private readonly IRepositorySensorReading _sensorReadingService;
         private readonly IRepositoryThreshold _thresholdService;
-        public SensorReadingEvent(IRepositorySensorReading sensorReadingService, IRepositoryThreshold thresholdService)
+        private readonly ISms _smsService;
+        public SensorReadingEvent(
+            IRepositorySensorReading sensorReadingService, 
+            IRepositoryThreshold thresholdService, 
+            ISms smsService
+            )
         {
             _sensorReadingService = sensorReadingService;
             _thresholdService = thresholdService;
+            _smsService = smsService;
         }
 
 // local.settings.json
@@ -81,10 +85,12 @@ namespace SilvermineNordic.Functions
                     if (isInZoneBefore != isInZoneAfter)
                     {
                         log.LogInformation("Threshold for notification has been reached!");
+                        await _smsService.SendSms("+17155239481", "Threshold for notification has been reached!");
                     }
                     else
                     {
-                        log.LogInformation("Threshold for notification NOT reached!");
+                        log.LogInformation("Threshold for notification NOT reached.");
+                        await _smsService.SendSms("+17155239481", "Threshold for notification NOT reached.");
                     }
 
                     var insertedSensorReading = await _sensorReadingService.AddSensorReadingAsync(new SensorReading()

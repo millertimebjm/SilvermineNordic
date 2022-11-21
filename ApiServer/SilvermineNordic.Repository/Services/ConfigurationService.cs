@@ -3,40 +3,46 @@ namespace SilvermineNordic.Repository
 {
     public class ConfigurationService : IConfiguration
     {
-        private readonly string _storageConnectionString;
-        private readonly string _storageName;
-        private readonly string _sqlConnectionString;
-        private readonly string _openWeatherApiKey;
-        public ConfigurationService(
-            string storageConnectionString, 
-            string storageName, 
-            string sqlConnectionString, 
-            string openWeatherApiKey)
+        public string StorageConnectionString { get; set; }
+        public string StorageName { get; set; }
+        public string SqlConnectionString { get; set; }
+        public string OpenWeatherApiKey { get; set; }
+        public string AzureSmsConnectionString { get; set; }
+        public string AzureSmsFromPhone { get; set; }
+
+        public ConfigurationService()
         {
-            _storageConnectionString = storageConnectionString;
-            _storageName = storageName;
-            _sqlConnectionString = sqlConnectionString;
-            _openWeatherApiKey = openWeatherApiKey;
+            
         }
 
         public string GetSqlConnectionString()
         {
-            return _sqlConnectionString;
+            return SqlConnectionString;
         }
 
         public string GetStorageConnectionString()
         {
-            return _storageConnectionString;
+            return StorageConnectionString;
         }
 
         public string GetStorageName()
         {
-            return _storageName;
+            return StorageName;
         }
 
         public string GetOpenWeatherApiKey()
         {
-            return _openWeatherApiKey;
+            return OpenWeatherApiKey;
+        }
+
+        public string GetAzureSmsConnectionString()
+        {
+            return AzureSmsConnectionString;
+        }
+
+        public string GetAzureSmsFromPhone()
+        {
+            return AzureSmsFromPhone;
         }
     }
 }
