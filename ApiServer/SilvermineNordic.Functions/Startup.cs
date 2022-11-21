@@ -1,6 +1,5 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
 using Microsoft.Azure.WebJobs.Host.Bindings;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -14,6 +13,20 @@ namespace SilvermineNordic.Functions
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
+            // local.settings.json
+            //{
+            //  "IsEncrypted": false,
+            //  "Values": {
+            //    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+            //    "FUNCTIONS_WORKER_RUNTIME": "dotnet"
+            //  },
+            //  "ConnectionStrings": {
+            //    "SnowMakingSqlConnectionString": "",
+            //    "AzureSmsConnectionString": "",
+            //    "AzureSmsFromPhone": "+",
+            //    "OpenWeatherApiForecastApiKey": ""
+            //  }
+            //}
             var executionContextOptions = builder.Services.BuildServiceProvider()
                 .GetRequiredService<IOptions<ExecutionContextOptions>>().Value;
 
@@ -42,11 +55,7 @@ namespace SilvermineNordic.Functions
                     AzureSmsFromPhone = azureSmsFromPhone,
                 });
 
-            //ISilvermineNordicDbContextOptionsFactory dbContextOptionsfactory =
-            //    new SilvermineNordicDbContextOptionsFactory(snowMakingSqlConnectionString, DbContextTypeEnum.SqlServer);
-
             builder.Services.AddDbContext<SilvermineNordicDbContext>();
-
             builder.Services.AddScoped<IRepositorySensorReading, EntityFrameworkSensorReadingService>();
             builder.Services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
             builder.Services.AddSingleton<ISms, AzureSmsService>();

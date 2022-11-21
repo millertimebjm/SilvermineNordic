@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Repository.Models;
-using System.Collections.Generic;
 
 namespace SilvermineNordic.Functions
 {
@@ -32,21 +31,13 @@ namespace SilvermineNordic.Functions
             _weatherForecastService = weatherForecastService;
         }
 
-        // local.settings.json
-        //{
-        //  "IsEncrypted": false,
-        //  "ConnectionStrings": {
-        //    "SnowMakingSqlConnectionString": ""
-        //  },
-        //  "Values": {  }
-        //}
-
         // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=25&humidity=25
         // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=15&humidity=15
+        // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=-5&humidity=32
         [FunctionName("SensorReadingEvent")]
         public async Task<IActionResult> Run(
-           [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-           ILogger log)
+               [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
+               ILogger log)
         {
             log.LogInformation($"C# HTTP trigger function processed a {req.Method.ToUpper()} request.");
 
