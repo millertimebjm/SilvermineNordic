@@ -18,9 +18,30 @@
         <a href="" class="reload">Reload</a>
         <a class="dismiss">🗙</a>
     </div>
-    <script src="_framework/blazor.webassembly.js"></script>
-    <script src="./js/bootstrap.min.js"></script>
 
+    <!--<div class="toast align-items-center" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body">
+                Refresh complete.
+            </div>
+            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>-->
+    <script src="_framework/blazor.webassembly.js"></script>
+    <script src="./js/bootstrap.bundle.min.js"></script>
+    <!--<script type="text/javascript">
+        window.activateToast = () => {
+            var myToast = document.getElementsByClassName("toast")[0];
+            console.log(myToast);
+            myToast.show();
+            var myToast2 = bootstrap.Toast.getOrCreateInstance(myToast);
+            console.log(myToast2);
+            myToast2.show();
+        };
+        window.doConsoleLog = () => {
+            console.log('got here');
+        };
+    </script>-->
 </body>
 
 </html>

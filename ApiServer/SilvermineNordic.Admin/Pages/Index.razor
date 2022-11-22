@@ -50,6 +50,11 @@
         <br />
     </div>
     <div class="col">
+        <div class="text-center col-12">
+            <a class="btn btn-info btn-lg" @onclick="@LoadDataOnClick">Refresh</a>
+        </div>
+    </div>
+    <div class="col">
         <div class="card bg-light mx-auto" style="width:170px">
             <div class="card-body">
                 <div class="row">
@@ -162,8 +167,8 @@
 
 
 @code {
-    //private string ApiUrl = "https://localhost:7243";
-    private string ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+    private string ApiUrl = "https://localhost:7243";
+    //private string ApiUrl = "https://silverminenordicapi.azurewebsites.net";
     private IEnumerable<SensorReading> sensorReadingBind;
     private List<Threshold> thresholds;
     private IEnumerable<SensorReading> weatherReadingBind;
@@ -179,6 +184,16 @@
     private List<Threshold> thresholdBind;
 
     protected override async Task OnInitializedAsync()
+    {
+        await LoadData(false);
+    }
+
+    protected async Task LoadDataOnClick(MouseEventArgs mouseEventArgs)
+    {
+        await LoadData(true);
+    }
+
+    private async Task LoadData(bool callStateHasChanged)
     {
         try
         {
@@ -237,7 +252,14 @@
         {
 
         }
+
+        if (callStateHasChanged)
+        {
+            StateHasChanged();
+        }
     }
+
+
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
