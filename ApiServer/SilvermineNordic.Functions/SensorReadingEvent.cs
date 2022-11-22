@@ -16,20 +16,9 @@ namespace SilvermineNordic.Functions
     public class SensorReadingEvent
     {
         private readonly IRepositorySensorReading _sensorReadingService;
-        private readonly IRepositoryThreshold _thresholdService;
-        private readonly ISms _smsService;
-        private readonly IWeatherForecast _weatherForecastService;
-
-        public SensorReadingEvent(
-            IRepositorySensorReading sensorReadingService,
-            IRepositoryThreshold thresholdService,
-            ISms smsService,
-            IWeatherForecast weatherForecastService)
+        public SensorReadingEvent(IRepositorySensorReading sensorReadingService)
         {
             _sensorReadingService = sensorReadingService;
-            _thresholdService = thresholdService;
-            _smsService = smsService;
-            _weatherForecastService = weatherForecastService;
         }
 
         // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=25&humidity=25
@@ -74,53 +63,6 @@ namespace SilvermineNordic.Functions
             {
                 try
                 {
-                    var sensorData = (await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 1)).Single();
-                    var thresholdData = await _thresholdService.GetThresholds();
-                    var currentWeather = await _weatherForecastService.GetCurrentWeather();
-                    log.LogInformation($"Current Weather is TemperatureInCelcius: {currentWeather.TemperatureInCelcius} | Humidity: {currentWeather.Humidity}");
-
-                    var isInZoneSensorBefore = InTheZoneService.IsInZone(thresholdData, sensorData.TemperatureInCelcius, sensorData.Humidity);
-                    var isInZoneSensorAfter = InTheZoneService.IsInZone(thresholdData, temperatureInCelcius, humidity);
-                    var isInZoneWeather = InTheZoneService.IsInZone(thresholdData, currentWeather.TemperatureInCelcius, currentWeather.Humidity);
-                    if (isInZoneSensorBefore != isInZoneSensorAfter || isInZoneWeather != isInZoneSensorBefore)
-                    {
-                        var message = "";
-                        if (!isInZoneSensorBefore && isInZoneSensorAfter && isInZoneWeather)
-                        {
-                            message = "Sensor and Weather say it is now snow making time!";
-                        }
-                        else if (!isInZoneSensorBefore && isInZoneSensorAfter && !isInZoneWeather)
-                        {
-                            message = "Sensor says it's time to make snow, Weather says not yet.";
-                        }
-                        else if (!isInZoneSensorBefore && !isInZoneSensorAfter && isInZoneWeather)
-                        {
-                            message = "Weather says it's time to make snow, Sensor says not yet.";
-                        }
-                        else if (isInZoneSensorBefore && !isInZoneSensorAfter && !isInZoneWeather)
-                        {
-                            message = "Weather says snow making time is done, Sensor says not yet.";
-                        }
-                        else if (isInZoneSensorBefore && !isInZoneSensorAfter && isInZoneWeather)
-                        {
-                            message = "Sensor says snow making time is done, Weather says not yet.";
-                        }
-                        else if (isInZoneSensorBefore && isInZoneSensorAfter && !isInZoneWeather)
-                        {
-                            message = "Weather says snow making time is done, Sensor says not yet.";
-                        }
-
-                        var nextZoneChange = await _weatherForecastService.GetNextZoneChange(thresholdData, isInZoneSensorAfter || isInZoneWeather);
-                        message += $" Next change forecasted for {nextZoneChange.Value.ToShortDateString()} {nextZoneChange.Value.ToShortTimeString()} UTC";
-                        log.LogInformation(message);
-                        await _smsService.SendSms("+17155239481", message);
-                        await _smsService.SendSms("+17155792999", message);
-                    }
-                    else
-                    {
-                        log.LogInformation("Threshold for notification NOT reached.");
-                    }
-
                     var insertedSensorReading = await _sensorReadingService.AddSensorReadingAsync(new SensorReading()
                     {
                         Type = SensorReadingTypeEnum.Sensor.ToString(),
@@ -142,12 +84,5 @@ namespace SilvermineNordic.Functions
             log.LogInformation($"Query parameters not formatted correctly.");
             return new BadRequestObjectResult("Query parameters not formatted correctly.");
         }
-
-        //private static DateTime ConvertUtcToAmericaChicago(DateTime input)
-        //{
-        //    string timezoneName = "America/Chicago";
-        //    var localTimeZone = TimeZoneInfo.FindSystemTimeZoneById(timezoneName);
-        //    return input.Add(localTimeZone.BaseUtcOffset);
-        //}
     }
 }
