@@ -19,37 +19,12 @@ namespace SilvermineNordic.Repository.Services
             return sensorReading;
         }
 
-        public async Task<SensorReading> GetLatestSensorReadingAsync()
+        public async Task<IEnumerable<SensorReading>> GetLastNReadingAsync(SensorReadingTypeEnum type, int count)
         {
             return await _dbContext.SensorReadings
-                .Where(_ => _.Type == SensorReadingTypeEnum.Sensor.ToString())
+                .Where(_ => _.Type == type.ToString())
                 .OrderByDescending(_ => _.Id)
-                .FirstAsync();
-        }
-
-        public async Task<SensorReading> GetLatestWeatherReadingAsync()
-        {
-            return await _dbContext.SensorReadings
-                .Where(_ => _.Type == SensorReadingTypeEnum.Weather.ToString())
-                .OrderByDescending(_ => _.Id)
-                .FirstAsync();
-        }
-
-        public async Task<IEnumerable<SensorReading>> GetLastTwoWeatherReadingAsync()
-        {
-            return await _dbContext.SensorReadings
-                .Where(_ => _.Type == SensorReadingTypeEnum.Weather.ToString())
-                .OrderByDescending(_ => _.Id)
-                .Take(2)
-                .ToListAsync();
-        }
-
-        public async Task<IEnumerable<SensorReading>> GetLastTwoSensorReadingAsync()
-        {
-            return await _dbContext.SensorReadings
-                .Where(_ => _.Type == SensorReadingTypeEnum.Sensor.ToString())
-                .OrderByDescending(_ => _.Id)
-                .Take(2)
+                .Take(count)
                 .ToListAsync();
         }
     }

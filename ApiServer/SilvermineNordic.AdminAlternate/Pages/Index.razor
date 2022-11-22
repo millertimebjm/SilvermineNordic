@@ -1,0 +1,240 @@
+﻿@page "/"
+@using SilvermineNordic.Repository.Models;
+@using SilvermineNordic.Repository.Services;
+@inject HttpClient Http
+
+<PageTitle>Dashboard</PageTitle>
+
+<h1 class="text-center">Silvermine Nordic</h1>
+<br/>
+<div class="row">
+    <div class="col">
+        <div class="card bg-light mx-auto" style="width:170px">
+            <div class="card-body">
+                <div class="row">
+                    <div class="text-center col-12">
+                        Last Sensor (@TimeSinceLastSensorReadingString)
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="text-center col-6">
+                        @TemperatureLastSensorReadingString
+                    </div>
+                    <div class="text-center col-6">
+                        @HumidityLastSensorReadingString
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+    </div>
+    <div class="col">
+        <div class="card bg-light mx-auto" style="width:170px">
+            <div class="card-body">
+                <div class="row">
+                    <div class="text-center col-12">
+                        Last Weather (@TimeSinceLastWeatherReadingString)
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="text-center col-6">
+                        @TemperatureLastWeatherReadingString
+                    </div>
+                    <div class="text-center col-6">
+                        @HumidityLastWeatherReadingString
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+    </div>
+    <div class="col">
+        <div class="card bg-light mx-auto" style="width:170px">
+            <div class="card-body">
+                <div class="row">
+                    <div class="text-center col-md-12">
+                        In The Zone
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="text-center col-md-12">
+                        @InTheZoneString
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+    </div>
+    <div class="col">
+        <div class="card bg-light mx-auto" style="width:170px">
+            <div class="card-body">
+                <div class="row">
+                    <div class="text-center col-md-12">
+                        Zone Forecast
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="text-center col-md-12">
+                        @ZoneChangeForecastString
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-6 col-md-12 text-center">
+        <h3>Sensor Readings</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Temp</th>
+                    <th scope="col">Humidity</th>
+                    <th scope="col">Make Snow</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var currentDate = DateTime.MinValue;
+                }
+                @foreach (var reading in sensorReading)
+                {
+                    <tr>
+                        <td scope="row">@(currentDate != reading.DateTimestampUtc.Date ? reading.DateTimestampUtc.Date.ToShortDateString() : "")</td>
+                        <td>@reading.DateTimestampUtc.ToShortTimeString()</td>
+                        <td>@(CelciusToFahr(reading.TemperatureInCelcius).ToString() + "°F")</td>
+                        <td>@(reading.Humidity)%</td>
+                        <td>@(InTheZoneService.IsInZone(thresholds, reading.TemperatureInCelcius, reading.Humidity) ? "Yes" : "")</td>
+                    </tr>
+                    @if (currentDate != reading.DateTimestampUtc.Date)
+                    {
+                        currentDate = reading.DateTimestampUtc.Date;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="col-lg-6 col-md-12 text-center">
+        <h3>Weather Readings</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Temp</th>
+                    <th scope="col">Humidity</th>
+                    <th scope="col">Make Snow</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    currentDate = DateTime.MinValue;
+                }
+                @foreach (var reading in weatherReading)
+                {
+                    <tr>
+                        <td scope="row">@(currentDate != reading.DateTimestampUtc.Date ? reading.DateTimestampUtc.Date.ToShortDateString() : "")</td>
+                        <td>@reading.DateTimestampUtc.ToShortTimeString()</td>
+                        <td>@(CelciusToFahr(reading.TemperatureInCelcius).ToString() + "°F")</td>
+                        <td>@(reading.Humidity)%</td>
+                        <td>@(InTheZoneService.IsInZone(thresholds, reading.TemperatureInCelcius, reading.Humidity) ? "Yes" : "")</td>
+                    </tr>
+                    @if (currentDate != reading.DateTimestampUtc.Date)
+                    {
+                        currentDate = reading.DateTimestampUtc.Date;
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+@code {
+    private string ApiUrl = "https://localhost:7243";
+    //private string ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+    private IEnumerable<SensorReading> sensorReading;
+    private List<Threshold> thresholds;
+    private IEnumerable<SensorReading> weatherReading;
+    private string? TimeSinceLastSensorReadingString;
+    private string TemperatureLastSensorReadingString;
+    private string HumidityLastSensorReadingString;
+    private string? TimeSinceLastWeatherReadingString;
+    private string TemperatureLastWeatherReadingString;
+    private string HumidityLastWeatherReadingString;
+    private string InTheZoneString;
+    private string ZoneChangeForecastString;
+    private DateTime? zoneChangeForecast;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            sensorReading = await Http.GetFromJsonAsync<IEnumerable<SensorReading>>(ApiUrl + "/sensorreading/?count=20");
+            thresholds = await Http.GetFromJsonAsync<List<Threshold>>(ApiUrl + "/thresholds");
+            weatherReading = await Http.GetFromJsonAsync<IEnumerable<SensorReading>>(ApiUrl + "/weatherreading/?count=20");
+            zoneChangeForecast = await Http.GetFromJsonAsync<DateTime>(ApiUrl + "/weatherforecast/nextzonechange");
+            if (sensorReading != null && thresholds != null && weatherReading != null && zoneChangeForecast != null)
+            {
+                TimeSinceLastSensorReadingString = ToHumanReadableString(DateTime.UtcNow - sensorReading.First().DateTimestampUtc);
+                TemperatureLastSensorReadingString = CelciusToFahr(sensorReading.First().TemperatureInCelcius).ToString() + "°F";
+                HumidityLastSensorReadingString = decimal.Round(sensorReading.First().Humidity, 1).ToString() + "%";
+                TimeSinceLastWeatherReadingString = ToHumanReadableString(DateTime.UtcNow - weatherReading.First().DateTimestampUtc);
+                TemperatureLastWeatherReadingString = CelciusToFahr(weatherReading.First().TemperatureInCelcius).ToString() + "°F";
+                HumidityLastWeatherReadingString = decimal.Round(weatherReading.First().Humidity, 1).ToString() + "%";
+                InTheZoneString = InTheZoneService.IsInZone(thresholds, sensorReading.First().TemperatureInCelcius, sensorReading.First().Humidity) ? "Yes" : "No";
+                //var closestTemperature = InTheZoneService.ClosestInTheZoneTemperature(thresholds, sensorReading.First().TemperatureInCelcius, sensorReading.First().Humidity);
+                //if (closestTemperature != null)
+                //{
+                //    ClosestTemperatureThresholdString = decimal.Round(closestTemperature.Value * 1.8m + 32, 1).ToString() + "°F";
+                //}
+                ZoneChangeForecastString = $"{zoneChangeForecast.Value.ToShortDateString()} {zoneChangeForecast.Value.ToShortTimeString()}";
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        // execute conditionally for loading data, otherwise this will load
+        // every time the page refreshes
+        if (firstRender)
+        {
+            // Do work to load page data and set properties
+
+        }
+    }
+
+    public string ToHumanReadableString(TimeSpan t)
+    {
+        if (t.TotalSeconds <= 1)
+        {
+            return $@"{t:s\.ff}s";
+        }
+        if (t.TotalMinutes <= 1)
+        {
+            return $@"{t:%s}s";
+        }
+        if (t.TotalHours <= 1)
+        {
+            return $@"{t:%m}m";
+        }
+        if (t.TotalDays <= 1)
+        {
+            return $@"{t:%h}h";
+        }
+        return $@"{t:%d}d";
+    }
+
+    public decimal CelciusToFahr(decimal c)
+    {
+        return decimal.Round(c * 1.8m + 32, 1);
+    }
+}

@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Repository.Models;
+using System.Linq;
 
 namespace SilvermineNordic.Functions
 {
@@ -72,7 +73,7 @@ namespace SilvermineNordic.Functions
             {
                 try
                 {
-                    var sensorData = await _sensorReadingService.GetLatestSensorReadingAsync();
+                    var sensorData = (await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 1)).Single();
                     var thresholdData = await _thresholdService.GetThresholds();
                     var currentWeather = await _weatherForecastService.GetCurrentWeather();
                     log.LogInformation($"Current Weather is TemperatureInCelcius: {currentWeather.Main.Temp} | Humidity: {currentWeather.Main.Humidity}");
@@ -109,7 +110,7 @@ namespace SilvermineNordic.Functions
                         }
 
                         var nextZoneChange = await _weatherForecastService.GetNextZoneChange(thresholdData, isInZoneSensorAfter || isInZoneWeather);
-                        message += $" Next change forecasted for {ConvertUtcToAmericaChicago(nextZoneChange.Value).ToShortDateString()} {ConvertUtcToAmericaChicago(nextZoneChange.Value).ToShortTimeString()}";
+                        message += $" Next change forecasted for {nextZoneChange.Value.ToShortDateString()} {nextZoneChange.Value.ToShortTimeString()} UTC";
                         log.LogInformation(message);
                         await _smsService.SendSms("+17155239481", message);
                         await _smsService.SendSms("+17155792999", message);
@@ -131,18 +132,20 @@ namespace SilvermineNordic.Functions
                 }
                 catch (Exception ex)
                 {
+                    log.LogInformation($"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
                     return new BadRequestObjectResult(ex.Message);
                 }
             }
 
+            log.LogInformation($"Query parameters not formatted correctly.");
             return new BadRequestObjectResult("Query parameters not formatted correctly.");
         }
 
-        private static DateTime ConvertUtcToAmericaChicago(DateTime input)
-        {
-            string timezoneName = "America/Chicago";
-            var localTimeZone = TimeZoneInfo.FindSystemTimeZoneById(timezoneName);
-            return input.Add(localTimeZone.BaseUtcOffset);
-        }
+        //private static DateTime ConvertUtcToAmericaChicago(DateTime input)
+        //{
+        //    string timezoneName = "America/Chicago";
+        //    var localTimeZone = TimeZoneInfo.FindSystemTimeZoneById(timezoneName);
+        //    return input.Add(localTimeZone.BaseUtcOffset);
+        //}
     }
 }

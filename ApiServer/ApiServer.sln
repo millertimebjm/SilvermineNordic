@@ -24,6 +24,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		..\..\..\..\Users\bmiller\Downloads\SilvermineNordicSnowMakingNotification.png = ..\..\..\..\Users\bmiller\Downloads\SilvermineNordicSnowMakingNotification.png
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilvermineNordic.AdminAlternate", "SilvermineNordic.AdminAlternate\SilvermineNordic.AdminAlternate.csproj", "{B43E1EC6-3FD2-4CCD-8F04-AC8AA0E65B39}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +52,10 @@ Global
 		{B894C078-5ECE-4C84-99FE-4D1CB1D976B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B894C078-5ECE-4C84-99FE-4D1CB1D976B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B894C078-5ECE-4C84-99FE-4D1CB1D976B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B43E1EC6-3FD2-4CCD-8F04-AC8AA0E65B39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B43E1EC6-3FD2-4CCD-8F04-AC8AA0E65B39}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B43E1EC6-3FD2-4CCD-8F04-AC8AA0E65B39}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B43E1EC6-3FD2-4CCD-8F04-AC8AA0E65B39}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -2,6 +2,7 @@ using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using SilvermineNordic.Repository;
+using SilvermineNordic.Repository.Models;
 using SilvermineNordic.Repository.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -63,10 +64,19 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/sensorreading/last", async () =>
+app.MapGet("/sensorreading/", async (int count) =>
 {
-    return await sensorReadingService.GetLatestSensorReadingAsync();
+    count = count > 100 ? 100 : count;
+    count = count < 1 ? 1 : count;
+    return await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, count);
 }).WithName("GetLastSensorReading");
+
+app.MapGet("/weatherreading/", async (int count) =>
+{
+    count = count > 100 ? 100 : count;
+    count = count < 1 ? 1 : count;
+    return await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, count);
+}).WithName("GetLastWeatherReading");
 
 app.MapGet("/weatherforecast", async () =>
 {
@@ -78,10 +88,10 @@ app.MapGet("/weatherforecast/nextzonechange", async () =>
 {
     var weatherForecastTask = weatherForecastService.GetWeatherForecast();
     var sensorThresholdTask = sensorThresholdService.GetThresholds();
-    var lastSensorReadingTask = sensorReadingService.GetLatestSensorReadingAsync();
+    var lastSensorReadingTask = sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 1);
     await Task.WhenAll(weatherForecastTask, sensorThresholdTask, lastSensorReadingTask);
     
-    var currentZone = InTheZoneService.IsInZone(sensorThresholdTask.Result, lastSensorReadingTask.Result.TemperatureInCelcius, lastSensorReadingTask.Result.Humidity);
+    var currentZone = InTheZoneService.IsInZone(sensorThresholdTask.Result, lastSensorReadingTask.Result.Single().TemperatureInCelcius, lastSensorReadingTask.Result.Single().Humidity);
 
     int nextWeatherForecastIndex = 0;
     while (currentZone == InTheZoneService.IsInZone(sensorThresholdTask.Result, weatherForecastTask.Result.List[nextWeatherForecastIndex].Main.Temp, weatherForecastTask.Result.List[nextWeatherForecastIndex].Main.Humidity)
