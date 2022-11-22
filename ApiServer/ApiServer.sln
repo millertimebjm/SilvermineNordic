@@ -7,8 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Repository
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Functions", "SilvermineNordic.Functions\SilvermineNordic.Functions.csproj", "{E5DA9C0B-18F5-413B-97F9-68BAD7DE1F11}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Admin", "SilvermineNordic.Admin\SilvermineNordic.Admin.csproj", "{2F0BB52C-A87E-4CA5-A892-4723B60901FE}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Api", "SilvermineNordic.Api\SilvermineNordic.Api.csproj", "{75B02092-480F-49D3-9DA1-60A7BA4A1669}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Arduino", "Arduino", "{3D5195C9-D0B5-4A5B-801A-AA899F030AEA}"
@@ -24,7 +22,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 		..\..\..\..\Users\bmiller\Downloads\SilvermineNordicSnowMakingNotification.png = ..\..\..\..\Users\bmiller\Downloads\SilvermineNordicSnowMakingNotification.png
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilvermineNordic.AdminAlternate", "SilvermineNordic.AdminAlternate\SilvermineNordic.AdminAlternate.csproj", "{B43E1EC6-3FD2-4CCD-8F04-AC8AA0E65B39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Admin", "SilvermineNordic.Admin\SilvermineNordic.Admin.csproj", "{2B92FB7F-8CF8-421F-8069-33EE974B9A22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,10 +38,6 @@ Global
 		{E5DA9C0B-18F5-413B-97F9-68BAD7DE1F11}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E5DA9C0B-18F5-413B-97F9-68BAD7DE1F11}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E5DA9C0B-18F5-413B-97F9-68BAD7DE1F11}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2F0BB52C-A87E-4CA5-A892-4723B60901FE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2F0BB52C-A87E-4CA5-A892-4723B60901FE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2F0BB52C-A87E-4CA5-A892-4723B60901FE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2F0BB52C-A87E-4CA5-A892-4723B60901FE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{75B02092-480F-49D3-9DA1-60A7BA4A1669}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{75B02092-480F-49D3-9DA1-60A7BA4A1669}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{75B02092-480F-49D3-9DA1-60A7BA4A1669}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -52,10 +46,10 @@ Global
 		{B894C078-5ECE-4C84-99FE-4D1CB1D976B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B894C078-5ECE-4C84-99FE-4D1CB1D976B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B894C078-5ECE-4C84-99FE-4D1CB1D976B1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B43E1EC6-3FD2-4CCD-8F04-AC8AA0E65B39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B43E1EC6-3FD2-4CCD-8F04-AC8AA0E65B39}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B43E1EC6-3FD2-4CCD-8F04-AC8AA0E65B39}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B43E1EC6-3FD2-4CCD-8F04-AC8AA0E65B39}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2B92FB7F-8CF8-421F-8069-33EE974B9A22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2B92FB7F-8CF8-421F-8069-33EE974B9A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B92FB7F-8CF8-421F-8069-33EE974B9A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2B92FB7F-8CF8-421F-8069-33EE974B9A22}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
