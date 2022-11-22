@@ -101,16 +101,16 @@
                 @{
                     var currentDate = DateTime.MinValue;
                 }
-                @if (sensorReading is not null)
+                @if (sensorReadingBind is not null)
                 {
-                    @foreach (var reading in sensorReading)
+                    @foreach (var reading in sensorReadingBind)
                     {
                         <tr>
                             <td scope="row">@(currentDate != reading.DateTimestampUtc.Date ? reading.DateTimestampUtc.ToLocalTime().Date.ToShortDateString() : "")</td>
                             <td>@reading.DateTimestampUtc.ToLocalTime().ToShortTimeString()</td>
                             <td>@(CelciusToFahr(reading.TemperatureInCelcius).ToString() + "°F")</td>
                             <td>@(reading.Humidity)%</td>
-                            <td>@(InTheZoneService.IsInZone(thresholds, reading.TemperatureInCelcius, reading.Humidity) ? "Yes" : "")</td>
+                            <td>@(InTheZoneService.IsInZone(thresholdBind, reading.TemperatureInCelcius, reading.Humidity) ? "Yes" : "")</td>
                         </tr>
                         @if (currentDate.ToLocalTime() != reading.DateTimestampUtc.ToLocalTime().Date)
                         {
@@ -137,16 +137,16 @@
                 @{
                     currentDate = DateTime.MinValue;
                 }
-                @if (weatherReading is not null)
+                @if (weatherReadingBind is not null)
                 {
-                    @foreach (var reading in weatherReading)
+                    @foreach (var reading in weatherReadingBind)
                     {
                         <tr>
                             <td scope="row">@(currentDate != reading.DateTimestampUtc.ToLocalTime().Date ? reading.DateTimestampUtc.ToLocalTime().Date.ToShortDateString() : "")</td>
                             <td>@reading.DateTimestampUtc.ToLocalTime().ToShortTimeString()</td>
                             <td>@(CelciusToFahr(reading.TemperatureInCelcius).ToString() + "°F")</td>
                             <td>@(reading.Humidity)%</td>
-                            <td>@(InTheZoneService.IsInZone(thresholds, reading.TemperatureInCelcius, reading.Humidity) ? "Yes" : "")</td>
+                            <td>@(InTheZoneService.IsInZone(thresholdBind, reading.TemperatureInCelcius, reading.Humidity) ? "Yes" : "")</td>
                         </tr>
                         @if (currentDate.ToLocalTime() != reading.DateTimestampUtc.ToLocalTime().Date)
                         {
@@ -161,11 +161,11 @@
 
 
 @code {
-    //private string ApiUrl = "https://localhost:7243";
-    private string ApiUrl = "https://silverminenordicapi.azurewebsites.net";
-    private IEnumerable<SensorReading> sensorReading;
+    private string ApiUrl = "https://localhost:7243";
+    //private string ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+    private IEnumerable<SensorReading> sensorReadingBind;
     private List<Threshold> thresholds;
-    private IEnumerable<SensorReading> weatherReading;
+    private IEnumerable<SensorReading> weatherReadingBind;
     private string? TimeSinceLastSensorReadingString;
     private string TemperatureLastSensorReadingString;
     private string HumidityLastSensorReadingString;
@@ -175,44 +175,57 @@
     private string InTheZoneString;
     private string ZoneChangeForecastString;
     private DateTime? zoneChangeForecast;
+    private List<Threshold> thresholdBind;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var sensorReadingTask = Http.GetFromJsonAsync<IEnumerable<SensorReading>>(ApiUrl + "/sensorreading/?count=20");
-            var thresholdsTask = Http.GetFromJsonAsync<List<Threshold>>(ApiUrl + "/thresholds");
-            var weatherReadingTask = Http.GetFromJsonAsync<IEnumerable<SensorReading>>(ApiUrl + "/weatherreading/?count=20");
-            var zoneChangeForecastTask = Http.GetFromJsonAsync<DateTime>(ApiUrl + "/weatherforecast/nextzonechange");
-            await Task.WhenAll(sensorReadingTask, thresholdsTask, weatherReadingTask, zoneChangeForecastTask);
+            var sensorReading = await Http.GetFromJsonAsync<IEnumerable<SensorReading>>(ApiUrl + "/sensorreading/?count=20");
+            var thresholds = await Http.GetFromJsonAsync<List<Threshold>>(ApiUrl + "/thresholds");
+            var weatherReading = await Http.GetFromJsonAsync<IEnumerable<SensorReading>>(ApiUrl + "/weatherreading/?count=20");
+            var zoneChangeForecast = await Http.GetFromJsonAsync<DateTime?>(ApiUrl + "/weatherforecast/nextzonechange");
+            //await Task.WhenAll(sensorReadingTask, thresholdsTask, weatherReadingTask, zoneChangeForecastTask);
 
-            if (sensorReadingTask.Result != null)
+            if (sensorReading != null)
             {
-                TimeSinceLastSensorReadingString = ToHumanReadableString(DateTime.UtcNow - sensorReadingTask.Result.First().DateTimestampUtc);
+                TimeSinceLastSensorReadingString = ToHumanReadableString(DateTime.UtcNow - sensorReading.First().DateTimestampUtc);
                 TimeSinceLastSensorReadingString = ToHumanReadableString(DateTime.UtcNow - sensorReading.First().DateTimestampUtc);
                 TemperatureLastSensorReadingString = CelciusToFahr(sensorReading.First().TemperatureInCelcius).ToString() + "°F";
                 HumidityLastSensorReadingString = decimal.Round(sensorReading.First().Humidity, 1).ToString() + "%";
+
             }
-            if (weatherReadingTask.Result != null)
+            if (weatherReading != null)
             {
                 TimeSinceLastWeatherReadingString = ToHumanReadableString(DateTime.UtcNow - weatherReading.First().DateTimestampUtc);
                 TemperatureLastWeatherReadingString = CelciusToFahr(weatherReading.First().TemperatureInCelcius).ToString() + "°F";
                 HumidityLastWeatherReadingString = decimal.Round(weatherReading.First().Humidity, 1).ToString() + "%";
+                weatherReadingBind = weatherReading;
+            }
+            if (thresholds != null)
+            {
+                thresholdBind = thresholds;
             }
 
-            if (thresholdsTask.Result != null && (sensorReadingTask.Result != null || weatherReadingTask.Result != null))
+
+            var inTheZone = false;
+            if (thresholds != null && sensorReading != null)
             {
-                var inTheZone = false;
-                if (sensorReadingTask != null && sensorReadingTask.Result.First().DateTimestampUtc > DateTime.UtcNow.AddMinutes(-10))
+                sensorReadingBind = sensorReading;
+                if (sensorReading.First().DateTimestampUtc > DateTime.UtcNow.AddMinutes(-10))
                 {
                     inTheZone = InTheZoneService.IsInZone(thresholds, sensorReading.First().TemperatureInCelcius, sensorReading.First().Humidity);
                 }
-                if (weatherReadingTask != null && weatherReadingTask.Result.First().DateTimestampUtc > DateTime.UtcNow.AddMinutes(-10))
+            }
+            if (thresholds != null && weatherReading != null)
+            {
+                weatherReadingBind = weatherReading;
+                if (weatherReading != null && weatherReading.First().DateTimestampUtc > DateTime.UtcNow.AddMinutes(-10))
                 {
                     inTheZone = InTheZoneService.IsInZone(thresholds, weatherReading.First().TemperatureInCelcius, weatherReading.First().Humidity);
                 }
-                InTheZoneString = inTheZone ? "Yes" : "No";
             }
+            InTheZoneString = inTheZone ? "Yes" : "No";
 
             if (zoneChangeForecast != null)
             {

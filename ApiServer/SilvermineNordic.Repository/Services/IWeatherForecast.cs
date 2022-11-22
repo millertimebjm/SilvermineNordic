@@ -4,8 +4,8 @@ namespace SilvermineNordic.Repository.Services
 {
     public interface IWeatherForecast
     {
-        Task<WeatherForecastListModel> GetWeatherForecast();
+        Task<IEnumerable<WeatherModel>> GetWeatherForecast();
         Task<DateTime?> GetNextZoneChange(IEnumerable<Threshold> thresholds, bool inTheZone);
-        Task<CurrentWeatherModel> GetCurrentWeather();
+        Task<WeatherModel> GetCurrentWeather();
     }
 }

@@ -40,6 +40,7 @@ namespace SilvermineNordic.Functions
                [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
                ILogger log)
         {
+            var sensorReadingDateTimeUtc = DateTime.UtcNow;
             log.LogInformation($"C# HTTP trigger function processed a {req.Method.ToUpper()} request.");
 
             var temperatureInCelciusString = req.Query["temperatureInCelcius"].ToString();
@@ -76,11 +77,11 @@ namespace SilvermineNordic.Functions
                     var sensorData = (await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 1)).Single();
                     var thresholdData = await _thresholdService.GetThresholds();
                     var currentWeather = await _weatherForecastService.GetCurrentWeather();
-                    log.LogInformation($"Current Weather is TemperatureInCelcius: {currentWeather.Main.Temp} | Humidity: {currentWeather.Main.Humidity}");
+                    log.LogInformation($"Current Weather is TemperatureInCelcius: {currentWeather.TemperatureInCelcius} | Humidity: {currentWeather.Humidity}");
 
                     var isInZoneSensorBefore = InTheZoneService.IsInZone(thresholdData, sensorData.TemperatureInCelcius, sensorData.Humidity);
                     var isInZoneSensorAfter = InTheZoneService.IsInZone(thresholdData, temperatureInCelcius, humidity);
-                    var isInZoneWeather = InTheZoneService.IsInZone(thresholdData, currentWeather.Main.Temp, currentWeather.Main.Humidity);
+                    var isInZoneWeather = InTheZoneService.IsInZone(thresholdData, currentWeather.TemperatureInCelcius, currentWeather.Humidity);
                     if (isInZoneSensorBefore != isInZoneSensorAfter || isInZoneWeather != isInZoneSensorBefore)
                     {
                         var message = "";
@@ -125,6 +126,7 @@ namespace SilvermineNordic.Functions
                         Type = SensorReadingTypeEnum.Sensor.ToString(),
                         TemperatureInCelcius = temperatureInCelcius,
                         Humidity = humidity,
+                        ReadingDateTimestampUtc = sensorReadingDateTimeUtc,
                     });
                     log.LogInformation($"Inserted Sensor Reading Id: {insertedSensorReading.Id} | DateTime: {insertedSensorReading.DateTimestampUtc}");
 

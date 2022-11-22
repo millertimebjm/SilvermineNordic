@@ -13,30 +13,45 @@ namespace SilvermineNordic.Repository.Services
             _configuration = configuration;
         }
 
-        public async Task<WeatherForecastListModel> GetWeatherForecast()
+        public async Task<IEnumerable<WeatherModel>> GetWeatherForecast()
         {
             //https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
-
             var url = $"https://api.openweathermap.org/data/2.5/forecast?lat=44.772712650825966&lon=-91.58243961934646&appid={_configuration.GetOpenWeatherApiKey()}&mode=json&units=metric";
             using var client = _httpClientFactory.CreateClient();
-            var model = await client.GetFromJsonAsync<WeatherForecastListModel>(url);
-            return model;
+            var openApiWeatherModel = await client.GetFromJsonAsync<OpenWeatherApiWeatherForecastListModel>(url);
+            var models = new List<WeatherModel>();
+            foreach (var forecast in openApiWeatherModel.List)
+            {
+                models.Add(new WeatherModel()
+                {
+                    DateTimeUtc = forecast.DateTimeUtc.Value,
+                    TemperatureInCelcius = forecast.Main.Temp,
+                    Humidity = forecast.Main.Humidity,
+                });
+            }
+            return models;
         }
 
-        public async Task<CurrentWeatherModel> GetCurrentWeather()
+        public async Task<WeatherModel> GetCurrentWeather()
         {
             var url = $"https://api.openweathermap.org/data/2.5/weather?lat=44.772712650825966&lon=-91.58243961934646&appid={_configuration.GetOpenWeatherApiKey()}&mode=json&units=metric";
             using var client = _httpClientFactory.CreateClient();
-            var model = await client.GetFromJsonAsync<CurrentWeatherModel>(url);
+            var openApiWeatherModel = await client.GetFromJsonAsync<OpenWeatherApiCurrentWeatherModel>(url);
+            var model = new WeatherModel()
+            {
+                DateTimeUtc = DateTime.UtcNow,
+                TemperatureInCelcius = openApiWeatherModel.Main.Temp,
+                Humidity = openApiWeatherModel.Main.Humidity,
+            };
             return model;
         }
 
         public async Task<DateTime?> GetNextZoneChange(IEnumerable<Threshold> thresholds, bool inTheZone)
         {
             var weatherForecastList = await GetWeatherForecast();
-            foreach (var weatherForecast in weatherForecastList.List)
+            foreach (var weatherForecast in weatherForecastList)
             {
-                var newInTheZone = InTheZoneService.IsInZone(thresholds, weatherForecast.Main.Temp, weatherForecast.Main.Humidity);
+                var newInTheZone = InTheZoneService.IsInZone(thresholds, weatherForecast.TemperatureInCelcius, weatherForecast.Humidity);
                 if (inTheZone != newInTheZone)
                 {
                     return weatherForecast.DateTimeUtc;

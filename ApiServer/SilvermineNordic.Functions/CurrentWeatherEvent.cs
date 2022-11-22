@@ -24,12 +24,14 @@ namespace SilvermineNordic.Functions
         {
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             var currentWeather = await _weatherForecastService.GetCurrentWeather();
-            log.LogInformation($"Current Weather is TemperatureInCelcius: {currentWeather.Main.Temp} | Humidity: {currentWeather.Main.Humidity}");
+            log.LogInformation($"Current Weather is TemperatureInCelcius: {currentWeather.TemperatureInCelcius} | Humidity: {currentWeather.Humidity}");
             var reading = await _sensorReadingService.AddSensorReadingAsync(new SensorReading()
             {
                 Type = SensorReadingTypeEnum.Weather.ToString(),
-                TemperatureInCelcius = currentWeather.Main.Temp,
-                Humidity = currentWeather.Main.Humidity,
+                TemperatureInCelcius = currentWeather.TemperatureInCelcius,
+                Humidity = currentWeather.Humidity,
+                DateTimestampUtc = currentWeather.DateTimeUtc,
+                ReadingDateTimestampUtc = currentWeather.DateTimeUtc,
             });
             log.LogInformation($"Current Weather inserted with Id {reading.Id}.");
             //return new OkObjectResult($"Event processed with Id {reading.Id}.");

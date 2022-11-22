@@ -4,6 +4,7 @@ using Microsoft.Extensions.Options;
 using SilvermineNordic.Repository;
 using SilvermineNordic.Repository.Models;
 using SilvermineNordic.Repository.Services;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -80,8 +81,7 @@ app.MapGet("/weatherreading/", async (int count) =>
 
 app.MapGet("/weatherforecast", async () =>
 {
-    var weatherForecast = await weatherForecastService.GetWeatherForecast();
-    return weatherForecast;
+    return await weatherForecastService.GetWeatherForecast();
 }).WithName("GetWeatherForecast");
 
 app.MapGet("/weatherforecast/nextzonechange", async () =>
@@ -92,18 +92,18 @@ app.MapGet("/weatherforecast/nextzonechange", async () =>
     await Task.WhenAll(weatherForecastTask, sensorThresholdTask, lastSensorReadingTask);
     
     var currentZone = InTheZoneService.IsInZone(sensorThresholdTask.Result, lastSensorReadingTask.Result.Single().TemperatureInCelcius, lastSensorReadingTask.Result.Single().Humidity);
-
+    List<WeatherModel> weatherForecastModels = weatherForecastTask.Result.ToList();
     int nextWeatherForecastIndex = 0;
-    while (nextWeatherForecastIndex >= weatherForecastTask.Result.List.Count() && currentZone == InTheZoneService.IsInZone(sensorThresholdTask.Result, weatherForecastTask.Result.List[nextWeatherForecastIndex].Main.Temp, weatherForecastTask.Result.List[nextWeatherForecastIndex].Main.Humidity)
-        || weatherForecastTask.Result.List[nextWeatherForecastIndex] == weatherForecastTask.Result.List.Last())
+    while (nextWeatherForecastIndex >= weatherForecastModels.Count() && currentZone == InTheZoneService.IsInZone(sensorThresholdTask.Result, weatherForecastModels[nextWeatherForecastIndex].TemperatureInCelcius, weatherForecastModels[nextWeatherForecastIndex].Humidity)
+        || weatherForecastModels[nextWeatherForecastIndex] == weatherForecastModels.Last())
     {
         nextWeatherForecastIndex++;
     }
-    if (nextWeatherForecastIndex >= weatherForecastTask.Result.List.Count())
+    if (nextWeatherForecastIndex >= weatherForecastModels.Count())
     {
-        return null;
+        return (DateTime?)null;
     }
-    return weatherForecastTask.Result.List[nextWeatherForecastIndex].DateTimeUtc;
+    return weatherForecastModels[nextWeatherForecastIndex].DateTimeUtc;
 }).WithName("GetNextZoneChange");
 
 app.MapGet("thresholds", async () =>

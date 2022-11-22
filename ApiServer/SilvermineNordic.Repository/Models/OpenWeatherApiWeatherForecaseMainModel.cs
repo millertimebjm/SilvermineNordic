@@ -2,7 +2,7 @@
 
 namespace SilvermineNordic.Repository.Models
 {
-    public class WeatherForecaseMainModel
+    public class OpenWeatherApiWeatherForecaseMainModel
     {
         public decimal Temp { get; set; }
         public decimal Humidity { get; set; }
