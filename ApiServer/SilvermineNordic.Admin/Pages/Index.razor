@@ -154,7 +154,6 @@
                         }
                     }
                 }
-
             </tbody>
         </table>
     </div>
@@ -181,24 +180,42 @@
     {
         try
         {
-            sensorReading = await Http.GetFromJsonAsync<IEnumerable<SensorReading>>(ApiUrl + "/sensorreading/?count=20");
-            thresholds = await Http.GetFromJsonAsync<List<Threshold>>(ApiUrl + "/thresholds");
-            weatherReading = await Http.GetFromJsonAsync<IEnumerable<SensorReading>>(ApiUrl + "/weatherreading/?count=20");
-            zoneChangeForecast = await Http.GetFromJsonAsync<DateTime>(ApiUrl + "/weatherforecast/nextzonechange");
-            if (sensorReading != null && thresholds != null && weatherReading != null && zoneChangeForecast != null)
+            var sensorReadingTask = Http.GetFromJsonAsync<IEnumerable<SensorReading>>(ApiUrl + "/sensorreading/?count=20");
+            var thresholdsTask = Http.GetFromJsonAsync<List<Threshold>>(ApiUrl + "/thresholds");
+            var weatherReadingTask = Http.GetFromJsonAsync<IEnumerable<SensorReading>>(ApiUrl + "/weatherreading/?count=20");
+            var zoneChangeForecastTask = Http.GetFromJsonAsync<DateTime>(ApiUrl + "/weatherforecast/nextzonechange");
+            await Task.WhenAll(sensorReadingTask, thresholdsTask, weatherReadingTask, zoneChangeForecastTask);
+
+            if (sensorReadingTask.Result != null)
             {
+                TimeSinceLastSensorReadingString = ToHumanReadableString(DateTime.UtcNow - sensorReadingTask.Result.First().DateTimestampUtc);
                 TimeSinceLastSensorReadingString = ToHumanReadableString(DateTime.UtcNow - sensorReading.First().DateTimestampUtc);
                 TemperatureLastSensorReadingString = CelciusToFahr(sensorReading.First().TemperatureInCelcius).ToString() + "°F";
                 HumidityLastSensorReadingString = decimal.Round(sensorReading.First().Humidity, 1).ToString() + "%";
+            }
+            if (weatherReadingTask.Result != null)
+            {
                 TimeSinceLastWeatherReadingString = ToHumanReadableString(DateTime.UtcNow - weatherReading.First().DateTimestampUtc);
                 TemperatureLastWeatherReadingString = CelciusToFahr(weatherReading.First().TemperatureInCelcius).ToString() + "°F";
                 HumidityLastWeatherReadingString = decimal.Round(weatherReading.First().Humidity, 1).ToString() + "%";
-                InTheZoneString = InTheZoneService.IsInZone(thresholds, sensorReading.First().TemperatureInCelcius, sensorReading.First().Humidity) ? "Yes" : "No";
-                //var closestTemperature = InTheZoneService.ClosestInTheZoneTemperature(thresholds, sensorReading.First().TemperatureInCelcius, sensorReading.First().Humidity);
-                //if (closestTemperature != null)
-                //{
-                //    ClosestTemperatureThresholdString = decimal.Round(closestTemperature.Value * 1.8m + 32, 1).ToString() + "°F";
-                //}
+            }
+
+            if (thresholdsTask.Result != null && (sensorReadingTask.Result != null || weatherReadingTask.Result != null))
+            {
+                var inTheZone = false;
+                if (sensorReadingTask != null && sensorReadingTask.Result.First().DateTimestampUtc > DateTime.UtcNow.AddMinutes(-10))
+                {
+                    inTheZone = InTheZoneService.IsInZone(thresholds, sensorReading.First().TemperatureInCelcius, sensorReading.First().Humidity);
+                }
+                if (weatherReadingTask != null && weatherReadingTask.Result.First().DateTimestampUtc > DateTime.UtcNow.AddMinutes(-10))
+                {
+                    inTheZone = InTheZoneService.IsInZone(thresholds, weatherReading.First().TemperatureInCelcius, weatherReading.First().Humidity);
+                }
+                InTheZoneString = inTheZone ? "Yes" : "No";
+            }
+
+            if (zoneChangeForecast != null)
+            {
                 ZoneChangeForecastString = $"{zoneChangeForecast.Value.ToShortDateString()} {zoneChangeForecast.Value.ToShortTimeString()}";
             }
         }

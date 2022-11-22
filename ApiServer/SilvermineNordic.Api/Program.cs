@@ -94,10 +94,14 @@ app.MapGet("/weatherforecast/nextzonechange", async () =>
     var currentZone = InTheZoneService.IsInZone(sensorThresholdTask.Result, lastSensorReadingTask.Result.Single().TemperatureInCelcius, lastSensorReadingTask.Result.Single().Humidity);
 
     int nextWeatherForecastIndex = 0;
-    while (currentZone == InTheZoneService.IsInZone(sensorThresholdTask.Result, weatherForecastTask.Result.List[nextWeatherForecastIndex].Main.Temp, weatherForecastTask.Result.List[nextWeatherForecastIndex].Main.Humidity)
+    while (nextWeatherForecastIndex >= weatherForecastTask.Result.List.Count() && currentZone == InTheZoneService.IsInZone(sensorThresholdTask.Result, weatherForecastTask.Result.List[nextWeatherForecastIndex].Main.Temp, weatherForecastTask.Result.List[nextWeatherForecastIndex].Main.Humidity)
         || weatherForecastTask.Result.List[nextWeatherForecastIndex] == weatherForecastTask.Result.List.Last())
     {
         nextWeatherForecastIndex++;
+    }
+    if (nextWeatherForecastIndex >= weatherForecastTask.Result.List.Count())
+    {
+        return null;
     }
     return weatherForecastTask.Result.List[nextWeatherForecastIndex].DateTimeUtc;
 }).WithName("GetNextZoneChange");
