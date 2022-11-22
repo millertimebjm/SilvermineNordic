@@ -106,15 +106,15 @@
                     @foreach (var reading in sensorReading)
                     {
                         <tr>
-                            <td scope="row">@(currentDate != reading.DateTimestampUtc.Date ? reading.DateTimestampUtc.Date.ToShortDateString() : "")</td>
-                            <td>@reading.DateTimestampUtc.ToShortTimeString()</td>
+                            <td scope="row">@(currentDate != reading.DateTimestampUtc.Date ? reading.DateTimestampUtc.ToLocalTime().Date.ToShortDateString() : "")</td>
+                            <td>@reading.DateTimestampUtc.ToLocalTime().ToShortTimeString()</td>
                             <td>@(CelciusToFahr(reading.TemperatureInCelcius).ToString() + "°F")</td>
                             <td>@(reading.Humidity)%</td>
                             <td>@(InTheZoneService.IsInZone(thresholds, reading.TemperatureInCelcius, reading.Humidity) ? "Yes" : "")</td>
                         </tr>
-                        @if (currentDate != reading.DateTimestampUtc.Date)
+                        @if (currentDate.ToLocalTime() != reading.DateTimestampUtc.ToLocalTime().Date)
                         {
-                            currentDate = reading.DateTimestampUtc.Date;
+                            currentDate = reading.DateTimestampUtc.ToLocalTime().Date;
                         }
                     }
                 }
@@ -142,15 +142,15 @@
                     @foreach (var reading in weatherReading)
                     {
                         <tr>
-                            <td scope="row">@(currentDate != reading.DateTimestampUtc.Date ? reading.DateTimestampUtc.Date.ToShortDateString() : "")</td>
-                            <td>@reading.DateTimestampUtc.ToShortTimeString()</td>
+                            <td scope="row">@(currentDate != reading.DateTimestampUtc.ToLocalTime().Date ? reading.DateTimestampUtc.ToLocalTime().Date.ToShortDateString() : "")</td>
+                            <td>@reading.DateTimestampUtc.ToLocalTime().ToShortTimeString()</td>
                             <td>@(CelciusToFahr(reading.TemperatureInCelcius).ToString() + "°F")</td>
                             <td>@(reading.Humidity)%</td>
                             <td>@(InTheZoneService.IsInZone(thresholds, reading.TemperatureInCelcius, reading.Humidity) ? "Yes" : "")</td>
                         </tr>
-                        @if (currentDate != reading.DateTimestampUtc.Date)
+                        @if (currentDate.ToLocalTime() != reading.DateTimestampUtc.ToLocalTime().Date)
                         {
-                            currentDate = reading.DateTimestampUtc.Date;
+                            currentDate = reading.DateTimestampUtc.ToLocalTime().Date;
                         }
                     }
                 }
