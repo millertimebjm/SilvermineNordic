@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SilvermineNordic.Repository.Models;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SilvermineNordic.Repository.Services
 {
@@ -16,9 +15,9 @@ namespace SilvermineNordic.Repository.Services
    
         public DbSet<SensorReading> SensorReadings { get; set; }
         private readonly string _connectionString;
-        private readonly IConfiguration _configuration;
+        private readonly ISilvermineNordicConfiguration _configuration;
 
-        public SilvermineNordicDbContext(IConfiguration configuration)
+        public SilvermineNordicDbContext(ISilvermineNordicConfiguration configuration)
         : base()
         {
             _configuration = configuration;

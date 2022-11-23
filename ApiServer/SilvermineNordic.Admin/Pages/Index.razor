@@ -1,7 +1,9 @@
 ﻿@page "/"
 @using SilvermineNordic.Repository.Models;
 @using SilvermineNordic.Repository.Services;
+@using SilvermineNordic.Repository;
 @inject HttpClient Http
+@inject ISilvermineNordicConfiguration SilvermineNordicConfiguration
 
 <PageTitle>Snow Making Dashboard</PageTitle>
 
@@ -105,22 +107,22 @@
             </thead>
             <tbody>
                 @{
-                    var currentDate = DateTime.MinValue;
+                    var sensorCurrentDate = DateTime.MinValue;
                 }
                 @if (sensorReadingBind is not null)
                 {
                     @foreach (var reading in sensorReadingBind)
                     {
                         <tr>
-                            <td scope="row">@(currentDate != reading.DateTimestampUtc.Date ? reading.DateTimestampUtc.ToLocalTime().Date.ToShortDateString() : "")</td>
+                            <td scope="row">@(sensorCurrentDate != reading.DateTimestampUtc.Date ? reading.DateTimestampUtc.ToLocalTime().Date.ToShortDateString() : "")</td>
                             <td>@reading.DateTimestampUtc.ToLocalTime().ToShortTimeString()</td>
                             <td>@(CelciusToFahr(reading.TemperatureInCelcius).ToString() + "°F")</td>
                             <td>@(reading.Humidity)%</td>
                             <td>@(InTheZoneService.IsInZone(thresholdBind, reading.TemperatureInCelcius, reading.Humidity) ? "Yes" : "")</td>
                         </tr>
-                        @if (currentDate.ToLocalTime() != reading.DateTimestampUtc.ToLocalTime().Date)
+                        @if (sensorCurrentDate.ToLocalTime() != reading.DateTimestampUtc.ToLocalTime().Date)
                         {
-                            currentDate = reading.DateTimestampUtc.ToLocalTime().Date;
+                            sensorCurrentDate = reading.DateTimestampUtc.ToLocalTime().Date;
                         }
                     }
                 }
@@ -141,22 +143,22 @@
             </thead>
             <tbody>
                 @{
-                    currentDate = DateTime.MinValue;
+                    var weatherCurrentDate = DateTime.MinValue;
                 }
                 @if (weatherReadingBind is not null)
                 {
                     @foreach (var reading in weatherReadingBind)
                     {
                         <tr>
-                            <td scope="row">@(currentDate != reading.DateTimestampUtc.ToLocalTime().Date ? reading.DateTimestampUtc.ToLocalTime().Date.ToShortDateString() : "")</td>
+                            <td scope="row">@(weatherCurrentDate != reading.DateTimestampUtc.ToLocalTime().Date ? reading.DateTimestampUtc.ToLocalTime().Date.ToShortDateString() : "")</td>
                             <td>@reading.DateTimestampUtc.ToLocalTime().ToShortTimeString()</td>
                             <td>@(CelciusToFahr(reading.TemperatureInCelcius).ToString() + "°F")</td>
-                            <td>@(reading.Humidity)%</td>
+                            <td>@(reading.Humidity.ToString("N1"))%</td>
                             <td>@(InTheZoneService.IsInZone(thresholdBind, reading.TemperatureInCelcius, reading.Humidity) ? "Yes" : "")</td>
                         </tr>
-                        @if (currentDate.ToLocalTime() != reading.DateTimestampUtc.ToLocalTime().Date)
+                        @if (weatherCurrentDate.ToLocalTime() != reading.DateTimestampUtc.ToLocalTime().Date)
                         {
-                            currentDate = reading.DateTimestampUtc.ToLocalTime().Date;
+                            weatherCurrentDate = reading.DateTimestampUtc.ToLocalTime().Date;
                         }
                     }
                 }
@@ -178,7 +180,7 @@
                     @foreach (var threshold in thresholdBind)
                     {
                         <tr>
-                            <td>@threshold.HumidityLowThreshold% - @threshold.HumidityHighThreshold%</td>
+                            <td>@threshold.HumidityLowThreshold.ToString("N0")% - @threshold.HumidityHighThreshold.ToString("N0")%</td>
                             <td>@CelciusToFahr(threshold.TemperatureInCelciusLowThreshold)°F - @CelciusToFahr(threshold.TemperatureInCelciusHighThreshold)°F</td>
                         </tr>
                     }
@@ -190,8 +192,7 @@
 
 
 @code {
-    //private string ApiUrl = "https://localhost:7243";
-    private string ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+    private string ApiUrl;
     private IEnumerable<SensorReading> sensorReadingBind;
     private List<Threshold> thresholds;
     private IEnumerable<SensorReading> weatherReadingBind;
@@ -208,6 +209,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        ApiUrl = SilvermineNordicConfiguration.GetSilvermineNordicApiUrl();
         await LoadData(false);
     }
 

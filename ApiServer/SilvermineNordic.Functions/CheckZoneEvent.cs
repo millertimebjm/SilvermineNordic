@@ -6,6 +6,8 @@ using Microsoft.Extensions.Logging;
 using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Repository.Models;
 using Twilio.TwiML.Messaging;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace SilvermineNordic.Functions
 {
@@ -36,6 +38,10 @@ namespace SilvermineNordic.Functions
             var lastTwoSensorReading = await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 2);
             var thresholdData = await _thresholdService.GetThresholds();
 
+            await VerifySensorIntegrity(lastTwoWeatherReading);
+            await VerifyWeatherIntegrity(lastTwoSensorReading);
+            await VerifyThresholdIntegrity(thresholdData);
+
             var lastSensorZone = InTheZoneService.IsInZone(thresholdData, lastTwoSensorReading.Last().TemperatureInCelcius, lastTwoSensorReading.Last().Humidity);
             var currentSensorZone = InTheZoneService.IsInZone(thresholdData, lastTwoSensorReading.First().TemperatureInCelcius, lastTwoSensorReading.First().Humidity);
 
@@ -53,6 +59,33 @@ namespace SilvermineNordic.Functions
                     await _smsService.SendSms("+17155239481", message);
                     await _smsService.SendSms("+17155792999", message);
                 }
+            }
+        }
+
+        private async Task VerifyThresholdIntegrity(IEnumerable<Threshold> thresholds)
+        {
+            //if (thresholds.Any(_ => _.TemperatureInCelciusLowThreshold > _.TemperatureInCelciusHighThreshold
+            //    || _.HumidityLowThreshold > _.HumidityHighThreshold))
+            //{
+            //    await _smsService.SendSms("+17155239481", $"Error in ThresholdIntegrity.");
+            //}
+        }
+
+        private async Task VerifyWeatherIntegrity(IEnumerable<SensorReading> weatherReadings)
+        {
+            if (weatherReadings.Last().InsertedDateTimestampUtc < DateTime.UtcNow.AddMinutes(-8) 
+                && weatherReadings.Last().InsertedDateTimestampUtc > DateTime.UtcNow.AddMinutes(-13))
+            {
+                await _smsService.SendSms("+17155239481", $"Error in WeatherIntegrity. Last Weather Reading from {weatherReadings.Last().InsertedDateTimestampUtc.ToShortDateString()} {weatherReadings.Last().InsertedDateTimestampUtc.ToShortTimeString()} UTC");
+            }
+        }
+
+        private async Task VerifySensorIntegrity(IEnumerable<SensorReading> sensorReadings)
+        {
+            if (sensorReadings.Last().InsertedDateTimestampUtc < DateTime.UtcNow.AddMinutes(-8)
+                && sensorReadings.Last().InsertedDateTimestampUtc > DateTime.UtcNow.AddMinutes(-13))
+            {
+                await _smsService.SendSms("+17155239481", $"Error in SensorIntegrity. Last Sensor Reading from {sensorReadings.Last().InsertedDateTimestampUtc.ToShortDateString()} {sensorReadings.Last().InsertedDateTimestampUtc.ToShortTimeString()} UTC");
             }
         }
 

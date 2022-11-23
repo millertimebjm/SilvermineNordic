@@ -28,8 +28,8 @@ var config = new ConfigurationBuilder()
 string snowMakingSqlConnectionString = config.GetConnectionString("SnowMakingSqlConnectionString");
 string openWeatherApiKey = config.GetConnectionString("OpenWeatherApiForecastApiKey");
 
-builder.Services.AddSingleton<SilvermineNordic.Repository.IConfiguration>(_ =>
-                new ConfigurationService()
+builder.Services.AddSingleton<SilvermineNordic.Repository.ISilvermineNordicConfiguration>(_ =>
+                new SilvermineNordicConfigurationService()
                 {
                     SqlConnectionString = snowMakingSqlConnectionString,
                     OpenWeatherApiKey = openWeatherApiKey
@@ -90,7 +90,7 @@ app.MapGet("/weatherforecast/nextzonechange", async () =>
     var sensorThresholdTask = sensorThresholdService.GetThresholds();
     var lastSensorReadingTask = sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 1);
     await Task.WhenAll(weatherForecastTask, sensorThresholdTask, lastSensorReadingTask);
-    
+
     var currentZone = InTheZoneService.IsInZone(sensorThresholdTask.Result, lastSensorReadingTask.Result.Single().TemperatureInCelcius, lastSensorReadingTask.Result.Single().Humidity);
     List<WeatherModel> weatherForecastModels = weatherForecastTask.Result.ToList();
     int nextWeatherForecastIndex = 0;

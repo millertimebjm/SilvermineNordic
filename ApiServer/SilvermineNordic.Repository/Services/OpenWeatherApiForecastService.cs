@@ -6,8 +6,8 @@ namespace SilvermineNordic.Repository.Services
     public class OpenWeatherApiForecastService : IWeatherForecast
     {
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IConfiguration _configuration;
-        public OpenWeatherApiForecastService(IHttpClientFactory httpClientFactory, IConfiguration configuration)
+        private readonly ISilvermineNordicConfiguration _configuration;
+        public OpenWeatherApiForecastService(IHttpClientFactory httpClientFactory, ISilvermineNordicConfiguration configuration)
         {
             _httpClientFactory = httpClientFactory;
             _configuration = configuration;

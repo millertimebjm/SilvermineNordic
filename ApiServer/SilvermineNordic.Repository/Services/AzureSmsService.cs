@@ -9,7 +9,7 @@ namespace SilvermineNordic.Repository.Services
     {
         private readonly string _azureSmsConnectionString;
         private readonly string _azureSmsFromPhone;
-        public AzureSmsService(IConfiguration configuration) 
+        public AzureSmsService(ISilvermineNordicConfiguration configuration) 
         {
             _azureSmsConnectionString = configuration.GetAzureSmsConnectionString();
             _azureSmsFromPhone = configuration.GetAzureSmsFromPhone();

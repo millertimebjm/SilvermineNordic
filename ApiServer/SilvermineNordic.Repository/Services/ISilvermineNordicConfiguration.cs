@@ -1,7 +1,7 @@
 ﻿
 namespace SilvermineNordic.Repository
 {
-    public interface IConfiguration
+    public interface ISilvermineNordicConfiguration
     {
         public string GetStorageConnectionString();
         public string GetStorageName();
@@ -9,5 +9,6 @@ namespace SilvermineNordic.Repository
         public string GetOpenWeatherApiKey();
         public string GetAzureSmsConnectionString();
         public string GetAzureSmsFromPhone();
+        public string GetSilvermineNordicApiUrl();
     }
 }

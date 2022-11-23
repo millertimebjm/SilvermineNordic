@@ -44,8 +44,8 @@ namespace SilvermineNordic.Functions
             string azureSmsFromPhone = config.GetConnectionStringOrSetting("AzureSmsFromPhone");
             string openWeatherApiForecastApiKey = config.GetConnectionStringOrSetting("OpenWeatherApiForecastApiKey");
 
-            builder.Services.AddSingleton<Repository.IConfiguration>(_ =>
-                new ConfigurationService()
+            builder.Services.AddSingleton<ISilvermineNordicConfiguration>(_ =>
+                new SilvermineNordicConfigurationService()
                 {
                     StorageConnectionString = snowMakingStorageConnectionString,
                     StorageName = snowMakingStorageName,

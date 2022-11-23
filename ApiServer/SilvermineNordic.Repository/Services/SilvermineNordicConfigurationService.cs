@@ -1,7 +1,7 @@
 ﻿
 namespace SilvermineNordic.Repository
 {
-    public class ConfigurationService : IConfiguration
+    public class SilvermineNordicConfigurationService : ISilvermineNordicConfiguration
     {
         public string StorageConnectionString { get; set; }
         public string StorageName { get; set; }
@@ -9,8 +9,9 @@ namespace SilvermineNordic.Repository
         public string OpenWeatherApiKey { get; set; }
         public string AzureSmsConnectionString { get; set; }
         public string AzureSmsFromPhone { get; set; }
+        public string SilvermineNordicApiUrl { get; set; }
 
-        public ConfigurationService()
+        public SilvermineNordicConfigurationService()
         {
             
         }
@@ -43,6 +44,11 @@ namespace SilvermineNordic.Repository
         public string GetAzureSmsFromPhone()
         {
             return AzureSmsFromPhone;
+        }
+
+        public string GetSilvermineNordicApiUrl()
+        {
+            return SilvermineNordicApiUrl;
         }
     }
 }
