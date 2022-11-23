@@ -9,6 +9,7 @@
 
 <input type="hidden" tabindex="-1" />
 <h1 class="text-center">Silvermine Nordic</h1>
+<p>@SilvermineNordicConfiguration.GetConfigurationString()</p>
 <br />
 <div class="row">
     <div class="col">
@@ -16,7 +17,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="text-center col-12">
-                        Last Sensor (@TimeSinceLastSensorReadingString)
+                        Last Sensor @TimeSinceLastSensorReadingString
                     </div>
                 </div>
                 <div class="row">
@@ -36,7 +37,7 @@
             <div class="card-body">
                 <div class="row">
                     <div class="text-center col-12">
-                        Last Weather (@TimeSinceLastWeatherReadingString)
+                        Last Weather @TimeSinceLastWeatherReadingString
                     </div>
                 </div>
                 <div class="row">
@@ -268,18 +269,16 @@
 
             if (sensorReading != null)
             {
-                TimeSinceLastSensorReadingString = ToHumanReadableString(DateTime.UtcNow - sensorReading.First().DateTimestampUtc);
-                TimeSinceLastSensorReadingString = ToHumanReadableString(DateTime.UtcNow - sensorReading.First().DateTimestampUtc);
+                TimeSinceLastSensorReadingString = "(" + ToHumanReadableString(DateTime.UtcNow - sensorReading.First().DateTimestampUtc) + ")";
                 TemperatureLastSensorReadingString = CelciusToFahr(sensorReading.First().TemperatureInCelcius).ToString() + "°F";
                 HumidityLastSensorReadingString = decimal.Round(sensorReading.First().Humidity, 1).ToString() + "%";
 
             }
             if (weatherReading != null)
             {
-                TimeSinceLastWeatherReadingString = ToHumanReadableString(DateTime.UtcNow - weatherReading.First().DateTimestampUtc);
+                TimeSinceLastWeatherReadingString = "(" + ToHumanReadableString(DateTime.UtcNow - weatherReading.First().DateTimestampUtc) + ")";
                 TemperatureLastWeatherReadingString = CelciusToFahr(weatherReading.First().TemperatureInCelcius).ToString() + "°F";
                 HumidityLastWeatherReadingString = decimal.Round(weatherReading.First().Humidity, 1).ToString() + "%";
-                weatherReadingBind = weatherReading;
             }
             if (thresholds != null)
             {

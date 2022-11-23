@@ -10,6 +10,7 @@ namespace SilvermineNordic.Repository
         public string AzureSmsConnectionString { get; set; }
         public string AzureSmsFromPhone { get; set; }
         public string SilvermineNordicApiUrl { get; set; }
+        public string ConfigurationString { get; set; }
 
         public SilvermineNordicConfigurationService()
         {
@@ -49,6 +50,11 @@ namespace SilvermineNordic.Repository
         public string GetSilvermineNordicApiUrl()
         {
             return SilvermineNordicApiUrl;
+        }
+
+        public string GetConfigurationString()
+        {
+            return ConfigurationString;
         }
     }
 }
