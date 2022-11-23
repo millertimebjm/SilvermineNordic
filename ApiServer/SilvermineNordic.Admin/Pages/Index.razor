@@ -117,7 +117,7 @@
                             <td scope="row">@(sensorCurrentDate != reading.DateTimestampUtc.Date ? reading.DateTimestampUtc.ToLocalTime().Date.ToShortDateString() : "")</td>
                             <td>@reading.DateTimestampUtc.ToLocalTime().ToShortTimeString()</td>
                             <td>@(CelciusToFahr(reading.TemperatureInCelcius).ToString() + "°F")</td>
-                            <td>@(reading.Humidity)%</td>
+                            <td>@(reading.Humidity.ToString("N0"))%</td>
                             <td>@(InTheZoneService.IsInZone(thresholdBind, reading.TemperatureInCelcius, reading.Humidity) ? "Yes" : "")</td>
                         </tr>
                         @if (sensorCurrentDate.ToLocalTime() != reading.DateTimestampUtc.ToLocalTime().Date)
@@ -153,7 +153,7 @@
                             <td scope="row">@(weatherCurrentDate != reading.DateTimestampUtc.ToLocalTime().Date ? reading.DateTimestampUtc.ToLocalTime().Date.ToShortDateString() : "")</td>
                             <td>@reading.DateTimestampUtc.ToLocalTime().ToShortTimeString()</td>
                             <td>@(CelciusToFahr(reading.TemperatureInCelcius).ToString() + "°F")</td>
-                            <td>@(reading.Humidity.ToString("N1"))%</td>
+                            <td>@(reading.Humidity.ToString("N0"))%</td>
                             <td>@(InTheZoneService.IsInZone(thresholdBind, reading.TemperatureInCelcius, reading.Humidity) ? "Yes" : "")</td>
                         </tr>
                         @if (weatherCurrentDate.ToLocalTime() != reading.DateTimestampUtc.ToLocalTime().Date)
@@ -212,7 +212,7 @@
                             <td scope="row">@(forecastCurrentDate != model.DateTimeUtc.ToLocalTime().Date ? model.DateTimeUtc.ToLocalTime().Date.ToShortDateString() : "")</td>
                             <td>@model.DateTimeUtc.ToLocalTime().ToShortTimeString()</td>
                             <td>@(CelciusToFahr(model.TemperatureInCelcius).ToString() + "°F")</td>
-                            <td>@(model.Humidity.ToString("N1"))%</td>
+                            <td>@(model.Humidity.ToString("N0"))%</td>
                             <td>@(InTheZoneService.IsInZone(thresholdBind, model.TemperatureInCelcius, model.Humidity) ? "Yes" : "")</td>
                         </tr>
                         @if (forecastCurrentDate.ToLocalTime() != model.DateTimeUtc.ToLocalTime().Date)
