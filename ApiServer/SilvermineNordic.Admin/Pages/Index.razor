@@ -7,7 +7,7 @@
 
 <PageTitle>Snow Making Dashboard</PageTitle>
 
-<input type="hidden" tabindex="-1"/>
+<input type="hidden" tabindex="-1" />
 <h1 class="text-center">Silvermine Nordic</h1>
 <br />
 <div class="row">
@@ -188,6 +188,42 @@
             </tbody>
         </table>
     </div>
+    <div class="col-lg-6 col-md-12 text-center">
+        <h3>Thresholds</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Date</th>
+                    <th scope="col">Time</th>
+                    <th scope="col">Temp</th>
+                    <th scope="col">Humidity</th>
+                    <th scope="col">Make Snow</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    var forecastCurrentDate = DateTime.MinValue;
+                }
+                @if (weatherForecastBind is not null)
+                {
+                    @foreach (var model in weatherForecastBind)
+                    {
+                        <tr>
+                            <td scope="row">@(forecastCurrentDate != model.DateTimeUtc.ToLocalTime().Date ? model.DateTimeUtc.ToLocalTime().Date.ToShortDateString() : "")</td>
+                            <td>@model.DateTimeUtc.ToLocalTime().ToShortTimeString()</td>
+                            <td>@(CelciusToFahr(model.TemperatureInCelcius).ToString() + "°F")</td>
+                            <td>@(model.Humidity.ToString("N1"))%</td>
+                            <td>@(InTheZoneService.IsInZone(thresholdBind, model.TemperatureInCelcius, model.Humidity) ? "Yes" : "")</td>
+                        </tr>
+                        @if (forecastCurrentDate.ToLocalTime() != model.DateTimeUtc.ToLocalTime().Date)
+                        {
+                            forecastCurrentDate = model.DateTimeUtc.ToLocalTime().Date;
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 
@@ -206,6 +242,7 @@
     private string ZoneChangeForecastString;
     private DateTime? zoneChangeForecast;
     private List<Threshold> thresholdBind;
+    private IEnumerable<WeatherModel> weatherForecastBind;
 
     protected override async Task OnInitializedAsync()
     {
@@ -226,6 +263,7 @@
             var thresholds = await Http.GetFromJsonAsync<List<Threshold>>(ApiUrl + "/thresholds");
             var weatherReading = await Http.GetFromJsonAsync<IEnumerable<SensorReading>>(ApiUrl + "/weatherreading/?count=20");
             var zoneChangeForecast = await Http.GetFromJsonAsync<DateTime?>(ApiUrl + "/weatherforecast/nextzonechange");
+            var weatherForecast = await Http.GetFromJsonAsync<IEnumerable<WeatherModel>>(ApiUrl + "/weatherforecast");
             //await Task.WhenAll(sensorReadingTask, thresholdsTask, weatherReadingTask, zoneChangeForecastTask);
 
             if (sensorReading != null)
@@ -267,10 +305,13 @@
                 }
             }
             InTheZoneString = inTheZone ? "Yes" : "No";
-
             if (zoneChangeForecast != null)
             {
                 ZoneChangeForecastString = $"{zoneChangeForecast.Value.ToShortDateString()} {zoneChangeForecast.Value.ToShortTimeString()}";
+            }
+            if (weatherForecast != null)
+            {
+                weatherForecastBind = weatherForecast;
             }
         }
         catch (Exception ex)
