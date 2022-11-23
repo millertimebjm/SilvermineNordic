@@ -3,7 +3,7 @@
 @using SilvermineNordic.Repository.Services;
 @inject HttpClient Http
 
-<PageTitle>Dashboard</PageTitle>
+<PageTitle>Snow Making Dashboard</PageTitle>
 
 <input type="hidden" tabindex="-1"/>
 <h1 class="text-center">Silvermine Nordic</h1>
@@ -163,12 +163,35 @@
             </tbody>
         </table>
     </div>
+    <div class="col-lg-6 col-md-12 text-center">
+        <h3>Thresholds</h3>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Humidity Range</th>
+                    <th scope="col">Temp Range</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (thresholdBind is not null)
+                {
+                    @foreach (var threshold in thresholdBind)
+                    {
+                        <tr>
+                            <td>@threshold.HumidityLowThreshold% - @threshold.HumidityHighThreshold%</td>
+                            <td>@CelciusToFahr(threshold.TemperatureInCelciusLowThreshold)°F - @CelciusToFahr(threshold.TemperatureInCelciusHighThreshold)°F</td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
 
 @code {
-    private string ApiUrl = "https://localhost:7243";
-    //private string ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+    //private string ApiUrl = "https://localhost:7243";
+    private string ApiUrl = "https://silverminenordicapi.azurewebsites.net";
     private IEnumerable<SensorReading> sensorReadingBind;
     private List<Threshold> thresholds;
     private IEnumerable<SensorReading> weatherReadingBind;
