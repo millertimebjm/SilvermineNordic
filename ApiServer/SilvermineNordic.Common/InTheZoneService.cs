@@ -1,11 +1,6 @@
-﻿using SilvermineNordic.Repository.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SilvermineNordic.Models;
 
-namespace SilvermineNordic.Repository.Services
+namespace SilvermineNordic.Common
 {
     public static class InTheZoneService
     {
@@ -46,6 +41,25 @@ namespace SilvermineNordic.Repository.Services
             }
 
             return null;
+        }
+
+        public static DateTime? GetNextZoneChange(IEnumerable<WeatherModel> weatherForecast, IEnumerable<Threshold> thresholds, SensorReading sensorReading, SensorReading weatherReading)
+        {
+            var currentSensorZone = InTheZoneService.IsInZone(thresholds, sensorReading.TemperatureInCelcius, sensorReading.Humidity);
+            var currentWeatherZone = InTheZoneService.IsInZone(thresholds, weatherReading.TemperatureInCelcius, weatherReading.Humidity);
+            var currentZone = currentSensorZone || currentWeatherZone;
+            List<WeatherModel> weatherForecastModels = weatherForecast.ToList();
+            int nextWeatherForecastIndex = 0;
+            while (nextWeatherForecastIndex >= weatherForecastModels.Count() && currentZone == InTheZoneService.IsInZone(thresholds, weatherForecastModels[nextWeatherForecastIndex].TemperatureInCelcius, weatherForecastModels[nextWeatherForecastIndex].Humidity)
+                || weatherForecastModels[nextWeatherForecastIndex] == weatherForecastModels.Last())
+            {
+                nextWeatherForecastIndex++;
+            }
+            if (nextWeatherForecastIndex >= weatherForecastModels.Count())
+            {
+                return (DateTime?)null;
+            }
+            return weatherForecastModels[nextWeatherForecastIndex].DateTimeUtc;
         }
     }
 }

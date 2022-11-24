@@ -1,4 +1,4 @@
-﻿namespace SilvermineNordic.Repository.Models
+﻿namespace SilvermineNordic.Models
 {
     public class User
     {

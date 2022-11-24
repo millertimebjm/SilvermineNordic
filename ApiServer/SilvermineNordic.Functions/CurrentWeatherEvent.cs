@@ -4,7 +4,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
 using SilvermineNordic.Repository.Services;
-using SilvermineNordic.Repository.Models;
+using SilvermineNordic.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace SilvermineNordic.Functions

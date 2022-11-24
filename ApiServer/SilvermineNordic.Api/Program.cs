@@ -2,9 +2,11 @@ using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using SilvermineNordic.Repository;
-using SilvermineNordic.Repository.Models;
+using SilvermineNordic.Models;
 using SilvermineNordic.Repository.Services;
 using System;
+using SilvermineNordic.Common;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -89,21 +91,11 @@ app.MapGet("/weatherforecast/nextzonechange", async () =>
     var weatherForecastTask = weatherForecastService.GetWeatherForecast();
     var sensorThresholdTask = sensorThresholdService.GetThresholds();
     var lastSensorReadingTask = sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 1);
-    await Task.WhenAll(weatherForecastTask, sensorThresholdTask, lastSensorReadingTask);
+    var lastWeatherReadingTask = sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 1);
+    await Task.WhenAll(weatherForecastTask, sensorThresholdTask, lastSensorReadingTask, lastWeatherReadingTask);
 
-    var currentZone = InTheZoneService.IsInZone(sensorThresholdTask.Result, lastSensorReadingTask.Result.Single().TemperatureInCelcius, lastSensorReadingTask.Result.Single().Humidity);
-    List<WeatherModel> weatherForecastModels = weatherForecastTask.Result.ToList();
-    int nextWeatherForecastIndex = 0;
-    while (nextWeatherForecastIndex >= weatherForecastModels.Count() && currentZone == InTheZoneService.IsInZone(sensorThresholdTask.Result, weatherForecastModels[nextWeatherForecastIndex].TemperatureInCelcius, weatherForecastModels[nextWeatherForecastIndex].Humidity)
-        || weatherForecastModels[nextWeatherForecastIndex] == weatherForecastModels.Last())
-    {
-        nextWeatherForecastIndex++;
-    }
-    if (nextWeatherForecastIndex >= weatherForecastModels.Count())
-    {
-        return (DateTime?)null;
-    }
-    return weatherForecastModels[nextWeatherForecastIndex].DateTimeUtc;
+    var nextZoneChangeDateTimeUtc = InTheZoneService.GetNextZoneChange(weatherForecastTask.Result, sensorThresholdTask.Result, lastSensorReadingTask.Result.Single(), lastWeatherReadingTask.Result.Single());
+    return nextZoneChangeDateTimeUtc;
 }).WithName("GetNextZoneChange");
 
 app.MapGet("thresholds", async () =>

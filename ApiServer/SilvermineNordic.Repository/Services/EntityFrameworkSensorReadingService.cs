@@ -1,6 +1,5 @@
-﻿
-using Microsoft.EntityFrameworkCore;
-using SilvermineNordic.Repository.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using SilvermineNordic.Models;
 
 namespace SilvermineNordic.Repository.Services
 {

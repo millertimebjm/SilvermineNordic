@@ -1,4 +1,4 @@
-﻿using SilvermineNordic.Repository.Models;
+﻿using SilvermineNordic.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

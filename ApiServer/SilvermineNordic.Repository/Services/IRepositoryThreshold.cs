@@ -1,4 +1,4 @@
-﻿using SilvermineNordic.Repository.Models;
+﻿using SilvermineNordic.Models;
 
 namespace SilvermineNordic.Repository.Services
 {

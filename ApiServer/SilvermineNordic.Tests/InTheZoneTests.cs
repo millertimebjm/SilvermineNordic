@@ -1,7 +1,5 @@
-using SilvermineNordic.Repository.Models;
-using System.Security.Cryptography.X509Certificates;
-using NUnit;
-using SilvermineNordic.Repository.Services;
+using SilvermineNordic.Models;
+using SilvermineNordic.Common;
 
 namespace SilvermineNordic.Tests
 {

@@ -1,15 +1,13 @@
 ﻿@page "/"
-@using SilvermineNordic.Repository.Models;
-@using SilvermineNordic.Repository.Services;
-@using SilvermineNordic.Repository;
+@using SilvermineNordic.Models;
+@using SilvermineNordic.Common;
 @inject HttpClient Http
-@inject ISilvermineNordicConfiguration SilvermineNordicConfiguration
 
 <PageTitle>Snow Making Dashboard</PageTitle>
 
 <input type="hidden" tabindex="-1" />
 <h1 class="text-center">Silvermine Nordic</h1>
-<p>@SilvermineNordicConfiguration.GetConfigurationString()</p>
+
 <br />
 <div class="row">
     <div class="col">
@@ -248,8 +246,8 @@
     protected override async Task OnInitializedAsync()
     {
         //ApiUrl = SilvermineNordicConfiguration.GetSilvermineNordicApiUrl();
-        //ApiUrl = "https://localhost:7243";
-        ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+        ApiUrl = "https://localhost:7243";
+        //ApiUrl = "https://silverminenordicapi.azurewebsites.net";
         await LoadData(false);
     }
 
@@ -308,7 +306,7 @@
             InTheZoneString = inTheZone ? "Yes" : "No";
             if (zoneChangeForecast != null)
             {
-                ZoneChangeForecastString = $"{zoneChangeForecast.Value.ToShortDateString()} {zoneChangeForecast.Value.ToShortTimeString()}";
+                ZoneChangeForecastString = $"{zoneChangeForecast?.ToShortDateString()} {zoneChangeForecast?.ToShortTimeString()}";
             }
             if (weatherForecast != null)
             {

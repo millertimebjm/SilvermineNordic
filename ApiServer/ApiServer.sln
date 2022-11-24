@@ -24,6 +24,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentat
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Admin", "SilvermineNordic.Admin\SilvermineNordic.Admin.csproj", "{2B92FB7F-8CF8-421F-8069-33EE974B9A22}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilvermineNordic.Models", "SilvermineNordic.Models\SilvermineNordic.Models.csproj", "{42F2D124-83BE-4C58-BCBE-2242974CFD29}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SilvermineNordic.Common", "SilvermineNordic.Common\SilvermineNordic.Common.csproj", "{BE82E345-7678-4C5A-956B-CBE47558F633}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,6 +54,14 @@ Global
 		{2B92FB7F-8CF8-421F-8069-33EE974B9A22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2B92FB7F-8CF8-421F-8069-33EE974B9A22}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B92FB7F-8CF8-421F-8069-33EE974B9A22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{42F2D124-83BE-4C58-BCBE-2242974CFD29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42F2D124-83BE-4C58-BCBE-2242974CFD29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42F2D124-83BE-4C58-BCBE-2242974CFD29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42F2D124-83BE-4C58-BCBE-2242974CFD29}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE82E345-7678-4C5A-956B-CBE47558F633}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE82E345-7678-4C5A-956B-CBE47558F633}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE82E345-7678-4C5A-956B-CBE47558F633}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE82E345-7678-4C5A-956B-CBE47558F633}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

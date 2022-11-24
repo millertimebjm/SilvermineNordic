@@ -1,7 +1,4 @@
 ﻿using Azure.Communication.Sms;
-using System.Net.Mail;
-using Twilio;
-using Twilio.Rest.Api.V2010.Account;
 
 namespace SilvermineNordic.Repository.Services
 {

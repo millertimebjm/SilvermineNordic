@@ -1,6 +1,6 @@
 ﻿using System.Xml.Linq;
 
-namespace SilvermineNordic.Repository.Models
+namespace SilvermineNordic.Models
 {
     public class OpenWeatherApiWeatherForecaseMainModel
     {
