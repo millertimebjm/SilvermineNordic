@@ -53,6 +53,8 @@
     <div class="col">
         <div class="text-center col-12">
             <a class="btn btn-info btn-lg" @onclick="@LoadDataOnClick">Refresh</a>
+            <br/>
+            @LoadingString
         </div>
     </div>
     <div class="col">
@@ -242,6 +244,9 @@
     private DateTime? zoneChangeForecast;
     private List<Threshold> thresholdBind;
     private IEnumerable<WeatherModel> weatherForecastBind;
+    private string LoadingString;
+    private DateTime lastRefresh = DateTime.UtcNow;
+    private string LoadingStringTemp = "Loading...";
 
     protected override async Task OnInitializedAsync()
     {
@@ -258,6 +263,7 @@
 
     private async Task LoadData(bool callStateHasChanged)
     {
+        LoadingString = LoadingStringTemp;
         try
         {
             var sensorReading = await Http.GetFromJsonAsync<IEnumerable<SensorReading>>(ApiUrl + "/sensorreading/?count=20");
@@ -307,11 +313,17 @@
             if (zoneChangeForecast != null)
             {
                 ZoneChangeForecastString = $"{zoneChangeForecast?.ToShortDateString()} {zoneChangeForecast?.ToShortTimeString()}";
+            } 
+            else
+            {
+                ZoneChangeForecastString = "No Zone Forecasted";
             }
             if (weatherForecast != null)
             {
                 weatherForecastBind = weatherForecast;
             }
+            LoadingString = "Last loaded: Just now";
+            lastRefresh = DateTime.UtcNow;
         }
         catch (Exception ex)
         {
@@ -324,7 +336,19 @@
         }
     }
 
-
+    private async Task SetLastRefreshString()
+    {
+        while (true)
+        {
+            await Task.Delay(1000*30);
+            // Don't update Loading String if the page is being refreshed
+            if (LoadingString != LoadingStringTemp)
+            {
+                LoadingString = "Last loaded: " + ToHumanReadableString(DateTime.UtcNow - lastRefresh);
+                StateHasChanged();
+            }
+        }
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -333,7 +357,7 @@
         if (firstRender)
         {
             // Do work to load page data and set properties
-
+            SetLastRefreshString(); // DO NOT AWAIT
         }
     }
 
