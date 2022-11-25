@@ -50,7 +50,7 @@ namespace SilvermineNordic.Functions
             if (lastSensorZone != currentSensorZone || lastWeatherZone != currentWeatherZone)
             {
                 log.LogInformation("Zone Changed.");
-                var message = GenerateMessage(lastSensorZone, currentSensorZone, lastWeatherZone, currentWeatherZone);
+                var message = InTheZoneService.GenerateZoneChangeMessage(lastSensorZone, currentSensorZone, lastWeatherZone, currentWeatherZone);
                 if (!string.IsNullOrWhiteSpace(message))
                 {
                     log.LogInformation("Message prepared: " + message);
@@ -88,57 +88,6 @@ namespace SilvermineNordic.Functions
             {
                 await _smsService.SendSms("+17155239481", $"Error in SensorIntegrity. Last Sensor Reading from {sensorReadings.Last().InsertedDateTimestampUtc.ToShortDateString()} {sensorReadings.Last().InsertedDateTimestampUtc.ToShortTimeString()} UTC");
             }
-        }
-
-        private static string GenerateMessage(bool lastSensorZone, bool currentSensorZone, bool lastWeatherZone, bool currentWeatherZone)
-        {
-            // Both Agree
-            if (currentSensorZone && currentWeatherZone)
-            {
-                return "Sensor and Weather say it is now snow making time!";
-            }
-            else if (!currentSensorZone && !currentWeatherZone)
-            {
-                return "Sensor and Weather say snow making time is done.";
-            }
-
-            // They used to agree, now they don't
-            else if (!lastSensorZone && !lastWeatherZone && currentSensorZone && !currentWeatherZone)
-            {
-                return "Sensor says it's time to make snow, Weather says not yet.";
-            }
-            else if (!lastSensorZone && !lastWeatherZone && !currentSensorZone && currentWeatherZone)
-            {
-                return "Weather says it's time to make snow, Sensor says not yet.";
-            }
-            else if (lastSensorZone && lastWeatherZone && currentSensorZone && !currentWeatherZone)
-            {
-                return "Weather says snow making time is done, Sensor says not yet.";
-            }
-            else if (lastSensorZone && lastWeatherZone && !currentSensorZone && currentWeatherZone)
-            {
-                return "Sensor says snow making time is done, Weather says not yet.";
-            }
-
-            // They didn't agree, but now they do
-            else if (!lastSensorZone && lastWeatherZone && !currentSensorZone && !currentWeatherZone)
-            {
-                return "Weather agrees with Sensor that snow should not be made.";
-            }
-            else if (lastSensorZone && !lastWeatherZone && !currentSensorZone && !currentWeatherZone)
-            {
-                return "Sensor agrees with Weather that snow should not be made.";
-            }
-            else if (!lastSensorZone && lastWeatherZone && currentSensorZone && currentWeatherZone)
-            {
-                return "Sensor agrees with Weather that snow can now be made.";
-            }
-            else if (lastSensorZone && !lastWeatherZone && currentSensorZone && currentWeatherZone)
-            {
-                return "Weather agrees with Sensor that snow can now be made.";
-            }
-
-            return "";
         }
     }
 }

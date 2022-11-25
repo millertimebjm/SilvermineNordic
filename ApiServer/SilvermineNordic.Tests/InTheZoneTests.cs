@@ -240,5 +240,23 @@ namespace SilvermineNordic.Tests
             var nextZoneChangeDateTime = InTheZoneService.GetNextZoneChange(weatherModels, thresholds, true);
             Assert.AreEqual(nextZoneChangeDateTime, weatherModels.First().DateTimeUtc);
         }
+
+        [TestCase(false, false, false, true)]
+        [TestCase(false, false, true, false)]
+        [TestCase(false, true, false, false)]
+        [TestCase(false, true, false, true)]
+        [TestCase(false, true, true, false)]
+        [TestCase(false, true, true, true)]
+        [TestCase(true, false, false, false)]
+        [TestCase(true, false, false, true)]
+        [TestCase(true, false, true, false)]
+        [TestCase(true, false, true, true)]
+        [TestCase(true, true, false, true)]
+        [TestCase(true, true, true, false)]
+        public void GetZoneChangeMessageTest(bool lastSensorZone, bool currentSensorZone, bool lastWeatherZone, bool currentWeatherZone)
+        {
+            var message = InTheZoneService.GenerateZoneChangeMessage(lastSensorZone, currentSensorZone, lastWeatherZone, currentWeatherZone);
+            Assert.IsNotEmpty(message);
+        }
     }
 }

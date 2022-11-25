@@ -99,8 +99,6 @@ app.MapGet("/weatherforecast/nextzonechange", async () =>
     var lastWeatherReading = lastWeatherReadingTask.Single();
     var nextZoneChangeDateTimeUtc = InTheZoneService.GetNextZoneChange(weatherForecastTask, thresholdTask, InTheZoneService.IsInZone(thresholdTask, lastSensorReading.TemperatureInCelcius, lastSensorReading.Humidity) || InTheZoneService.IsInZone(thresholdTask, lastWeatherReading.TemperatureInCelcius, lastWeatherReading.Humidity));
     return nextZoneChangeDateTimeUtc;
-    //return DateTime.MinValue;
-    //return (DateTime?)null;
 }).WithName("GetNextZoneChange");
 
 app.MapGet("thresholds", async () =>
