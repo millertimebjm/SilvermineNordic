@@ -71,5 +71,174 @@ namespace SilvermineNordic.Tests
             var inTheZoneCalculated = InTheZoneService.IsInZone(SensorThresholds, sensorReading.TemperatureInCelcius, sensorReading.Humidity);
             Assert.AreEqual(inTheZoneCalculated, inTheZone);
         }
+
+        private List<Threshold> thresholds = new List<Threshold>()
+            {
+                new Threshold()
+                {
+                    HumidityLowThreshold = 10.0M,
+                    HumidityHighThreshold = 20.0M,
+                    TemperatureInCelciusLowThreshold = 0.0M,
+                    TemperatureInCelciusHighThreshold = 10.0M,
+                },
+                new Threshold()
+                {
+                    HumidityLowThreshold = 20.0M,
+                    HumidityHighThreshold = 30.0M,
+                    TemperatureInCelciusLowThreshold = 5.0M,
+                    TemperatureInCelciusHighThreshold = 15.0M,
+                },
+                new Threshold()
+                {
+                    HumidityLowThreshold = 30.0M,
+                    HumidityHighThreshold = 40.0M,
+                    TemperatureInCelciusLowThreshold = 10.0M,
+                    TemperatureInCelciusHighThreshold = 20.0M,
+                },
+            };
+
+        [Test]
+        public void GetNextZoneChange_AllLowWeatherModels_False_Null()
+        {
+            var dateTimeUtcNow = DateTime.UtcNow;
+            var weatherModels = new List<WeatherModel>()
+            {
+                new WeatherModel()
+                {
+                    TemperatureInCelcius = 2.0M,
+                    Humidity = 5.0M,
+                    DateTimeUtc = dateTimeUtcNow,
+                },
+                new WeatherModel()
+                {
+                    TemperatureInCelcius = 4.0M,
+                    Humidity = 7.0M,
+                    DateTimeUtc = dateTimeUtcNow.AddMinutes(1),
+                },
+                new WeatherModel()
+                {
+                    TemperatureInCelcius = 6.0M,
+                    Humidity = 9.0M,
+                    DateTimeUtc = dateTimeUtcNow.AddMinutes(2),
+                },
+            };
+            var nextZoneChangeDateTime = InTheZoneService.GetNextZoneChange(weatherModels, thresholds, false);
+            Assert.IsNull(nextZoneChangeDateTime);
+        }
+
+        [Test]
+        public void GetNextZoneChange_AllHighWeatherModels_False_Null()
+        {
+            var dateTimeUtcNow = DateTime.UtcNow;
+            var weatherModels = new List<WeatherModel>()
+            {
+                new WeatherModel()
+                {
+                    TemperatureInCelcius = 55.0M,
+                    Humidity = 35.0M,
+                    DateTimeUtc = dateTimeUtcNow,
+                },
+                new WeatherModel()
+                {
+                    TemperatureInCelcius = 45.0M,
+                    Humidity = 40.0M,
+                    DateTimeUtc = dateTimeUtcNow.AddMinutes(1),
+                },
+                new WeatherModel()
+                {
+                    TemperatureInCelcius = 63.0M,
+                    Humidity = 92.0M,
+                    DateTimeUtc = dateTimeUtcNow.AddMinutes(2),
+                },
+            };
+            var nextZoneChangeDateTime = InTheZoneService.GetNextZoneChange(weatherModels, thresholds, false);
+            Assert.IsNull(nextZoneChangeDateTime);
+        }
+
+        [Test]
+        public void GetNextZoneChange_InRangeWeatherModels_True_Null()
+        {
+            var dateTimeUtcNow = DateTime.UtcNow;
+            var weatherModels = new List<WeatherModel>()
+            {
+                new WeatherModel()
+                {
+                    TemperatureInCelcius = 5.0M,
+                    Humidity = 15.0M,
+                    DateTimeUtc = dateTimeUtcNow,
+                },
+                new WeatherModel()
+                {
+                    TemperatureInCelcius = 10.0M,
+                    Humidity = 25.0M,
+                    DateTimeUtc = dateTimeUtcNow.AddMinutes(1),
+                },
+                new WeatherModel()
+                {
+                    TemperatureInCelcius = 15.0M,
+                    Humidity = 35.0M,
+                    DateTimeUtc = dateTimeUtcNow.AddMinutes(2),
+                },
+            };
+            var nextZoneChangeDateTime = InTheZoneService.GetNextZoneChange(weatherModels, thresholds, true);
+            Assert.IsNull(nextZoneChangeDateTime);
+        }
+
+        [Test]
+        public void GetNextZoneChange_InRangeWeatherModels_False_First()
+        {
+            var dateTimeUtcNow = DateTime.UtcNow;
+            var weatherModels = new List<WeatherModel>()
+            {
+                new WeatherModel()
+                {
+                    TemperatureInCelcius = 5.0M,
+                    Humidity = 15.0M,
+                    DateTimeUtc = dateTimeUtcNow,
+                },
+                new WeatherModel()
+                {
+                    TemperatureInCelcius = 10.0M,
+                    Humidity = 25.0M,
+                    DateTimeUtc = dateTimeUtcNow.AddMinutes(1),
+                },
+                new WeatherModel()
+                {
+                    TemperatureInCelcius = 15.0M,
+                    Humidity = 35.0M,
+                    DateTimeUtc = dateTimeUtcNow.AddMinutes(2),
+                },
+            };
+            var nextZoneChangeDateTime = InTheZoneService.GetNextZoneChange(weatherModels, thresholds, false);
+            Assert.AreEqual(nextZoneChangeDateTime, weatherModels.First().DateTimeUtc);
+        }
+
+        public void GetNextZoneChange_AllHighWeatherModels_True_First()
+        {
+            var dateTimeUtcNow = DateTime.UtcNow;
+            var weatherModels = new List<WeatherModel>()
+            {
+                new WeatherModel()
+                {
+                    TemperatureInCelcius = 55.0M,
+                    Humidity = 35.0M,
+                    DateTimeUtc = dateTimeUtcNow,
+                },
+                new WeatherModel()
+                {
+                    TemperatureInCelcius = 45.0M,
+                    Humidity = 40.0M,
+                    DateTimeUtc = dateTimeUtcNow.AddMinutes(1),
+                },
+                new WeatherModel()
+                {
+                    TemperatureInCelcius = 63.0M,
+                    Humidity = 92.0M,
+                    DateTimeUtc = dateTimeUtcNow.AddMinutes(2),
+                },
+            };
+            var nextZoneChangeDateTime = InTheZoneService.GetNextZoneChange(weatherModels, thresholds, true);
+            Assert.AreEqual(nextZoneChangeDateTime, weatherModels.First().DateTimeUtc);
+        }
     }
 }

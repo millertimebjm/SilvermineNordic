@@ -43,15 +43,11 @@ namespace SilvermineNordic.Common
             return null;
         }
 
-        public static DateTime? GetNextZoneChange(IEnumerable<WeatherModel> weatherForecast, IEnumerable<Threshold> thresholds, SensorReading sensorReading, SensorReading weatherReading)
+        public static DateTime? GetNextZoneChange(IEnumerable<WeatherModel> weatherForecast, IEnumerable<Threshold> thresholds, bool currentZone)
         {
-            var currentSensorZone = InTheZoneService.IsInZone(thresholds, sensorReading.TemperatureInCelcius, sensorReading.Humidity);
-            var currentWeatherZone = InTheZoneService.IsInZone(thresholds, weatherReading.TemperatureInCelcius, weatherReading.Humidity);
-            var currentZone = currentSensorZone || currentWeatherZone;
             List<WeatherModel> weatherForecastModels = weatherForecast.ToList();
             int nextWeatherForecastIndex = 0;
-            while (nextWeatherForecastIndex >= weatherForecastModels.Count() && currentZone == InTheZoneService.IsInZone(thresholds, weatherForecastModels[nextWeatherForecastIndex].TemperatureInCelcius, weatherForecastModels[nextWeatherForecastIndex].Humidity)
-                || weatherForecastModels[nextWeatherForecastIndex] == weatherForecastModels.Last())
+            while (nextWeatherForecastIndex < weatherForecastModels.Count() && currentZone == InTheZoneService.IsInZone(thresholds, weatherForecastModels[nextWeatherForecastIndex].TemperatureInCelcius, weatherForecastModels[nextWeatherForecastIndex].Humidity))
             {
                 nextWeatherForecastIndex++;
             }

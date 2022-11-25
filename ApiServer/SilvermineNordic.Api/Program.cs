@@ -7,6 +7,7 @@ using SilvermineNordic.Repository.Services;
 using System;
 using SilvermineNordic.Common;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -88,14 +89,18 @@ app.MapGet("/weatherforecast", async () =>
 
 app.MapGet("/weatherforecast/nextzonechange", async () =>
 {
-    var weatherForecastTask = weatherForecastService.GetWeatherForecast();
-    var sensorThresholdTask = sensorThresholdService.GetThresholds();
-    var lastSensorReadingTask = sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 1);
-    var lastWeatherReadingTask = sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 1);
-    await Task.WhenAll(weatherForecastTask, sensorThresholdTask, lastSensorReadingTask, lastWeatherReadingTask);
+    var weatherForecastTask = await weatherForecastService.GetWeatherForecast();
+    var thresholdTask = await sensorThresholdService.GetThresholds();
+    var lastSensorReadingTask = await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 1);
+    var lastWeatherReadingTask = await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 1);
+    //await Task.WhenAll(weatherForecastTask, thresholdTask, lastSensorReadingTask, lastWeatherReadingTask);
 
-    var nextZoneChangeDateTimeUtc = InTheZoneService.GetNextZoneChange(weatherForecastTask.Result, sensorThresholdTask.Result, lastSensorReadingTask.Result.Single(), lastWeatherReadingTask.Result.Single());
+    var lastSensorReading = lastSensorReadingTask.Single();
+    var lastWeatherReading = lastWeatherReadingTask.Single();
+    var nextZoneChangeDateTimeUtc = InTheZoneService.GetNextZoneChange(weatherForecastTask, thresholdTask, InTheZoneService.IsInZone(thresholdTask, lastSensorReading.TemperatureInCelcius, lastSensorReading.Humidity) || InTheZoneService.IsInZone(thresholdTask, lastWeatherReading.TemperatureInCelcius, lastWeatherReading.Humidity));
     return nextZoneChangeDateTimeUtc;
+    //return DateTime.MinValue;
+    //return (DateTime?)null;
 }).WithName("GetNextZoneChange");
 
 app.MapGet("thresholds", async () =>
