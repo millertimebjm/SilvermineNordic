@@ -43,6 +43,7 @@ namespace SilvermineNordic.Functions
             string azureSmsConnectionString = config.GetConnectionStringOrSetting("AzureSmsConnectionString");
             string azureSmsFromPhone = config.GetConnectionStringOrSetting("AzureSmsFromPhone");
             string openWeatherApiForecastApiKey = config.GetConnectionStringOrSetting("OpenWeatherApiForecastApiKey");
+            string zoneNotificationPhoneNumbers = config.GetConnectionStringOrSetting("ZoneNotificationPhoneNumbers");
 
             builder.Services.AddSingleton<ISilvermineNordicConfiguration>(_ =>
                 new SilvermineNordicConfigurationService()
@@ -53,6 +54,7 @@ namespace SilvermineNordic.Functions
                     OpenWeatherApiKey = openWeatherApiForecastApiKey,
                     AzureSmsConnectionString = azureSmsConnectionString,
                     AzureSmsFromPhone = azureSmsFromPhone,
+                    ZoneNotificationPhoneNumbers = zoneNotificationPhoneNumbers,
                 });
 
             builder.Services.AddDbContext<SilvermineNordicDbContext>();

@@ -10,6 +10,6 @@ namespace SilvermineNordic.Repository
         public string GetAzureSmsConnectionString();
         public string GetAzureSmsFromPhone();
         public string GetSilvermineNordicApiUrl();
-        public string GetConfigurationString();
+        public string GetZoneNotificationPhoneNumbers();
     }
 }

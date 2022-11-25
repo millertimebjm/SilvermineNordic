@@ -5,8 +5,8 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Models;
-using System.Collections.Generic;
 using SilvermineNordic.Common;
+using SilvermineNordic.Repository;
 
 namespace SilvermineNordic.Functions
 {
@@ -16,17 +16,20 @@ namespace SilvermineNordic.Functions
         private readonly IRepositoryThreshold _thresholdService;
         private readonly IWeatherForecast _weatherForecastService;
         private readonly ISms _smsService;
+        private readonly ISilvermineNordicConfiguration _configurationService;
 
         public CheckZoneEvent(
             IRepositorySensorReading sensorReadingService, 
             IRepositoryThreshold thresholdService,
             IWeatherForecast weatherForecastService,
-            ISms smsService)
+            ISms smsService,
+            ISilvermineNordicConfiguration conigurationService)
         {
             _sensorReadingService = sensorReadingService;
             _thresholdService = thresholdService;
             _weatherForecastService = weatherForecastService;
             _smsService = smsService;
+            _configurationService = conigurationService;
         }
 
         [FunctionName("CheckZoneEvent")]
@@ -49,44 +52,26 @@ namespace SilvermineNordic.Functions
 
             if (lastSensorZone != currentSensorZone || lastWeatherZone != currentWeatherZone)
             {
-                log.LogInformation("Zone Changed.");
                 var message = InTheZoneService.GenerateZoneChangeMessage(lastSensorZone, currentSensorZone, lastWeatherZone, currentWeatherZone);
                 if (!string.IsNullOrWhiteSpace(message))
                 {
-                    log.LogInformation("Message prepared: " + message);
                     var nextZoneChange = await _weatherForecastService.GetNextZoneChange(thresholdData, currentSensorZone || currentWeatherZone);
-                    log.LogInformation("NextZoneChange null? " + (nextZoneChange == null ? "Yes" : "No") + $" | ThresholdData Count: {thresholdData.Count()} | currentSensorZone: {currentSensorZone.ToString()} | currentWeatherZone: {currentWeatherZone.ToString()}");
-                    message += $" Next change forecasted for {nextZoneChange?.ToShortDateString() ?? ""} {nextZoneChange?.ToShortTimeString() ?? ""} UTC";
+                    if (nextZoneChange != null)
+                    {
+                        message += $" Next change forecasted for {nextZoneChange.Value.ToShortDateString() ?? ""} {nextZoneChange.Value.ToShortTimeString() ?? ""} UTC";
+                    }
+                    else
+                    {
+                        message += $" No further Zone Change forecasted.";
+                    }
                     log.LogInformation("Sending notification: " + message);
-                    await _smsService.SendSms("+17155239481", message);
+                    var phoneNumbers = _configurationService.GetZoneNotificationPhoneNumbers();
+                    var validPhoneNumbers = phoneNumbers.Split(",").Where(_ => PhoneNumberService.ValidatePhoneNumber(_)).ToList();
+                    foreach (var validPhoneNumber in validPhoneNumbers)
+                    {
+                        await _smsService.SendSms(validPhoneNumber, message);
+                    }
                 }
-            }
-        }
-
-        private async Task VerifyThresholdIntegrity(IEnumerable<Threshold> thresholds)
-        {
-            //if (thresholds.Any(_ => _.TemperatureInCelciusLowThreshold > _.TemperatureInCelciusHighThreshold
-            //    || _.HumidityLowThreshold > _.HumidityHighThreshold))
-            //{
-            //    await _smsService.SendSms("+17155239481", $"Error in ThresholdIntegrity.");
-            //}
-        }
-
-        private async Task VerifyWeatherIntegrity(IEnumerable<SensorReading> weatherReadings)
-        {
-            if (weatherReadings.Last().InsertedDateTimestampUtc < DateTime.UtcNow.AddMinutes(-8) 
-                && weatherReadings.Last().InsertedDateTimestampUtc > DateTime.UtcNow.AddMinutes(-13))
-            {
-                await _smsService.SendSms("+17155239481", $"Error in WeatherIntegrity. Last Weather Reading from {weatherReadings.Last().InsertedDateTimestampUtc.ToShortDateString()} {weatherReadings.Last().InsertedDateTimestampUtc.ToShortTimeString()} UTC");
-            }
-        }
-
-        private async Task VerifySensorIntegrity(IEnumerable<SensorReading> sensorReadings)
-        {
-            if (sensorReadings.Last().InsertedDateTimestampUtc < DateTime.UtcNow.AddMinutes(-8)
-                && sensorReadings.Last().InsertedDateTimestampUtc > DateTime.UtcNow.AddMinutes(-13))
-            {
-                await _smsService.SendSms("+17155239481", $"Error in SensorIntegrity. Last Sensor Reading from {sensorReadings.Last().InsertedDateTimestampUtc.ToShortDateString()} {sensorReadings.Last().InsertedDateTimestampUtc.ToShortTimeString()} UTC");
             }
         }
     }
