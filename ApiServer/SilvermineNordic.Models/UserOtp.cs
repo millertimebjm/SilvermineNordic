@@ -7,7 +7,7 @@
         public Guid Otp { get; set; }
         public Guid AuthKey { get; set; }
         public bool Exhausted { get; set; } = false;
-        public DateTime CreatedUtc { get; set; } = DateTime.UtcNow;
-        public DateTime? LastUsedUtc { get; set; }
+        public DateTime CreatedDateTimestampUtc { get; set; } = DateTime.UtcNow;
+        public DateTime? LastUsedDateTimestampUtc { get; set; }
     }
 }

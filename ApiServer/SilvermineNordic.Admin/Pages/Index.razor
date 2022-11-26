@@ -1,9 +1,14 @@
 ﻿@page "/"
 @using SilvermineNordic.Models;
 @using SilvermineNordic.Common;
+@using SilvermineNordic.Admin.Services;
 @inject HttpClient Http
+@inject ICookie cookie
 
 <PageTitle>Snow Making Dashboard</PageTitle>
+
+<br />
+<br/>
 
 <input type="hidden" tabindex="-1" />
 <h1 class="text-center">Silvermine Nordic</h1>
@@ -231,7 +236,6 @@
 @code {
     private string ApiUrl;
     private IEnumerable<SensorReading> sensorReadingBind;
-    private List<Threshold> thresholds;
     private IEnumerable<SensorReading> weatherReadingBind;
     private string? TimeSinceLastSensorReadingString;
     private string TemperatureLastSensorReadingString;
@@ -241,18 +245,19 @@
     private string HumidityLastWeatherReadingString;
     private string InTheZoneString;
     private string ZoneChangeForecastString;
-    private DateTime? zoneChangeForecast;
     private List<Threshold> thresholdBind;
     private IEnumerable<WeatherModel> weatherForecastBind;
     private string LoadingString;
     private DateTime lastRefresh = DateTime.UtcNow;
     private string LoadingStringTemp = "Loading...";
+    private string LoadingStringError = "Loading Error";
+    private string UserAuthKey = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
         //ApiUrl = SilvermineNordicConfiguration.GetSilvermineNordicApiUrl();
-        //ApiUrl = "https://localhost:7243";
-        ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+        ApiUrl = "https://localhost:7243";
+        //ApiUrl = "https://silverminenordicapi.azurewebsites.net";
         await LoadData(false);
     }
 
@@ -327,7 +332,7 @@
         }
         catch (Exception ex)
         {
-
+            LoadingString = LoadingStringError;
         }
 
         if (callStateHasChanged)
@@ -342,7 +347,7 @@
         {
             await Task.Delay(1000*30);
             // Don't update Loading String if the page is being refreshed
-            if (LoadingString != LoadingStringTemp)
+            if (LoadingString != LoadingStringTemp && LoadingString != LoadingStringError)
             {
                 LoadingString = "Last loaded: " + ToHumanReadableString(DateTime.UtcNow - lastRefresh);
                 StateHasChanged();

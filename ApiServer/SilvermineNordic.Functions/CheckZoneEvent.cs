@@ -67,6 +67,7 @@ namespace SilvermineNordic.Functions
                     log.LogInformation("Sending notification: " + message);
                     var phoneNumbers = _configurationService.GetZoneNotificationPhoneNumbers();
                     var validPhoneNumbers = phoneNumbers.Split(",").Where(_ => PhoneNumberService.ValidatePhoneNumber(_)).ToList();
+                    log.LogInformation("Valid Phone Numbers: " + validPhoneNumbers.Count().ToString());
                     foreach (var validPhoneNumber in validPhoneNumbers)
                     {
                         await _smsService.SendSms(validPhoneNumber, message);

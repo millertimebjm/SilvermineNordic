@@ -1,0 +1,33 @@
+﻿@page "/loginauth/{otp?}"
+@using SilvermineNordic.Admin.Services;
+@using SilvermineNordic.Models;
+@inject HttpClient Http
+@inject NavigationManager Nav
+@inject ICookie cookie
+
+<PageTitle>Snow Making Authorizing...</PageTitle>
+
+<br />
+<div class="row">
+
+</div>
+
+@code {
+    [Parameter]
+    public string otp { get; set; }
+    private UserOtp UserOtp { get; set; }
+    private string ApiUrl = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        //ApiUrl = SilvermineNordicConfiguration.GetSilvermineNordicApiUrl();
+        ApiUrl = "https://localhost:7243";
+        //ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+
+        if (!string.IsNullOrWhiteSpace(otp))
+        {
+            var userOtp = await Http.GetFromJsonAsync<UserOtp>(ApiUrl + $"/loginauth?otp={otp}");
+            await cookie.SetValue("UserAuthKey", userOtp.AuthKey.ToString());
+            Nav.NavigateTo("/");
+        }
+    }
+}

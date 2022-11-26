@@ -32,6 +32,8 @@ namespace SilvermineNordic.Repository.Services
         {
             modelBuilder.Entity<SensorReading>().ToTable("SensorReading");
             modelBuilder.Entity<Threshold>().ToTable("SensorThreshold");
+            modelBuilder.Entity<User>().ToTable("User");
+            modelBuilder.Entity<UserOtp>().ToTable("UserOtp");
         }
     }
 }

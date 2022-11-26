@@ -1,7 +1,54 @@
 ﻿@inherits LayoutComponentBase
+@using SilvermineNordic.Models
+@using SilvermineNordic.Admin.Services
+@inject HttpClient Http
+@inject ICookie cookie
+@inject IGlobalService GlobalService
 
+<header>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white" style="position: absolute; left: 50%; transform: translateX(-50%)">
+        <div class="container-fluid">
+            <button class="navbar-toggler"
+                    type="button"
+                    data-mdb-toggle="collapse"
+                    data-mdb-target="#navbarExample01"
+                    aria-controls="navbarExample01"
+                    aria-expanded="false"
+                    aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarExample01">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login">@LoginText</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <!-- Navbar -->
+</header>
+<br />
 <div class="page">
-    <div class="container">
-            @Body
+    <div class="container">     
+        @Body
     </div>
 </div>
+
+@code {
+    private string ApiUrl;
+    private string LoginText = "Login";
+
+    protected override async Task OnInitializedAsync()
+    {
+        ApiUrl = "https://localhost:7243";
+        //ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+        var userAuthKey = await cookie.GetValue("UserAuthKey");
+        var user = await GlobalService.GetUser(Http, ApiUrl, userAuthKey);
+        LoginText = $"Welcome, {user.Name}";
+    }
+}

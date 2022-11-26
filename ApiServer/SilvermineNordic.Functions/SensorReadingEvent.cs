@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Models;
-using System.Linq;
 
 namespace SilvermineNordic.Functions
 {

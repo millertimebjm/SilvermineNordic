@@ -16,4 +16,8 @@
     <ProjectReference Include="..\SilvermineNordic.Models\SilvermineNordic.Models.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
 </Project>

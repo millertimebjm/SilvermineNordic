@@ -11,6 +11,7 @@ namespace SilvermineNordic.Repository
         public string AzureSmsFromPhone { get; set; }
         public string SilvermineNordicApiUrl { get; set; }
         public string ZoneNotificationPhoneNumbers { get; set; }
+        public string EmailServiceConnectionString { get; set; }
 
         public SilvermineNordicConfigurationService()
         {
@@ -55,6 +56,11 @@ namespace SilvermineNordic.Repository
         public string GetZoneNotificationPhoneNumbers()
         {
             return ZoneNotificationPhoneNumbers;
+        }
+
+        public string GetEmailServiceConnectionString()
+        {
+            return EmailServiceConnectionString;
         }
     }
 }

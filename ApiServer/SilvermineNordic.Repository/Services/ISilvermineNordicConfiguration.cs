@@ -11,5 +11,6 @@ namespace SilvermineNordic.Repository
         public string GetAzureSmsFromPhone();
         public string GetSilvermineNordicApiUrl();
         public string GetZoneNotificationPhoneNumbers();
+        public string GetEmailServiceConnectionString();
     }
 }

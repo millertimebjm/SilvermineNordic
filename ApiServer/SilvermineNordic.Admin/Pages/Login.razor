@@ -1,0 +1,50 @@
+﻿@page "/login"
+@inject HttpClient Http
+@inject NavigationManager Nav
+
+<PageTitle>Snow Making Login</PageTitle>
+
+<br />
+<div class="row">
+    <div class="offset-4 col-md-4 text-center">
+        <br/>
+        <h1>Snow Making Login</h1>
+        <br/>
+        <!-- Email input -->
+        <div class="form-outline mb-4">
+            <input type="email" class="form-control" placeholder="Email address" @bind="EmailAddress" />
+        </div>
+
+        <!-- Submit button -->
+        <button type="button" class="btn btn-primary btn-block mb-4" style="width: 100%" @onclick="@LoginButton" >Sign in</button>
+
+        <!-- 2 column grid layout for inline styling -->
+        <div class="row mb-4">
+            <div class="col">
+                <!-- Simple link -->
+                <a href="#!">Forgot Password</a>
+            </div>
+            <div class="col">
+                <!-- Simple link -->
+                <a href="#!">Register</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string EmailAddress = string.Empty;
+    private string ApiUrl = string.Empty;
+
+    private async Task LoginButton()
+    {
+        ApiUrl = "https://localhost:7243";
+        //ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+        var asdf = EmailAddress;
+        var response = await Http.PostAsJsonAsync<string>(ApiUrl + $"/loginattempt", EmailAddress);
+        //if (response)
+        //{
+            Nav.NavigateTo("/loginmessage");
+        //}
+    }
+}

@@ -5,12 +5,11 @@ namespace SilvermineNordic.Repository.Services
 {
     public class EntityFrameworkUserService : IRepositoryUser
     {
-        DbContextOptions<SilvermineNordicDbContext> _options;
-        public EntityFrameworkUserService(DbContextOptions<SilvermineNordicDbContext> options)
+        private readonly SilvermineNordicDbContext _dbContext;
+        public EntityFrameworkUserService(SilvermineNordicDbContext dbContext)
         {
-            _options = options;
+            _dbContext = dbContext;
         }
-
 
         public Task<User> AddUserAsync(User user)
         {
@@ -24,7 +23,7 @@ namespace SilvermineNordic.Repository.Services
 
         public async Task<User> GetUserAsync(string email)
         {
-            throw new NotImplementedException();
+            return _dbContext.Users.SingleOrDefault(_ => _.Email == email);
         }
 
         public Task<User> UpdateUserAsync(User user)

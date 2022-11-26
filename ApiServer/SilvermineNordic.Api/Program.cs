@@ -1,13 +1,9 @@
 using Microsoft.Azure.WebJobs.Host.Bindings;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using SilvermineNordic.Repository;
 using SilvermineNordic.Models;
 using SilvermineNordic.Repository.Services;
-using System;
 using SilvermineNordic.Common;
-using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,12 +26,14 @@ var config = new ConfigurationBuilder()
 
 string snowMakingSqlConnectionString = config.GetConnectionString("SnowMakingSqlConnectionString");
 string openWeatherApiKey = config.GetConnectionString("OpenWeatherApiForecastApiKey");
+string emailServiceConnectionString = config.GetConnectionString("EmailServiceConnectionString");
 
-builder.Services.AddSingleton<SilvermineNordic.Repository.ISilvermineNordicConfiguration>(_ =>
+builder.Services.AddSingleton<ISilvermineNordicConfiguration>(_ =>
                 new SilvermineNordicConfigurationService()
                 {
                     SqlConnectionString = snowMakingSqlConnectionString,
-                    OpenWeatherApiKey = openWeatherApiKey
+                    OpenWeatherApiKey = openWeatherApiKey,
+                    EmailServiceConnectionString = emailServiceConnectionString,
                 });
 
 builder.Services.AddDbContext<SilvermineNordicDbContext>();
@@ -43,10 +41,17 @@ builder.Services.AddDbContext<SilvermineNordicDbContext>();
 builder.Services.AddScoped<IRepositorySensorReading, EntityFrameworkSensorReadingService>();
 builder.Services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
 builder.Services.AddScoped<IWeatherForecast, OpenWeatherApiForecastService>();
+builder.Services.AddScoped<IRepositoryUser, EntityFrameworkUserService>();
+builder.Services.AddScoped<IRepositoryUserOtp, EntityFrameworkUserOtpService>();
+builder.Services.AddScoped<IEmailService, AzureEmailService>();
+builder.Services.AddScoped<IRepositoryUserOtp, EntityFrameworkUserOtpService>();
 
 var sensorReadingService = builder.Services.BuildServiceProvider().GetService<IRepositorySensorReading>();
 var sensorThresholdService = builder.Services.BuildServiceProvider().GetService<IRepositoryThreshold>();
 var weatherForecastService = builder.Services.BuildServiceProvider().GetService<IWeatherForecast>();
+var userService = builder.Services.BuildServiceProvider().GetService<IRepositoryUser>();
+var userOtpService = builder.Services.BuildServiceProvider().GetService<IRepositoryUserOtp>();
+var emailService = builder.Services.BuildServiceProvider().GetService<IEmailService>();
 
 builder.Services.AddCors(o => o.AddPolicy("NUXT", builder =>
 {
@@ -105,6 +110,43 @@ app.MapGet("thresholds", async () =>
 {
     var thresholds = await sensorThresholdService.GetThresholds();
     return thresholds;
+});
+
+app.MapPost("loginattempt", async ([Microsoft.AspNetCore.Mvc.FromBody] string login) =>
+{
+    try
+    {
+        var user = await userService.GetUserAsync(login);
+        if (user != null)
+        {
+            var userOtpResult = await userOtpService.AddUserOtpAsync(user.Id);
+            var emailResult = await emailService.SendEmailAsync(user.Email, "Snow Making Login Request", @$"Dear {(!string.IsNullOrWhiteSpace(user.Name) ? user.Name : user.Email)},{Environment.NewLine}<br/>https://snowmaking.silverminenordic.com/loginotp/{userOtpResult.Otp}");
+            return true;
+        }
+        return true;
+    }
+    catch(Exception ex)
+    { 
+        return false; 
+    }
+});
+
+app.MapGet("loginotp", async (string otp) =>
+{
+    if (Guid.TryParse(otp, out Guid otpGuid))
+    {
+        return await userOtpService.GetUserOtpAsync(otpGuid);
+    }
+    return (UserOtp)null;
+});
+
+app.MapGet("loginauth", async (string authKey) =>
+{
+    if (Guid.TryParse(authKey, out Guid authKeyGuid))
+    {
+        return await userOtpService.GetUserOtpByAuthKeyAsync(authKeyGuid);
+    }
+    return (User)null;
 });
 
 app.Run();
