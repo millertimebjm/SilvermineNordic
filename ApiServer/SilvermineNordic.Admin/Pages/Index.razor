@@ -57,7 +57,7 @@
     </div>
     <div class="col">
         <div class="text-center col-12">
-            <a class="btn btn-info btn-lg" @onclick="@LoadDataOnClick">Refresh</a>
+            <a class="btn btn-info btn-lg" @onclick="@LoadDataOnClick" tabindex="-1">Refresh</a>
             <br/>
             @LoadingString
         </div>
@@ -234,6 +234,8 @@
 
 
 @code {
+    [CascadingParameter]
+    public GlobalService GlobalService { get; set; }
     private string ApiUrl;
     private IEnumerable<SensorReading> sensorReadingBind;
     private IEnumerable<SensorReading> weatherReadingBind;
@@ -256,8 +258,8 @@
     protected override async Task OnInitializedAsync()
     {
         //ApiUrl = SilvermineNordicConfiguration.GetSilvermineNordicApiUrl();
-        ApiUrl = "https://localhost:7243";
-        //ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+        //ApiUrl = "https://localhost:7243";
+        ApiUrl = "https://silverminenordicapi.azurewebsites.net";
         await LoadData(false);
     }
 

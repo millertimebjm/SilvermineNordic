@@ -1,9 +1,10 @@
-﻿@page "/loginauth/{otp?}"
+﻿@page "/loginotp/{otp?}"
 @using SilvermineNordic.Admin.Services;
 @using SilvermineNordic.Models;
 @inject HttpClient Http
 @inject NavigationManager Nav
 @inject ICookie cookie
+@inject IGlobalService GlobalService
 
 <PageTitle>Snow Making Authorizing...</PageTitle>
 
@@ -15,18 +16,26 @@
 @code {
     [Parameter]
     public string otp { get; set; }
+    [CascadingParameter]
+    public MainLayout layout { get; set; }
+
     private UserOtp UserOtp { get; set; }
     private string ApiUrl = string.Empty;
     protected override async Task OnInitializedAsync()
     {
         //ApiUrl = SilvermineNordicConfiguration.GetSilvermineNordicApiUrl();
-        ApiUrl = "https://localhost:7243";
-        //ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+        //ApiUrl = "https://localhost:7243";
+        ApiUrl = "https://silverminenordicapi.azurewebsites.net";
 
         if (!string.IsNullOrWhiteSpace(otp))
         {
-            var userOtp = await Http.GetFromJsonAsync<UserOtp>(ApiUrl + $"/loginauth?otp={otp}");
+            var userOtp = await Http.GetFromJsonAsync<UserOtp>(ApiUrl + $"/loginotp?otp={otp}");
             await cookie.SetValue("UserAuthKey", userOtp.AuthKey.ToString());
+            var user = await GlobalService.GetUser(Http, ApiUrl, userOtp.AuthKey.ToString());
+            if (user is not null)
+            {
+                layout.SetLoggedInStatus(true, user);
+            }
             Nav.NavigateTo("/");
         }
     }

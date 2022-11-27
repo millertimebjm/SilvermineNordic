@@ -1,7 +1,6 @@
 ﻿@page "/logout"
 @using SilvermineNordic.Admin.Services;
 @using SilvermineNordic.Models;
-@inject HttpClient Http
 @inject NavigationManager Nav
 @inject ICookie cookie
 @inject IGlobalService GlobalService
@@ -10,14 +9,18 @@
 
 <br />
 <div class="row">
-
 </div>
 
 @code {
+    [CascadingParameter]
+    public MainLayout layout { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
-            await cookie.SetValue("UserAuthKey", "");
-            GlobalService.ClearUser();
-            Nav.NavigateTo("/");
+        //await cookie.GetValue("UserAuthKey");
+        await cookie.SetValue("UserAuthKey", "");
+        GlobalService.ClearUser();
+        layout.SetLoggedInStatus(false);
+        Nav.NavigateTo("/");
     }
 }

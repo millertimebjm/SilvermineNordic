@@ -12,7 +12,7 @@
         <br/>
         <!-- Email input -->
         <div class="form-outline mb-4">
-            <input type="email" class="form-control" placeholder="Email address" @bind="EmailAddress" />
+            <input type="email" class="form-control" placeholder="Email address" @bind="EmailAddress" tabindex="-1" />
         </div>
 
         <!-- Submit button -->
@@ -38,8 +38,8 @@
 
     private async Task LoginButton()
     {
-        ApiUrl = "https://localhost:7243";
-        //ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+        //ApiUrl = "https://localhost:7243";
+        ApiUrl = "https://silverminenordicapi.azurewebsites.net";
         var asdf = EmailAddress;
         var response = await Http.PostAsJsonAsync<string>(ApiUrl + $"/loginattempt", EmailAddress);
         //if (response)

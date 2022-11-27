@@ -24,7 +24,7 @@
                         <a class="nav-link" href="/">Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="login">@LoginText</a>
+                        <a class="nav-link" href="@LoginLogoutDestination">@LoginText</a>
                     </li>
                 </ul>
             </div>
@@ -34,21 +34,47 @@
 </header>
 <br />
 <div class="page">
-    <div class="container">     
-        @Body
+    <div class="container">
+        <CascadingValue Value="this">
+            @Body
+        </CascadingValue>
     </div>
 </div>
 
 @code {
     private string ApiUrl;
-    private string LoginText = "Login";
+    private string LoginLogoutDestination { get; set; } = "login";
+    private string LoginText { get; set; } = "login";
+    private User user;
 
     protected override async Task OnInitializedAsync()
     {
         ApiUrl = "https://localhost:7243";
         //ApiUrl = "https://silverminenordicapi.azurewebsites.net";
         var userAuthKey = await cookie.GetValue("UserAuthKey");
-        var user = await GlobalService.GetUser(Http, ApiUrl, userAuthKey);
-        LoginText = $"Welcome, {user.Name}";
+        if (!string.IsNullOrWhiteSpace(userAuthKey))
+        {
+            user = await GlobalService.GetUser(Http, ApiUrl, userAuthKey);
+        }
+        SetLoggedInStatus(user is not null, user);
+    }
+
+    public void SetLoggedInStatus(bool isLoggedIn, User user = null)
+    {
+        if (user != null)
+        {
+            var usernameText = "";
+            if (user.Name != null)
+            {
+                usernameText = $", {user.Name}";
+            }
+            LoginText = $"Welcome{usernameText}";
+            LoginLogoutDestination = "/logout";
+        }
+        else
+        {
+            LoginText = $"Login";
+            LoginLogoutDestination = "/login";
+        }
     }
 }
