@@ -397,3 +397,5 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 /ApiServer/SilvermineNordic.Api/local.settings.json
+/ApiServer/SilvermineNordic.Admin/local.settings.json
+/ApiServer/SilvermineNordic.Admin/appsettings.json
