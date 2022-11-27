@@ -1,12 +1,14 @@
 ﻿@page "/login"
+@using SilvermineNordic.Admin.Services
 @inject HttpClient Http
 @inject NavigationManager Nav
+@inject IGlobalService GlobalService
 
 <PageTitle>Snow Making Login</PageTitle>
 
 <br />
 <div class="row">
-    <div class="offset-4 col-md-4 text-center">
+    <div class="offset-md-4 col-md-4 text-center">
         <br/>
         <h1>Snow Making Login</h1>
         <br/>
@@ -34,12 +36,15 @@
 
 @code {
     private string EmailAddress = string.Empty;
-    private string ApiUrl = string.Empty;
+    private string ApiUrl = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        ApiUrl = GlobalService.GetApiUrl();
+    }
 
     private async Task LoginButton()
     {
-        //ApiUrl = "https://localhost:7243";
-        ApiUrl = "https://silverminenordicapi.azurewebsites.net";
         var response = await Http.PostAsJsonAsync<string>(ApiUrl + $"/loginattempt", EmailAddress);
         Nav.NavigateTo("/loginmessage");
     }
@@ -48,8 +53,6 @@
     {
         if (args.Key == "Enter")
         {
-            //ApiUrl = "https://localhost:7243";
-            ApiUrl = "https://silverminenordicapi.azurewebsites.net";
             var response = await Http.PostAsJsonAsync<string>(ApiUrl + $"/loginattempt", EmailAddress);
             Nav.NavigateTo("/loginmessage");
         }

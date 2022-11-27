@@ -4,7 +4,8 @@ namespace SilvermineNordic.Admin.Services
 {
     public interface IGlobalService
     {
-        Task<User> GetUser(HttpClient http, string apiUrl, string authKey);
+        Task<User> GetUser(HttpClient http, string authKey);
         void ClearUser();
+        string GetApiUrl();
     }
 }
