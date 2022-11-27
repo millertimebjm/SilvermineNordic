@@ -319,7 +319,7 @@
             InTheZoneString = inTheZone ? "Yes" : "No";
             if (zoneChangeForecast != null)
             {
-                ZoneChangeForecastString = $"{zoneChangeForecast?.ToShortDateString()} {zoneChangeForecast?.ToShortTimeString()}";
+                ZoneChangeForecastString = $"{zoneChangeForecast?.ToLocalTime().ToShortDateString()} {zoneChangeForecast?.ToLocalTime().ToShortTimeString()}";
             } 
             else
             {

@@ -49,8 +49,8 @@
 
     protected override async Task OnInitializedAsync()
     {
-        ApiUrl = "https://localhost:7243";
-        //ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+        //ApiUrl = "https://localhost:7243";
+        ApiUrl = "https://silverminenordicapi.azurewebsites.net";
         var userAuthKey = await cookie.GetValue("UserAuthKey");
         if (!string.IsNullOrWhiteSpace(userAuthKey))
         {
