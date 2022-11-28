@@ -18,8 +18,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Tests", "S
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{60977E9A-FD53-4175-AB85-61B7A913FADD}"
 	ProjectSection(SolutionItems) = preProject
-		..\..\..\..\Users\bmiller\Downloads\SilvermineNordicSnowMakingNotification.drawio = ..\..\..\..\Users\bmiller\Downloads\SilvermineNordicSnowMakingNotification.drawio
-		..\..\..\..\Users\bmiller\Downloads\SilvermineNordicSnowMakingNotification.png = ..\..\..\..\Users\bmiller\Downloads\SilvermineNordicSnowMakingNotification.png
+		SilvermineNordicSnowMakingNotification.drawio = SilvermineNordicSnowMakingNotification.drawio
+		SilvermineNordicSnowMakingNotification.png = SilvermineNordicSnowMakingNotification.png
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SilvermineNordic.Admin", "SilvermineNordic.Admin\SilvermineNordic.Admin.csproj", "{2B92FB7F-8CF8-421F-8069-33EE974B9A22}"
