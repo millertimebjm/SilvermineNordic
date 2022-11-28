@@ -46,7 +46,21 @@
     private async Task LoginButton()
     {
         var response = await Http.PostAsJsonAsync<string>(ApiUrl + $"/loginattempt", EmailAddress);
-        Nav.NavigateTo("/loginmessage");
+        try
+        {
+            response.EnsureSuccessStatusCode();
+            if (bool.TryParse(await response.Content.ReadAsStringAsync(), out bool resultBool)
+                && resultBool)
+            {
+                Nav.NavigateTo("/loginmessage");
+                return;
+            }
+        }
+        catch
+        {
+            
+        }
+        Nav.NavigateTo("/loginmessageerror");
     }
 
     private async Task LoginButtonEnter(KeyboardEventArgs args)
