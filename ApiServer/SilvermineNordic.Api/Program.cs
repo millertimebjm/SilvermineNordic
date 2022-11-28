@@ -4,6 +4,7 @@ using SilvermineNordic.Repository;
 using SilvermineNordic.Models;
 using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Common;
+using SilvermineNordic.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -72,6 +73,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseMiddleware<AddCacheHeadersMiddleware>();
 
 app.MapGet("/sensorreading/", async (int count) =>
 {
@@ -90,7 +92,8 @@ app.MapGet("/weatherreading/", async (int count) =>
 app.MapGet("/weatherforecast", async () =>
 {
     return await weatherForecastService.GetWeatherForecast();
-}).WithName("GetWeatherForecast");
+}).WithName("GetWeatherForecast")
+.WithMetadata(new CacheResponseMetadata());
 
 app.MapGet("/weatherforecast/nextzonechange", async () =>
 {
@@ -104,7 +107,8 @@ app.MapGet("/weatherforecast/nextzonechange", async () =>
     var lastWeatherReading = lastWeatherReadingTask.Single();
     var nextZoneChangeDateTimeUtc = InTheZoneService.GetNextZoneChange(weatherForecastTask, thresholdTask, InTheZoneService.IsInZone(thresholdTask, lastSensorReading.TemperatureInCelcius, lastSensorReading.Humidity) || InTheZoneService.IsInZone(thresholdTask, lastWeatherReading.TemperatureInCelcius, lastWeatherReading.Humidity));
     return nextZoneChangeDateTimeUtc;
-}).WithName("GetNextZoneChange");
+}).WithName("GetNextZoneChange")
+.WithMetadata(new CacheResponseMetadata());
 
 app.MapGet("thresholds", async () =>
 {
