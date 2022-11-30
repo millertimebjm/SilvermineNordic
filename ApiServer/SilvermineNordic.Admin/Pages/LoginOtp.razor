@@ -23,15 +23,13 @@
     private string ApiUrl = string.Empty;
     protected override async Task OnInitializedAsync()
     {
-        //ApiUrl = SilvermineNordicConfiguration.GetSilvermineNordicApiUrl();
-        //ApiUrl = "https://localhost:7243";
-        ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+        ApiUrl = GlobalService.GetApiUrl();
 
         if (!string.IsNullOrWhiteSpace(otp))
         {
             var userOtp = await Http.GetFromJsonAsync<UserOtp>(ApiUrl + $"/loginotp?otp={otp}");
             await cookie.SetValue("UserAuthKey", userOtp.AuthKey.ToString());
-            var user = await GlobalService.GetUser(Http, ApiUrl, userOtp.AuthKey.ToString());
+            var user = await GlobalService.GetUser(Http, userOtp.AuthKey.ToString());
             if (user is not null)
             {
                 layout.SetLoggedInStatus(true, user);

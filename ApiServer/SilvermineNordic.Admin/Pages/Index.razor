@@ -4,6 +4,7 @@
 @using SilvermineNordic.Admin.Services;
 @inject HttpClient Http
 @inject ICookie cookie
+@inject IGlobalService GlobalService
 
 <PageTitle>Snow Making Dashboard</PageTitle>
 
@@ -234,8 +235,6 @@
 
 
 @code {
-    [CascadingParameter]
-    public GlobalService GlobalService { get; set; }
     private string ApiUrl;
     private IEnumerable<SensorReading> sensorReadingBind;
     private IEnumerable<SensorReading> weatherReadingBind;
@@ -257,9 +256,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //ApiUrl = SilvermineNordicConfiguration.GetSilvermineNordicApiUrl();
-        //ApiUrl = "https://localhost:7243";
-        ApiUrl = "https://silverminenordicapi.azurewebsites.net";
+        ApiUrl = GlobalService.GetApiUrl();
         await LoadData(false);
     }
 

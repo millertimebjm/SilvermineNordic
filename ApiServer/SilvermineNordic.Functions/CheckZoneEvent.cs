@@ -52,13 +52,15 @@ namespace SilvermineNordic.Functions
 
             if (lastSensorZone != currentSensorZone || lastWeatherZone != currentWeatherZone)
             {
-                var message = InTheZoneService.GenerateZoneChangeMessage(lastSensorZone, currentSensorZone, lastWeatherZone, currentWeatherZone);
+                //var message = InTheZoneService.GenerateZoneChangeMessage(lastSensorZone, currentSensorZone, lastWeatherZone, currentWeatherZone);
+                var message = InTheZoneService.GenerateZoneChangeWeatherMessage(lastWeatherZone, currentWeatherZone);
                 if (!string.IsNullOrWhiteSpace(message))
                 {
                     var nextZoneChange = await _weatherForecastService.GetNextZoneChange(thresholdData, currentSensorZone || currentWeatherZone);
                     if (nextZoneChange != null)
                     {
-                        message += $" Next change forecasted for {nextZoneChange.Value.ToShortDateString() ?? ""} {nextZoneChange.Value.ToShortTimeString() ?? ""} UTC";
+                        var centralTime = CentralTimeService.GetCentralTime(nextZoneChange.Value);
+                        message += $" Next change forecasted for {centralTime.ToShortDateString() ?? ""} {centralTime.ToShortTimeString() ?? ""}";
                     }
                     else
                     {
