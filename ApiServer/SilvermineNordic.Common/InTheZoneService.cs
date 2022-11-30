@@ -58,7 +58,20 @@ namespace SilvermineNordic.Common
             return weatherForecastModels[nextWeatherForecastIndex].DateTimeUtc;
         }
 
-        public static string GenerateZoneChangeMessage(bool lastSensorZone, bool currentSensorZone, bool lastWeatherZone, bool currentWeatherZone)
+        public static string GenerateZoneChangeWeatherMessage(bool lastWeatherZone, bool currentWeatherZone)
+        {
+            if (!lastWeatherZone && currentWeatherZone)
+            {
+                return "Weather says it's time to make snow.";
+            }
+            if (lastWeatherZone && !currentWeatherZone)
+            {
+                return "Weather says snow making is done.";
+            }
+            return "";
+        }
+
+        public static string GenerateZoneChangeSensorWeatherMessage(bool lastSensorZone, bool currentSensorZone, bool lastWeatherZone, bool currentWeatherZone)
         {
             // Both Agree
             if (currentSensorZone && currentWeatherZone)
