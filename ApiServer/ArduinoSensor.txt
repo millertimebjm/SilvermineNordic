@@ -1,12 +1,14 @@
 #include <Notecard.h>
 #include <NotecardPseudoSensor.h>
+#include "Adafruit_Si7021.h"
 
 using namespace blues;
 
 #define usbSerial Serial
-#define productUID ""
+#define productUID "com.hotmail.millertimebjm:snow_making"
 Notecard notecard;
-NotecardPseudoSensor sensor(notecard);
+// NotecardPseudoSensor sensor(notecard);
+Adafruit_Si7021 sensor = Adafruit_Si7021();
 
 void setup() {
   // put your setup code here, to run once:
@@ -16,17 +18,21 @@ void setup() {
 
   notecard.begin();
   notecard.setDebugOutputStream(usbSerial);
+
+  sensor.begin();
   
   J *req = notecard.newRequest("hub.set");
   JAddStringToObject(req, "product", productUID);
-  JAddStringToObject(req, "mode", "continuous");
+  JAddStringToObject(req, "mode", "periodic");
   notecard.sendRequest(req);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  float temperature = sensor.temp();
-  float humidity = sensor.humidity();
+  //float temperature = sensor.temp();
+  //float humidity = sensor.humidity();
+  float temperature = sensor.readTemperature();
+  float humidity = sensor.readHumidity();
 
   usbSerial.print("Temperature = ");
   usbSerial.print(temperature);
@@ -49,13 +55,6 @@ void loop() {
       
       dtostrf(humidity, 2, 3, buf);
       JAddStringToObject(body, "humidity", buf);
-      // const char* temperatureString = String(temperature,3);
-      // const char* humidityString = String(humidity, 3);
-    
-      // JAddStringToObject(body, "temperatureInCelcius", temperatureString);
-      // JAddStringToObject(body, "humidity", humidityString);
-      // JAddNumberToObject(body, "temperatureInCelcius", String(temperature,3));
-      // JAddNumberToObject(body, "humidity", String(humidity, 3));
     }
     notecard.sendRequest(req);
   }
