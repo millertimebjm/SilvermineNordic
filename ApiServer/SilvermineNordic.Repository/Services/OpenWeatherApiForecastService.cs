@@ -1,6 +1,10 @@
 ﻿using SilvermineNordic.Common;
 using SilvermineNordic.Models;
+using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Net.Http.Json;
+using System.Threading.Tasks;
 
 namespace SilvermineNordic.Repository.Services
 {
@@ -58,7 +62,7 @@ namespace SilvermineNordic.Repository.Services
                     return weatherForecast.DateTimeUtc;
                 }
             }
-            return null;
+            return DateTime.MaxValue;
         }
     }
 }

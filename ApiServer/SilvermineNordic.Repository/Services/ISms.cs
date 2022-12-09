@@ -1,4 +1,6 @@
 ﻿
+using System.Threading.Tasks;
+
 namespace SilvermineNordic.Repository.Services
 {
     public interface ISms

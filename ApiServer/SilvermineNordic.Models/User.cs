@@ -1,4 +1,6 @@
-﻿namespace SilvermineNordic.Models
+﻿using System;
+
+namespace SilvermineNordic.Models
 {
     public class User
     {

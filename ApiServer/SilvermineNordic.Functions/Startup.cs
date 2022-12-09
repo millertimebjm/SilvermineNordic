@@ -27,11 +27,9 @@ namespace SilvermineNordic.Functions
             //    "OpenWeatherApiForecastApiKey": ""
             //  }
             //}
-            var executionContextOptions = builder.Services.BuildServiceProvider()
-                .GetRequiredService<IOptions<ExecutionContextOptions>>().Value;
-
+            
             var config = new ConfigurationBuilder()
-                .SetBasePath(executionContextOptions.AppDirectory)
+                .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true)
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()

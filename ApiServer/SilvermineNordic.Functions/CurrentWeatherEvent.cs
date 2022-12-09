@@ -1,30 +1,34 @@
 using System;
-using System.Threading.Tasks;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using SilvermineNordic.Repository.Services;
+using SilvermineNordic.Repository;
 using SilvermineNordic.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace SilvermineNordic.Functions
 {
     public class CurrentWeatherEvent
     {
+        private readonly ILogger _logger;
         private readonly IWeatherForecast _weatherForecastService;
         private readonly IRepositorySensorReading _sensorReadingService;
-        public CurrentWeatherEvent(IWeatherForecast weatherForecastService, IRepositorySensorReading sensorReadingService)
+
+        public CurrentWeatherEvent(
+            ILoggerFactory loggerFactory,
+            IWeatherForecast weatherForecastService, 
+            IRepositorySensorReading sensorReadingService)
         {
+            _logger = loggerFactory.CreateLogger<CurrentWeatherEvent>();
             _weatherForecastService = weatherForecastService;
             _sensorReadingService = sensorReadingService;
         }
 
-        [FunctionName("CurrentWeatherEvent")]
-        public async Task Run([TimerTrigger("0 */5 * * * *")]TimerInfo myTimer, ILogger log)
+        [Function("CurrentWeatherEvent")]
+        public async Task RunAsync([TimerTrigger("0 */5 * * * *")] MyInfo myTimer)
         {
-            log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
+            _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             var currentWeather = await _weatherForecastService.GetCurrentWeather();
-            log.LogInformation($"Current Weather is TemperatureInCelcius: {currentWeather.TemperatureInCelcius} | Humidity: {currentWeather.Humidity}");
+            _logger.LogInformation($"Current Weather is TemperatureInCelcius: {currentWeather.TemperatureInCelcius} | Humidity: {currentWeather.Humidity}");
             var reading = await _sensorReadingService.AddSensorReadingAsync(new SensorReading()
             {
                 Type = SensorReadingTypeEnum.Weather.ToString(),
@@ -33,8 +37,7 @@ namespace SilvermineNordic.Functions
                 DateTimestampUtc = currentWeather.DateTimeUtc,
                 ReadingDateTimestampUtc = currentWeather.DateTimeUtc,
             });
-            log.LogInformation($"Current Weather inserted with Id {reading.Id}.");
-            //return new OkObjectResult($"Event processed with Id {reading.Id}.");
+            _logger.LogInformation($"Current Weather inserted with Id {reading.Id}.");
         }
     }
 }

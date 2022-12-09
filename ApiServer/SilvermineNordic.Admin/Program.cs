@@ -7,7 +7,7 @@ var builder = WebAssemblyHostBuilder.CreateDefault(args);
 builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
-var apiUrl = "https://localhost:7243";
+var apiUrl = "https://localhost:7259";
 var hostEnvironment = builder.Services.BuildServiceProvider().GetService<IWebAssemblyHostEnvironment>();
 if (hostEnvironment.IsProduction())
 {

@@ -1,38 +1,48 @@
-using System;
-using System.IO;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
+using System.Net;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Models;
+using SilvermineNordic.Repository.Services;
 
 namespace SilvermineNordic.Functions
 {
     public class SensorReadingEvent
     {
+        private readonly ILogger _logger;
         private readonly IRepositorySensorReading _sensorReadingService;
-        public SensorReadingEvent(IRepositorySensorReading sensorReadingService)
+
+        public SensorReadingEvent(
+            ILoggerFactory loggerFactory,
+            IRepositorySensorReading sensorReadingService)
         {
+            _logger = loggerFactory.CreateLogger<SensorReadingEvent>();
             _sensorReadingService = sensorReadingService;
         }
 
         // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=25&humidity=25
         // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=15&humidity=15
         // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=-5&humidity=32
-        [FunctionName("SensorReadingEvent")]
-        public async Task<IActionResult> Run(
-               [HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req,
-               ILogger log)
+        [Function("SensorReadingEvent")]
+        public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
-            var sensorReadingDateTimeUtc = DateTime.UtcNow;
-            log.LogInformation($"C# HTTP trigger function processed a {req.Method.ToUpper()} request.");
+            //_logger.LogInformation("C# HTTP trigger function processed a request.");
 
-            var temperatureInCelciusString = req.Query["temperatureInCelcius"].ToString();
-            var humidityString = req.Query["humidity"].ToString();
+            //var response = req.CreateResponse(HttpStatusCode.OK);
+            //response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
+
+            //response.WriteString("Welcome to Azure Functions!");
+
+            //return response;
+
+            
+            var sensorReadingDateTimeUtc = DateTime.UtcNow;
+            var queryStringArray = System.Web.HttpUtility.ParseQueryString(req.Url.Query);
+            _logger.LogInformation($"C# HTTP trigger function processed a {req.Method.ToUpper()} request.");
+
+            var temperatureInCelciusString = queryStringArray["temperatureInCelcius"].ToString();
+            var humidityString = queryStringArray["humidity"].ToString();
 
             if (string.IsNullOrWhiteSpace(temperatureInCelciusString)
                 && string.IsNullOrWhiteSpace(humidityString))
@@ -41,7 +51,7 @@ namespace SilvermineNordic.Functions
                 using (StreamReader streamReader = new StreamReader(req.Body))
                 {
                     requestBody = await streamReader.ReadToEndAsync();
-                    log.LogInformation($"RequestBody: {requestBody}");
+                    _logger.LogInformation($"RequestBody: {requestBody}");
                 }
                 dynamic data = JsonConvert.DeserializeObject(requestBody);
                 if (data != null)
@@ -54,8 +64,8 @@ namespace SilvermineNordic.Functions
                 }
             }
 
-            log.LogInformation($"TemperatureInCelcius value entered as {temperatureInCelciusString}.");
-            log.LogInformation($"Humidity value entered as {humidityString}.");
+            _logger.LogInformation($"TemperatureInCelcius value entered as {temperatureInCelciusString}.");
+            _logger.LogInformation($"Humidity value entered as {humidityString}.");
 
             if (decimal.TryParse(temperatureInCelciusString, out var temperatureInCelcius)
                 && decimal.TryParse(humidityString, out var humidity))
@@ -69,19 +79,19 @@ namespace SilvermineNordic.Functions
                         Humidity = humidity,
                         ReadingDateTimestampUtc = sensorReadingDateTimeUtc,
                     });
-                    log.LogInformation($"Inserted Sensor Reading Id: {insertedSensorReading.Id} | DateTime: {insertedSensorReading.DateTimestampUtc}");
+                    _logger.LogInformation($"Inserted Sensor Reading Id: {insertedSensorReading.Id} | DateTime: {insertedSensorReading.DateTimestampUtc}");
 
-                    return new OkObjectResult("Event processed.");
+                    return req.CreateResponse(HttpStatusCode.OK); // new OkObjectResult("Event processed.");
                 }
                 catch (Exception ex)
                 {
-                    log.LogInformation($"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
-                    return new BadRequestObjectResult(ex.Message);
+                    _logger.LogInformation($"{ex.Message}{Environment.NewLine}{ex.StackTrace}");
+                    return req.CreateResponse(HttpStatusCode.BadRequest); // new BadRequestObjectResult(ex.Message);
                 }
             }
 
-            log.LogInformation($"Query parameters not formatted correctly.");
-            return new BadRequestObjectResult("Query parameters not formatted correctly.");
+            _logger.LogInformation($"Query parameters not formatted correctly.");
+            return req.CreateResponse(HttpStatusCode.BadRequest); // new BadRequestObjectResult("Query parameters not formatted correctly.");
         }
     }
 }

@@ -1,30 +1,30 @@
 using System;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
 using SilvermineNordic.Repository.Services;
-using SilvermineNordic.Models;
-using SilvermineNordic.Common;
 using SilvermineNordic.Repository;
+using SilvermineNordic.Common;
+using SilvermineNordic.Models;
 
 namespace SilvermineNordic.Functions
 {
     public class CheckZoneEvent
     {
+        private readonly ILogger _logger;
         private readonly IRepositorySensorReading _sensorReadingService;
         private readonly IRepositoryThreshold _thresholdService;
         private readonly IWeatherForecast _weatherForecastService;
         private readonly ISms _smsService;
         private readonly ISilvermineNordicConfiguration _configurationService;
 
-        public CheckZoneEvent(
-            IRepositorySensorReading sensorReadingService, 
+        public CheckZoneEvent(ILoggerFactory loggerFactory,
+            IRepositorySensorReading sensorReadingService,
             IRepositoryThreshold thresholdService,
             IWeatherForecast weatherForecastService,
             ISms smsService,
             ISilvermineNordicConfiguration conigurationService)
         {
+            _logger = loggerFactory.CreateLogger<CheckZoneEvent>();
             _sensorReadingService = sensorReadingService;
             _thresholdService = thresholdService;
             _weatherForecastService = weatherForecastService;
@@ -32,10 +32,10 @@ namespace SilvermineNordic.Functions
             _configurationService = conigurationService;
         }
 
-        [FunctionName("CheckZoneEvent")]
-        public async Task Run([TimerTrigger("0 */5 * * * *")]TimerInfo myTimer, ILogger log)
+        [Function("CheckZoneEvent")]
+        public async Task RunAsync([TimerTrigger("0 */5 * * * *")] MyInfo myTimer)
         {
-            log.LogInformation($"C# Timer trigger function executed at: {DateTime.UtcNow} UTC");
+            _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.UtcNow} UTC");
             var lastTwoWeatherReading = await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 2);
             var lastTwoSensorReading = await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 2);
             var thresholdData = await _thresholdService.GetThresholds();
@@ -66,10 +66,10 @@ namespace SilvermineNordic.Functions
                     {
                         message += $" No further Zone Change forecasted.";
                     }
-                    log.LogInformation("Sending notification: " + message);
+                    _logger.LogInformation("Sending notification: " + message);
                     var phoneNumbers = _configurationService.GetZoneNotificationPhoneNumbers();
                     var validPhoneNumbers = phoneNumbers.Split(",").Where(_ => PhoneNumberService.ValidatePhoneNumber(_)).ToList();
-                    log.LogInformation("Valid Phone Numbers: " + validPhoneNumbers.Count().ToString());
+                    _logger.LogInformation("Valid Phone Numbers: " + validPhoneNumbers.Count().ToString());
                     foreach (var validPhoneNumber in validPhoneNumbers)
                     {
                         await _smsService.SendSms(validPhoneNumber, message);

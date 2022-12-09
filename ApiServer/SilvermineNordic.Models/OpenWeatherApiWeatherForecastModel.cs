@@ -1,4 +1,6 @@
 ﻿
+using System;
+
 namespace SilvermineNordic.Models
 {
     public class OpenWeatherApiWeatherForecastModel

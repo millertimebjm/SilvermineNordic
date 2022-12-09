@@ -1,10 +1,7 @@
-using Microsoft.Azure.WebJobs.Host.Bindings;
-using Microsoft.Extensions.Options;
 using SilvermineNordic.Repository;
 using SilvermineNordic.Models;
 using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Common;
-using SilvermineNordic.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -69,7 +66,21 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseMiddleware<AddCacheHeadersMiddleware>();
+
+//app.MapGet("/weatherforecast", () =>
+//{
+//    var forecast = Enumerable.Range(1, 5).Select(index =>
+//        new WeatherForecast
+//        (
+//            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
+//            Random.Shared.Next(-20, 55),
+//            summaries[Random.Shared.Next(summaries.Length)]
+//        ))
+//        .ToArray();
+//    return forecast;
+//})
+//.WithName("GetWeatherForecast")
+//.WithOpenApi();
 
 app.MapGet("/sensorreading/", async (int count) =>
 {
@@ -88,8 +99,7 @@ app.MapGet("/weatherreading/", async (int count) =>
 app.MapGet("/weatherforecast", async () =>
 {
     return await weatherForecastService.GetWeatherForecast();
-}).WithName("GetWeatherForecast")
-.WithMetadata(new CacheResponseMetadata());
+}).WithName("GetWeatherForecast");
 
 app.MapGet("/weatherforecast/nextzonechange", async () =>
 {
@@ -103,8 +113,7 @@ app.MapGet("/weatherforecast/nextzonechange", async () =>
     var lastWeatherReading = lastWeatherReadingTask.Single();
     var nextZoneChangeDateTimeUtc = InTheZoneService.GetNextZoneChange(weatherForecastTask, thresholdTask, InTheZoneService.IsInZone(thresholdTask, lastSensorReading.TemperatureInCelcius, lastSensorReading.Humidity) || InTheZoneService.IsInZone(thresholdTask, lastWeatherReading.TemperatureInCelcius, lastWeatherReading.Humidity));
     return nextZoneChangeDateTimeUtc;
-}).WithName("GetNextZoneChange")
-.WithMetadata(new CacheResponseMetadata());
+}).WithName("GetNextZoneChange");
 
 app.MapGet("thresholds", async () =>
 {
@@ -125,9 +134,9 @@ app.MapPost("loginattempt", async ([Microsoft.AspNetCore.Mvc.FromBody] string lo
         }
         return true;
     }
-    catch(Exception ex)
-    { 
-        return false; 
+    catch (Exception ex)
+    {
+        return false;
     }
 });
 
@@ -150,3 +159,4 @@ app.MapGet("loginauth", async (string authKey) =>
 });
 
 app.Run();
+

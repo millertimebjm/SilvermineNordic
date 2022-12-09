@@ -1,4 +1,6 @@
 ﻿
+using System.Collections.Generic;
+
 namespace SilvermineNordic.Models
 {
     public class OpenWeatherApiWeatherForecastListModel

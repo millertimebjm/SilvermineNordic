@@ -255,7 +255,7 @@ namespace SilvermineNordic.Tests
         [TestCase(true, true, true, false)]
         public void GetZoneChangeMessageTest(bool lastSensorZone, bool currentSensorZone, bool lastWeatherZone, bool currentWeatherZone)
         {
-            var message = InTheZoneService.GenerateZoneChangeMessage(lastSensorZone, currentSensorZone, lastWeatherZone, currentWeatherZone);
+            var message = InTheZoneService.GenerateZoneChangeSensorWeatherMessage(lastSensorZone, currentSensorZone, lastWeatherZone, currentWeatherZone);
             Assert.IsNotEmpty(message);
         }
     }
