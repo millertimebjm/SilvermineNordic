@@ -37,8 +37,6 @@ namespace SilvermineNordic.Functions
                 .AddEnvironmentVariables()
                 .Build();
 
-            string snowMakingStorageConnectionString = config.GetConnectionStringOrSetting("SnowMakingStorageConnectionString");
-            string snowMakingStorageName = config.GetConnectionStringOrSetting("SnowMakingStorageName");
             string snowMakingSqlConnectionString = config.GetConnectionStringOrSetting("SnowMakingSqlConnectionString");
             string azureSmsConnectionString = config.GetConnectionStringOrSetting("AzureSmsConnectionString");
             string azureSmsFromPhone = config.GetConnectionStringOrSetting("AzureSmsFromPhone");
@@ -48,8 +46,6 @@ namespace SilvermineNordic.Functions
             builder.Services.AddSingleton<ISilvermineNordicConfiguration>(_ =>
                 new SilvermineNordicConfigurationService()
                 {
-                    StorageConnectionString = snowMakingStorageConnectionString,
-                    StorageName = snowMakingStorageName,
                     SqlConnectionString = snowMakingSqlConnectionString,
                     OpenWeatherApiKey = openWeatherApiForecastApiKey,
                     AzureSmsConnectionString = azureSmsConnectionString,

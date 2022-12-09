@@ -58,7 +58,7 @@ namespace SilvermineNordic.Repository.Services
                     return weatherForecast.DateTimeUtc;
                 }
             }
-            return DateTime.MaxValue;
+            return null;
         }
     }
 }
