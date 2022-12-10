@@ -1,8 +1,6 @@
 ﻿using Microsoft.Azure.Functions.Extensions.DependencyInjection;
-using Microsoft.Azure.WebJobs.Host.Bindings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using SilvermineNordic.Repository;
 using SilvermineNordic.Repository.Services;
 

@@ -50,32 +50,47 @@ namespace SilvermineNordic.Functions
             var lastWeatherZone = InTheZoneService.IsInZone(thresholdData, lastTwoWeatherReading.Last().TemperatureInCelcius, lastTwoWeatherReading.Last().Humidity);
             var currentWeatherZone = InTheZoneService.IsInZone(thresholdData, lastTwoWeatherReading.First().TemperatureInCelcius, lastTwoWeatherReading.First().Humidity);
 
-            if (lastSensorZone != currentSensorZone || lastWeatherZone != currentWeatherZone)
+            if (lastSensorZone == currentSensorZone && lastWeatherZone == currentWeatherZone)
             {
-                //var message = InTheZoneService.GenerateZoneChangeMessage(lastSensorZone, currentSensorZone, lastWeatherZone, currentWeatherZone);
-                var message = InTheZoneService.GenerateZoneChangeWeatherMessage(lastWeatherZone, currentWeatherZone);
-                if (!string.IsNullOrWhiteSpace(message))
-                {
-                    var nextZoneChange = await _weatherForecastService.GetNextZoneChange(thresholdData, currentSensorZone || currentWeatherZone);
-                    if (nextZoneChange != null)
-                    {
-                        var centralTime = CentralTimeService.GetCentralTime(nextZoneChange.Value);
-                        message += $" Next change forecasted for {centralTime.ToShortDateString() ?? ""} {centralTime.ToShortTimeString() ?? ""}";
-                    }
-                    else
-                    {
-                        message += $" No further Zone Change forecasted.";
-                    }
-                    _logger.LogInformation("Sending notification: " + message);
-                    var phoneNumbers = _configurationService.GetZoneNotificationPhoneNumbers();
-                    var validPhoneNumbers = phoneNumbers.Split(",").Where(_ => PhoneNumberService.ValidatePhoneNumber(_)).ToList();
-                    _logger.LogInformation("Valid Phone Numbers: " + validPhoneNumbers.Count().ToString());
-                    foreach (var validPhoneNumber in validPhoneNumbers)
-                    {
-                        await _smsService.SendSms(validPhoneNumber, message);
-                    }
-                }
+                return;
             }
+
+            _logger.LogInformation("A zone change has been identified.");
+
+            var message = string.Empty;
+            if (lastTwoSensorReading.Any(_ => _.ReadingDateTimestampUtc > DateTime.UtcNow.AddMinutes(-10)))
+            {
+                message = InTheZoneService.GenerateZoneChangeSensorWeatherMessage(lastSensorZone, currentSensorZone, lastWeatherZone, currentWeatherZone);
+            }
+            else
+            {
+                message = InTheZoneService.GenerateZoneChangeWeatherMessage(lastWeatherZone, currentWeatherZone);
+            }
+            
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                return;
+            }
+
+            var nextZoneChange = await _weatherForecastService.GetNextZoneChange(thresholdData, currentSensorZone || currentWeatherZone);
+            if (nextZoneChange != null)
+            {
+                var centralTime = CentralTimeService.GetCentralTime(nextZoneChange.Value);
+                message += $" Next change forecasted for {centralTime.ToShortDateString() ?? ""} {centralTime.ToShortTimeString() ?? ""}";
+            }
+            else
+            {
+                message += $" No further Zone Change forecasted.";
+            }
+            _logger.LogInformation("Sending notification: " + message);
+            var phoneNumbers = _configurationService.GetZoneNotificationPhoneNumbers();
+            var validPhoneNumbers = phoneNumbers.Split(",").Where(_ => PhoneNumberService.ValidatePhoneNumber(_)).ToList();
+            _logger.LogInformation("Valid Phone Numbers: " + validPhoneNumbers.Count().ToString());
+            foreach (var validPhoneNumber in validPhoneNumbers)
+            {
+                await _smsService.SendSms(validPhoneNumber, message);
+            }
+            _logger.LogInformation("Message sent to valid phone numbers.");
         }
     }
 }

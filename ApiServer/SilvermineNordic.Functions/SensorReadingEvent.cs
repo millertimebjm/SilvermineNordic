@@ -26,17 +26,7 @@ namespace SilvermineNordic.Functions
         // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=-5&humidity=32
         [Function("SensorReadingEvent")]
         public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
-        {
-            //_logger.LogInformation("C# HTTP trigger function processed a request.");
-
-            //var response = req.CreateResponse(HttpStatusCode.OK);
-            //response.Headers.Add("Content-Type", "text/plain; charset=utf-8");
-
-            //response.WriteString("Welcome to Azure Functions!");
-
-            //return response;
-
-            
+        {          
             var sensorReadingDateTimeUtc = DateTime.UtcNow;
             var queryStringArray = System.Web.HttpUtility.ParseQueryString(req.Url.Query);
             _logger.LogInformation($"C# HTTP trigger function processed a {req.Method.ToUpper()} request.");

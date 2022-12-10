@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SilvermineNordic.Models;
+using System;
 
 namespace SilvermineNordic.Repository.Services
 {
@@ -14,7 +15,6 @@ namespace SilvermineNordic.Repository.Services
 
    
         public DbSet<SensorReading> SensorReadings { get; set; }
-        private readonly string _connectionString;
         private readonly ISilvermineNordicConfiguration _configuration;
 
         public SilvermineNordicDbContext(ISilvermineNordicConfiguration configuration)
@@ -25,7 +25,26 @@ namespace SilvermineNordic.Repository.Services
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(_configuration.GetSqlConnectionString());
+            if (optionsBuilder.IsConfigured)
+            {
+                return;
+            }
+
+            var sqlConnectionString = _configuration.GetSqlConnectionString();
+            if (sqlConnectionString != null)
+            {
+                optionsBuilder.UseSqlServer(sqlConnectionString);
+                return;
+            }
+
+            var inMemoryDatabaseName = _configuration.GetInMemoryDatabaseName();
+            if (!string.IsNullOrWhiteSpace(inMemoryDatabaseName))
+            {
+                optionsBuilder.UseInMemoryDatabase(inMemoryDatabaseName);
+                return;
+            }
+
+            throw new NotImplementedException();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

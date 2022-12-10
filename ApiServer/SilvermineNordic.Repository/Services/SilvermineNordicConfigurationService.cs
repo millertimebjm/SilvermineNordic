@@ -12,6 +12,7 @@ namespace SilvermineNordic.Repository
         public string SilvermineNordicApiUrl { get; set; }
         public string ZoneNotificationPhoneNumbers { get; set; }
         public string EmailServiceConnectionString { get; set; }
+        public string InMemoryDatabaseName { get; set; }
 
         public SilvermineNordicConfigurationService()
         {
@@ -61,6 +62,11 @@ namespace SilvermineNordic.Repository
         public string GetEmailServiceConnectionString()
         {
             return EmailServiceConnectionString;
+        }
+
+        public string GetInMemoryDatabaseName()
+        {
+            return InMemoryDatabaseName;
         }
     }
 }
