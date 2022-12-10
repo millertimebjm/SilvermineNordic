@@ -83,6 +83,7 @@ namespace SilvermineNordic.Tests
                         Type = SensorReadingTypeEnum.Sensor.ToString(),
                     },
                 });
+            _silvermineNordicDbContext.SaveChanges();
         }
 
         [OneTimeTearDown]
@@ -101,24 +102,28 @@ namespace SilvermineNordic.Tests
         public async Task GetLatestNReadingsTest1()
         {
             var readings = await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 1);
+            Assert.AreEqual(readings.Count(), 1);
         }
 
         [Test]
         public async Task GetLatestNReadingsTest2()
         {
             var readings = await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 1);
+            Assert.AreEqual(readings.Count(), 1);
         }
 
         [Test]
         public async Task GetLatestNReadingsTest3()
         {
-            var readings = await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 1);
+            var readings = await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 2);
+            Assert.AreEqual(readings.Count(), 2);
         }
 
         [Test]
         public async Task GetLatestNReadingsTest4()
         {
-            var readings = await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 1);
+            var readings = await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 2);
+            Assert.AreEqual(readings.Count(), 2);
         }
     }
 }
