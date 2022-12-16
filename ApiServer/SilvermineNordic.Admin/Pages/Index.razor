@@ -205,6 +205,7 @@
                     <th scope="col">Temp</th>
                     <th scope="col">Humidity</th>
                     <th scope="col">Make Snow</th>
+                    <th scope="col">Snowfall</th>
                 </tr>
             </thead>
             <tbody>
@@ -221,6 +222,7 @@
                             <td>@(CelciusToFahr(model.TemperatureInCelcius).ToString() + "°F")</td>
                             <td>@(model.Humidity.ToString("N0"))%</td>
                             <td>@(InTheZoneService.IsInZone(thresholdBind, model.TemperatureInCelcius, model.Humidity) ? "Yes" : "")</td>
+                            <td>@(model.SnowfallInCm > 0m ? (model.SnowfallInCm * 0.3937008m).ToString("N2") + "in" : "")</td>
                         </tr>
                         @if (forecastCurrentDate.ToLocalTime() != model.DateTimeUtc.ToLocalTime().Date)
                         {

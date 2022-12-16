@@ -14,5 +14,6 @@ namespace SilvermineNordic.Models
             }
         }
         public OpenWeatherApiWeatherForecaseMainModel Main { get; set; }
+        public OpenWeatherApiWeatherForecastSnowModel Snow { get; set; }
     }
 }
