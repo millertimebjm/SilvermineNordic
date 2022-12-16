@@ -32,6 +32,7 @@ namespace SilvermineNordic.Repository.Services
                     DateTimeUtc = forecast.DateTimeUtc.Value,
                     TemperatureInCelcius = forecast.Main.Temp,
                     Humidity = forecast.Main.Humidity,
+                    SnowfallInCm = forecast.Snow?.SnowfallAmountInCentimeters ?? 0,
                 });
             }
             return models;
