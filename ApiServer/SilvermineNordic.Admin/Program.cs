@@ -12,7 +12,7 @@ var hostEnvironment = builder.Services.BuildServiceProvider().GetService<IWebAss
 if (hostEnvironment.IsProduction())
 {
     //apiUrl = "https://silverminenordicapi.azurewebsites.net";
-    apiUrl = "http://miller.silverminenordic.com:9443";
+    apiUrl = "https://miller.silverminenordic.com:9443";
 }
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
