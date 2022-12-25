@@ -11,7 +11,8 @@ var apiUrl = "https://localhost:7259";
 var hostEnvironment = builder.Services.BuildServiceProvider().GetService<IWebAssemblyHostEnvironment>();
 if (hostEnvironment.IsProduction())
 {
-    apiUrl = "https://silverminenordicapi.azurewebsites.net";
+    //apiUrl = "https://silverminenordicapi.azurewebsites.net";
+    apiUrl = "https://miller.silverminenordic.com:9443";
 }
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
