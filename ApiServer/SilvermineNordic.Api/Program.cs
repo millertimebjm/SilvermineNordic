@@ -2,6 +2,7 @@ using SilvermineNordic.Repository;
 using SilvermineNordic.Models;
 using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Common;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,13 +23,14 @@ string snowMakingSqlConnectionString = config.GetConnectionString("SnowMakingSql
 string openWeatherApiKey = config.GetConnectionString("OpenWeatherApiForecastApiKey");
 string emailServiceConnectionString = config.GetConnectionString("EmailServiceConnectionString");
 
-builder.Services.AddSingleton<ISilvermineNordicConfiguration>(_ =>
-                new SilvermineNordicConfigurationService()
-                {
-                    SqlConnectionString = snowMakingSqlConnectionString,
-                    OpenWeatherApiKey = openWeatherApiKey,
-                    EmailServiceConnectionString = emailServiceConnectionString,
-                });
+var configService = new SilvermineNordicConfigurationService()
+{
+    SqlConnectionString = snowMakingSqlConnectionString,
+    OpenWeatherApiKey = openWeatherApiKey,
+    EmailServiceConnectionString = emailServiceConnectionString,
+    InMemoryDatabaseName = "SilvermineNordicDatabase",
+};
+builder.Services.AddSingleton<ISilvermineNordicConfiguration>(_ => configService);
 
 builder.Services.AddDbContext<SilvermineNordicDbContext>();
 
