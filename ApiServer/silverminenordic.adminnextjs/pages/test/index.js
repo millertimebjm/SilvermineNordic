@@ -1,15 +1,29 @@
+class WeatherForecast {
+  constructor(dateTimeUtc, temperatureInCelcius, humidity, snowfallInCm) {
+    this.dateTimeUtc = dateTimeUtc;
+    this.temperatureInCelcius = temperatureInCelcius;
+    this.humidity = humidity;
+    this.snowfallInCm = snowfallInCm;
+  }
+}
+
 export async function getServerSideProps(context) {
-    let result = {};
-    const data = await fetch("http://0.0.0.0:9080/weatherforecast");
-    result = await data.json();
+  const data = await fetch("http://0.0.0.0:9080/weatherforecast");
+  var result = await data.json();
 
   return {
     props: { result }
   }
 }
 
+// function Page({ result }) {
+//   // Render the data here
+//   return <div>{result.map(wf => (
+//     <>{wf.dateTimeUtc}</>
+//   ))}</div>;
+// }
+
 function Page({ result }) {
-  // Render the data here
   return <div>{result[0].dateTimeUtc}</div>;
 }
 

@@ -1,11 +1,42 @@
 import Head from 'next/head';
 import styles from '../../styles/SnowMaking.module.css';
 import SnowMakingQuickInfo from './SnowMakingQuickInfo';
+import SensorReadings from './SensorReadings';
 import Thresholds from './Thresholds';
 import WeatherForecast from './WeatherForecast';
 import WeatherReadings from './WeatherReadings';
 
-export default function snowmaking() {
+export async function getServerSideProps(context) {
+    const weatherForecastData = await fetch("http://0.0.0.0:9080/weatherforecast");
+    const sensorReadingData = await fetch("http://0.0.0.0:9080/sensorreading?count=5");
+    const weatherReadingData = await fetch("http://0.0.0.0:9080/weatherreading?count=5");
+    const thresholdData = await fetch("http://0.0.0.0:9080/thresholds");
+
+    // const [weatherForecastData, sensorReadingData, weatherReadingData, thresholdData] = await Promise.all([
+    //     fetch("http://0.0.0.0:9080/weatherforecast"),
+    //     fetch("http://0.0.0.0:9080/sensorreading?count=5"),
+    //     fetch("http://0.0.0.0:9080/weatherreading?count=5"),
+    //     fetch("http://0.0.0.0:9080/thresholds")
+    // ]);
+
+    const [weatherForecastJson, sensorReadingJson, weatherReadingJson, thresholdJson] = await Promise.all([
+        weatherForecastData.json(),
+        sensorReadingData.json(),
+        weatherReadingData.json(),
+        thresholdData.json()
+    ]);
+
+    // var weatherForecastJson = await weatherForecastData.json();
+    // var sensorReadingJson = await sensorReadingData.json();
+    // var weatherReadingJson = await weatherReadingData.json();
+    // var thresholdJson = await thresholdData.json();
+
+    return {
+        props: { weatherForecastJson, sensorReadingJson, weatherReadingJson, thresholdJson }
+    }
+}
+
+export default function snowmaking({ weatherForecastJson, sensorReadingJson, weatherReadingJson, thresholdJson }) {
     return (
         <div className={styles.container}>
             <Head>
@@ -22,28 +53,16 @@ export default function snowmaking() {
             <SnowMakingQuickInfo />
             <div className={styles.grid}>
                 <div className={styles.tablecard}>
-                    <Thresholds />
+                    <Thresholds thresholdJson={thresholdJson} />
                 </div>
-                <div styles="border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 20px;">
-                    <WeatherForecast />
+                <div className={styles.tablecard}>
+                    <SensorReadings sensorReadingJson={sensorReadingJson} />
                 </div>
-                <div styles="border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 20px;">
-                    <WeatherReadings />
+                <div className={styles.tablecard}>
+                    <WeatherReadings weatherReadingJson={weatherReadingJson} />
                 </div>
-                <div styles="border: 1px solid #ccc;
-  border-radius: 4px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin-bottom: 20px;">
-                    <WeatherForecast />
+                <div className={styles.tablecard}>
+                    <WeatherForecast weatherForecastJson={weatherForecastJson} />
                 </div>
             </div>
             <style jsx global>{`

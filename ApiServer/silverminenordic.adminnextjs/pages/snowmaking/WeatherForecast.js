@@ -1,42 +1,31 @@
 import styles from '../../styles/SnowMaking.module.css';
 
-export default function WeatherForecast() {
+function WeatherForecast({ weatherForecastJson }) {
     return (
         <>
+            <h3 className={styles.description}>Weather Forecast</h3>
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th>header</th>
-                        <th>header</th>
-                        <th>header</th>
-                        <th>header</th>
-                        <th>header</th>
+                        <th>DateTimeUtc</th>
+                        <th>temperatureInCelcius</th>
+                        <th>humidity</th>
+                        <th>snowfallInCm</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                    </tr>
-                    <tr>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                    </tr>
-                    <tr>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                    </tr>
+                    {weatherForecastJson.map(wf => (
+                        <tr>
+                            <td>{wf.dateTimeUtc}</td>
+                            <td>{wf.temperatureInCelcius}</td>
+                            <td>{wf.humidity}</td>
+                            <td>{wf.snowfallInCm}</td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </>
     );
 }
+
+export default WeatherForecast;

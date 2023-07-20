@@ -1,40 +1,27 @@
 import styles from '../../styles/SnowMaking.module.css';
 
-export default function Thresholds() {
+export default function Thresholds({ thresholdJson }) {
     return (
         <>
+            <h3 className={styles.description}>Thresholds</h3>
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th>header</th>
-                        <th>header</th>
-                        <th>header</th>
-                        <th>header</th>
-                        <th>header</th>
+                        <th>temperatureInCelciusLowThreshold</th>
+                        <th>temperatureInCelciusHighThreshold</th>
+                        <th>humidityLowThreshold</th>
+                        <th>humidityHighThreshold</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                    </tr>
-                    <tr>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                    </tr>
-                    <tr>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                        <td>first</td>
-                    </tr>
+                    {thresholdJson.map(wf => (
+                        <tr>
+                            <td>{wf.temperatureInCelciusLowThreshold}</td>
+                            <td>{wf.temperatureInCelciusHighThreshold}</td>
+                            <td>{wf.humidityLowThreshold}</td>
+                            <td>{wf.humidityHighThreshold}</td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </>
