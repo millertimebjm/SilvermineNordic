@@ -32,7 +32,7 @@ var configService = new SilvermineNordicConfigurationService()
 };
 builder.Services.AddSingleton<ISilvermineNordicConfiguration>(_ => configService);
 
-builder.Services.AddDbContext<SilvermineNordicDbContext>();
+builder.Services.AddDbContext<SilvermineNordicDbContext>(ServiceLifetime.Scoped);
 
 builder.Services.AddScoped<IRepositorySensorReading, EntityFrameworkSensorReadingService>();
 builder.Services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
@@ -42,12 +42,12 @@ builder.Services.AddScoped<IRepositoryUserOtp, EntityFrameworkUserOtpService>();
 builder.Services.AddScoped<IEmailService, AzureEmailService>();
 builder.Services.AddScoped<IRepositoryUserOtp, EntityFrameworkUserOtpService>();
 
-var sensorReadingService = builder.Services.BuildServiceProvider().GetService<IRepositorySensorReading>();
-var sensorThresholdService = builder.Services.BuildServiceProvider().GetService<IRepositoryThreshold>();
-var weatherForecastService = builder.Services.BuildServiceProvider().GetService<IWeatherForecast>();
-var userService = builder.Services.BuildServiceProvider().GetService<IRepositoryUser>();
-var userOtpService = builder.Services.BuildServiceProvider().GetService<IRepositoryUserOtp>();
-var emailService = builder.Services.BuildServiceProvider().GetService<IEmailService>();
+// var sensorReadingService = builder.Services.BuildServiceProvider().GetService<IRepositorySensorReading>();
+// var sensorThresholdService = builder.Services.BuildServiceProvider().GetService<IRepositoryThreshold>();
+// var weatherForecastService = builder.Services.BuildServiceProvider().GetService<IWeatherForecast>();
+// var userService = builder.Services.BuildServiceProvider().GetService<IRepositoryUser>();
+// var userOtpService = builder.Services.BuildServiceProvider().GetService<IRepositoryUserOtp>();
+// var emailService = builder.Services.BuildServiceProvider().GetService<IEmailService>();
 
 builder.Services.AddCors(o => o.AddPolicy("NUXT", builder =>
 {
@@ -86,78 +86,115 @@ if (app.Environment.IsDevelopment())
 
 app.MapGet("/sensorreading/", async (int count) =>
 {
-    count = count > 100 ? 100 : count;
-    count = count < 1 ? 1 : count;
-    return await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, count);
+    using (var scope = app.Services.CreateScope())
+    {
+        var sensorReadingService = scope.ServiceProvider.GetRequiredService<IRepositorySensorReading>();
+        count = count > 100 ? 100 : count;
+        count = count < 1 ? 1 : count;
+        return await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, count);
+    }
 }).WithName("GetLastSensorReading");
 
 app.MapGet("/weatherreading/", async (int count) =>
 {
-    count = count > 100 ? 100 : count;
-    count = count < 1 ? 1 : count;
-    return await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, count);
+    using (var scope = app.Services.CreateScope())
+    {
+        var sensorReadingService = scope.ServiceProvider.GetRequiredService<IRepositorySensorReading>();
+        count = count > 100 ? 100 : count;
+        count = count < 1 ? 1 : count;
+        return await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, count);
+    }
 }).WithName("GetLastWeatherReading");
 
 app.MapGet("/weatherforecast", async () =>
 {
-    return await weatherForecastService.GetWeatherForecast();
+    using (var scope = app.Services.CreateScope())
+    {
+        var weatherForecastService = scope.ServiceProvider.GetRequiredService<IWeatherForecast>();
+        return await weatherForecastService.GetWeatherForecast();
+    }
 }).WithName("GetWeatherForecast");
 
 app.MapGet("/weatherforecast/nextzonechange", async () =>
 {
-    var weatherForecastTask = await weatherForecastService.GetWeatherForecast();
-    var thresholdTask = await sensorThresholdService.GetThresholds();
-    var lastSensorReadingTask = await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 1);
-    var lastWeatherReadingTask = await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 1);
-    //await Task.WhenAll(weatherForecastTask, thresholdTask, lastSensorReadingTask, lastWeatherReadingTask);
+    using (var scope = app.Services.CreateScope())
+    {
+        var weatherForecastService = scope.ServiceProvider.GetRequiredService<IWeatherForecast>();
+        var sensorThresholdService = scope.ServiceProvider.GetRequiredService<IRepositoryThreshold>();
+        var sensorReadingService = scope.ServiceProvider.GetRequiredService<IRepositorySensorReading>();
 
-    var lastSensorReading = lastSensorReadingTask.Single();
-    var lastWeatherReading = lastWeatherReadingTask.Single();
-    var nextZoneChangeDateTimeUtc = InTheZoneService.GetNextZoneChange(weatherForecastTask, thresholdTask, InTheZoneService.IsInZone(thresholdTask, lastSensorReading.TemperatureInCelcius, lastSensorReading.Humidity) || InTheZoneService.IsInZone(thresholdTask, lastWeatherReading.TemperatureInCelcius, lastWeatherReading.Humidity));
-    return nextZoneChangeDateTimeUtc;
+        var weatherForecastTask = await weatherForecastService.GetWeatherForecast();
+        var thresholdTask = await sensorThresholdService.GetThresholds();
+        var lastSensorReadingTask = await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 1);
+        var lastWeatherReadingTask = await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 1);
+        //await Task.WhenAll(weatherForecastTask, thresholdTask, lastSensorReadingTask, lastWeatherReadingTask);
+
+        var lastSensorReading = lastSensorReadingTask.Single();
+        var lastWeatherReading = lastWeatherReadingTask.Single();
+        var nextZoneChangeDateTimeUtc = InTheZoneService.GetNextZoneChange(weatherForecastTask, thresholdTask, InTheZoneService.IsInZone(thresholdTask, lastSensorReading.TemperatureInCelcius, lastSensorReading.Humidity) || InTheZoneService.IsInZone(thresholdTask, lastWeatherReading.TemperatureInCelcius, lastWeatherReading.Humidity));
+        return nextZoneChangeDateTimeUtc;
+    }
 }).WithName("GetNextZoneChange");
 
 app.MapGet("thresholds", async () =>
 {
-    var thresholds = await sensorThresholdService.GetThresholds();
-    return thresholds;
+    using (var scope = app.Services.CreateScope())
+    {
+        var sensorThresholdService = scope.ServiceProvider.GetRequiredService<IRepositoryThreshold>();
+        var thresholds = await sensorThresholdService.GetThresholds();
+        return thresholds;
+    }
 });
 
 app.MapPost("loginattempt", async ([Microsoft.AspNetCore.Mvc.FromBody] string login) =>
 {
-    try
+    using (var scope = app.Services.CreateScope())
     {
-        var user = await userService.GetUserAsync(login);
-        if (user != null)
+        var userService = scope.ServiceProvider.GetRequiredService<EntityFrameworkUserService>();
+        var emailService = scope.ServiceProvider.GetRequiredService<AzureEmailService>();
+        var userOtpService = scope.ServiceProvider.GetRequiredService<IRepositoryUserOtp>();
+        try
         {
-            var userOtpResult = await userOtpService.AddUserOtpAsync(user.Id);
-            var emailResult = await emailService.SendEmailAsync(user.Email, "Snow Making Login Request", @$"Dear {(!string.IsNullOrWhiteSpace(user.Name) ? user.Name : user.Email)},{Environment.NewLine}<br/>https://snowmaking.silverminenordic.com/loginotp/{userOtpResult.Otp}");
+            var user = await userService.GetUserAsync(login);
+            if (user != null)
+            {
+                var userOtpResult = await userOtpService.AddUserOtpAsync(user.Id);
+                var emailResult = await emailService.SendEmailAsync(user.Email, "Snow Making Login Request", @$"Dear {(!string.IsNullOrWhiteSpace(user.Name) ? user.Name : user.Email)},{Environment.NewLine}<br/>https://snowmaking.silverminenordic.com/loginotp/{userOtpResult.Otp}");
+                return true;
+            }
             return true;
         }
-        return true;
-    }
-    catch (Exception ex)
-    {
-        return false;
+        catch (Exception ex)
+        {
+            return false;
+        }
     }
 });
 
 app.MapGet("loginotp", async (string otp) =>
 {
-    if (Guid.TryParse(otp, out Guid otpGuid))
+    using (var scope = app.Services.CreateScope())
     {
-        return await userOtpService.GetUserOtpAsync(otpGuid);
+        var userOtpService = scope.ServiceProvider.GetRequiredService<IRepositoryUserOtp>();
+        if (Guid.TryParse(otp, out Guid otpGuid))
+        {
+            return await userOtpService.GetUserOtpAsync(otpGuid);
+        }
+        return (UserOtp)null;
     }
-    return (UserOtp)null;
 });
 
 app.MapGet("loginauth", async (string authKey) =>
 {
-    if (Guid.TryParse(authKey, out Guid authKeyGuid))
+    using (var scope = app.Services.CreateScope())
     {
-        return await userOtpService.GetUserOtpByAuthKeyAsync(authKeyGuid);
+        var userOtpService = scope.ServiceProvider.GetRequiredService<IRepositoryUserOtp>();
+        if (Guid.TryParse(authKey, out Guid authKeyGuid))
+        {
+            return await userOtpService.GetUserOtpByAuthKeyAsync(authKeyGuid);
+        }
+        return (User)null;
     }
-    return (User)null;
 });
 
 app.Run();

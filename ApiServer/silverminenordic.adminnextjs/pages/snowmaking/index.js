@@ -7,17 +7,12 @@ import WeatherForecast from './WeatherForecast';
 import WeatherReadings from './WeatherReadings';
 
 export async function getServerSideProps(context) {
-    const weatherForecastData = await fetch("http://0.0.0.0:9080/weatherforecast");
-    const sensorReadingData = await fetch("http://0.0.0.0:9080/sensorreading?count=5");
-    const weatherReadingData = await fetch("http://0.0.0.0:9080/weatherreading?count=5");
-    const thresholdData = await fetch("http://0.0.0.0:9080/thresholds");
-
-    // const [weatherForecastData, sensorReadingData, weatherReadingData, thresholdData] = await Promise.all([
-    //     fetch("http://0.0.0.0:9080/weatherforecast"),
-    //     fetch("http://0.0.0.0:9080/sensorreading?count=5"),
-    //     fetch("http://0.0.0.0:9080/weatherreading?count=5"),
-    //     fetch("http://0.0.0.0:9080/thresholds")
-    // ]);
+    const [weatherForecastData, sensorReadingData, weatherReadingData, thresholdData] = await Promise.all([
+        fetch("http://0.0.0.0:9080/weatherforecast"),
+        fetch("http://0.0.0.0:9080/sensorreading?count=5"),
+        fetch("http://0.0.0.0:9080/weatherreading?count=5"),
+        fetch("http://0.0.0.0:9080/thresholds")
+    ]);
 
     const [weatherForecastJson, sensorReadingJson, weatherReadingJson, thresholdJson] = await Promise.all([
         weatherForecastData.json(),
@@ -25,11 +20,6 @@ export async function getServerSideProps(context) {
         weatherReadingData.json(),
         thresholdData.json()
     ]);
-
-    // var weatherForecastJson = await weatherForecastData.json();
-    // var sensorReadingJson = await sensorReadingData.json();
-    // var weatherReadingJson = await weatherReadingData.json();
-    // var thresholdJson = await thresholdData.json();
 
     return {
         props: { weatherForecastJson, sensorReadingJson, weatherReadingJson, thresholdJson }
