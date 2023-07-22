@@ -8,7 +8,7 @@ function WeatherForecast({ weatherForecastJson }) {
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th>DateTimeUtc</th>
+                        <th>DateTime</th>
                         <th>Temperature</th>
                         <th>Humidity</th>
                         <th>SnowfallInCm</th>

@@ -8,7 +8,7 @@ export default function SensorReadings({ sensorReadingJson }) {
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th>DateTimeUtc</th>
+                        <th>DateTime</th>
                         <th>Temperature</th>
                         <th>Humidity</th>
                     </tr>

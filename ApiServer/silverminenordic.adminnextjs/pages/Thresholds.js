@@ -8,10 +8,10 @@ export default function Thresholds({ thresholdJson }) {
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th>TemperatureLowThreshold</th>
-                        <th>TemperatureHighThreshold</th>
-                        <th>HumidityLowThreshold</th>
-                        <th>HumidityHighThreshold</th>
+                        <th>Temperature Low</th>
+                        <th>Temperature High</th>
+                        <th>Humidity Low</th>
+                        <th>Humidity High</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -40,7 +40,7 @@
 
 .grid {
   display: flex;
-  align-items: center;
+  align-items: flext-start;
   justify-content: center;
   flex-wrap: wrap;
 
