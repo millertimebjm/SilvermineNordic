@@ -1,4 +1,5 @@
 import styles from '../styles/SnowMaking.module.css';
+import { CelciusToFahrenheit, RoundToOneDecimal, ConvertUtcToCentral } from './helperFunctions';
 
 export default function SensorReadings({ sensorReadingJson }) {
     return (
@@ -8,16 +9,16 @@ export default function SensorReadings({ sensorReadingJson }) {
                 <thead>
                     <tr>
                         <th>DateTimeUtc</th>
-                        <th>temperatureInCelcius</th>
-                        <th>humidity</th>
+                        <th>Temperature</th>
+                        <th>Humidity</th>
                     </tr>
                 </thead>
                 <tbody>
                     {sensorReadingJson.map(sr => (
                         <tr key={sr.id}>
-                            <td>{sr.readingDateTimestampUtc}</td>
-                            <td>{sr.temperatureInCelcius}</td>
-                            <td>{sr.humidity}</td>
+                            <td>{ConvertUtcToCentral(sr.readingDateTimestampUtc)}</td>
+                            <td>{CelciusToFahrenheit(sr.temperatureInCelcius)}</td>
+                            <td>{RoundToOneDecimal(sr.humidity)}</td>
                         </tr>
                     ))}
                 </tbody>

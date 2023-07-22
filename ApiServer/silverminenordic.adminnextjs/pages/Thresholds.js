@@ -1,4 +1,5 @@
 import styles from '../styles/SnowMaking.module.css';
+import { CelciusToFahrenheit, RoundToOneDecimal } from './helperFunctions';
 
 export default function Thresholds({ thresholdJson }) {
     return (
@@ -7,19 +8,19 @@ export default function Thresholds({ thresholdJson }) {
             <table className={styles.table}>
                 <thead>
                     <tr>
-                        <th>temperatureInCelciusLowThreshold</th>
-                        <th>temperatureInCelciusHighThreshold</th>
-                        <th>humidityLowThreshold</th>
-                        <th>humidityHighThreshold</th>
+                        <th>TemperatureLowThreshold</th>
+                        <th>TemperatureHighThreshold</th>
+                        <th>HumidityLowThreshold</th>
+                        <th>HumidityHighThreshold</th>
                     </tr>
                 </thead>
                 <tbody>
                     {thresholdJson.map(t => (
                         <tr key={t.id}>
-                            <td>{t.temperatureInCelciusLowThreshold}</td>
-                            <td>{t.temperatureInCelciusHighThreshold}</td>
-                            <td>{t.humidityLowThreshold}</td>
-                            <td>{t.humidityHighThreshold}</td>
+                            <td>{CelciusToFahrenheit(t.temperatureInCelciusLowThreshold)}</td>
+                            <td>{CelciusToFahrenheit(t.temperatureInCelciusHighThreshold)}</td>
+                            <td>{RoundToOneDecimal(t.humidityLowThreshold)}</td>
+                            <td>{RoundToOneDecimal(t.humidityHighThreshold)}</td>
                         </tr>
                     ))}
                 </tbody>
