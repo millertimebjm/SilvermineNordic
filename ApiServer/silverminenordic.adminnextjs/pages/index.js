@@ -1,102 +1,60 @@
 import Head from 'next/head';
-import styles from '../styles/Home.module.css';
+import styles from '../styles/SnowMaking.module.css';
+import SnowMakingQuickInfo from './SnowMakingQuickInfo';
+import SensorReadings from './SensorReadings';
+import Thresholds from './Thresholds';
+import WeatherForecast from './WeatherForecast';
+import WeatherReadings from './WeatherReadings';
 
-export default function Home() {
+export async function getServerSideProps(context) {
+  const [weatherForecastData, sensorReadingData, weatherReadingData, thresholdData] = await Promise.all([
+    fetch("http://0.0.0.0:9080/weatherforecast"),
+    fetch("http://0.0.0.0:9080/sensorreading?count=5"),
+    fetch("http://0.0.0.0:9080/weatherreading?count=5"),
+    fetch("http://0.0.0.0:9080/thresholds")
+  ]);
+
+  const [weatherForecastJson, sensorReadingJson, weatherReadingJson, thresholdJson] = await Promise.all([
+    weatherForecastData.json(),
+    sensorReadingData.json(),
+    weatherReadingData.json(),
+    thresholdData.json()
+  ]);
+
+  return {
+    props: { weatherForecastJson, sensorReadingJson, weatherReadingJson, thresholdJson }
+  }
+}
+
+export default function snowmaking({ weatherForecastJson, sensorReadingJson, weatherReadingJson, thresholdJson }) {
   return (
     <div className={styles.container}>
       <Head>
-        <title>Create Next App</title>
+        <title>Silvermine Nordic Snow Making</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <h1 className={styles.title}>Silvermine Nordic<br />Snow Making</h1>
 
-      <main>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing <code>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+      <div className={styles.grid}>
+        <h3 className={styles.cardwithoutborder}>
+          <button className={styles.button}>Refresh</button>
+        </h3>
+      </div>
+      <SnowMakingQuickInfo />
+      <div className={styles.grid}>
+        <div className={styles.tablecard}>
+          <Thresholds thresholdJson={thresholdJson} />
         </div>
-      </main>
-
-      <footer>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel" className={styles.logo} />
-        </a>
-      </footer>
-
-      <style jsx>{`
-        main {
-          padding: 5rem 0;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
-        footer {
-          width: 100%;
-          height: 100px;
-          border-top: 1px solid #eaeaea;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-        footer img {
-          margin-left: 0.5rem;
-        }
-        footer a {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          text-decoration: none;
-          color: inherit;
-        }
-        code {
-          background: #fafafa;
-          border-radius: 5px;
-          padding: 0.75rem;
-          font-size: 1.1rem;
-          font-family: Menlo, Monaco, Lucida Console, Liberation Mono,
-            DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace;
-        }
-      `}</style>
-
+        <div className={styles.tablecard}>
+          <SensorReadings sensorReadingJson={sensorReadingJson} />
+        </div>
+        <div className={styles.tablecard}>
+          <WeatherReadings weatherReadingJson={weatherReadingJson} />
+        </div>
+        <div className={styles.tablecard}>
+          <WeatherForecast weatherForecastJson={weatherForecastJson} />
+        </div>
+      </div>
       <style jsx global>{`
         html,
         body {
@@ -110,6 +68,6 @@ export default function Home() {
           box-sizing: border-box;
         }
       `}</style>
-    </div>
+    </div >
   )
 }

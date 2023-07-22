@@ -1,4 +1,4 @@
-import styles from '../../styles/SnowMaking.module.css';
+import styles from '../styles/SnowMaking.module.css';
 
 export default function SensorReadings({ sensorReadingJson }) {
     return (
