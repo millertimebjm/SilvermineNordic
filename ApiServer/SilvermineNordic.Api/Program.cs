@@ -34,7 +34,7 @@ builder.Services.AddSingleton<ISilvermineNordicConfiguration>(_ => configService
 
 builder.Services.AddDbContext<SilvermineNordicDbContext>(ServiceLifetime.Scoped);
 
-builder.Services.AddScoped<IRepositorySensorReading, EntityFrameworkSensorReadingService>();
+builder.Services.AddScoped<IRepositoryReading, EntityFrameworkReadingService>();
 builder.Services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
 builder.Services.AddScoped<IWeatherForecast, OpenWeatherApiForecastService>();
 builder.Services.AddScoped<IRepositoryUser, EntityFrameworkUserService>();
@@ -88,10 +88,10 @@ app.MapGet("/sensorreading/", async (int count) =>
 {
     using (var scope = app.Services.CreateScope())
     {
-        var sensorReadingService = scope.ServiceProvider.GetRequiredService<IRepositorySensorReading>();
+        var sensorReadingService = scope.ServiceProvider.GetRequiredService<IRepositoryReading>();
         count = count > 100 ? 100 : count;
         count = count < 1 ? 1 : count;
-        return await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, count);
+        return await sensorReadingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, count);
     }
 }).WithName("GetLastSensorReading");
 
@@ -99,10 +99,10 @@ app.MapGet("/weatherreading/", async (int count) =>
 {
     using (var scope = app.Services.CreateScope())
     {
-        var sensorReadingService = scope.ServiceProvider.GetRequiredService<IRepositorySensorReading>();
+        var sensorReadingService = scope.ServiceProvider.GetRequiredService<IRepositoryReading>();
         count = count > 100 ? 100 : count;
         count = count < 1 ? 1 : count;
-        return await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, count);
+        return await sensorReadingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, count);
     }
 }).WithName("GetLastWeatherReading");
 
@@ -120,13 +120,13 @@ app.MapGet("/weatherforecast/nextzonechange", async () =>
     using (var scope = app.Services.CreateScope())
     {
         var weatherForecastService = scope.ServiceProvider.GetRequiredService<IWeatherForecast>();
-        var sensorThresholdService = scope.ServiceProvider.GetRequiredService<IRepositoryThreshold>();
-        var sensorReadingService = scope.ServiceProvider.GetRequiredService<IRepositorySensorReading>();
+        var thresholdService = scope.ServiceProvider.GetRequiredService<IRepositoryThreshold>();
+        var readingService = scope.ServiceProvider.GetRequiredService<IRepositoryReading>();
 
         var weatherForecastTask = await weatherForecastService.GetWeatherForecast();
-        var thresholdTask = await sensorThresholdService.GetThresholds();
-        var lastSensorReadingTask = await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 1);
-        var lastWeatherReadingTask = await sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 1);
+        var thresholdTask = await thresholdService.GetThresholds();
+        var lastSensorReadingTask = await readingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, 1);
+        var lastWeatherReadingTask = await readingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, 1);
         //await Task.WhenAll(weatherForecastTask, thresholdTask, lastSensorReadingTask, lastWeatherReadingTask);
 
         var lastSensorReading = lastSensorReadingTask.Single();
@@ -140,8 +140,8 @@ app.MapGet("thresholds", async () =>
 {
     using (var scope = app.Services.CreateScope())
     {
-        var sensorThresholdService = scope.ServiceProvider.GetRequiredService<IRepositoryThreshold>();
-        var thresholds = await sensorThresholdService.GetThresholds();
+        var thresholdService = scope.ServiceProvider.GetRequiredService<IRepositoryThreshold>();
+        var thresholds = await thresholdService.GetThresholds();
         return thresholds;
     }
 });

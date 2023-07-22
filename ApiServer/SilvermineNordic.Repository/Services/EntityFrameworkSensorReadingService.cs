@@ -7,32 +7,32 @@ using System.Threading.Tasks;
 
 namespace SilvermineNordic.Repository.Services
 {
-    public class EntityFrameworkSensorReadingService : IRepositorySensorReading
+    public class EntityFrameworkReadingService : IRepositoryReading
     {
         private readonly SilvermineNordicDbContext _dbContext;
         private const string INMEMORY = "Microsoft.EntityFrameworkCore.InMemory";
-        public EntityFrameworkSensorReadingService(
+        public EntityFrameworkReadingService(
             SilvermineNordicDbContext dbContext)
         {
             _dbContext = dbContext;
         }
 
-        public async Task<SensorReading> AddSensorReadingAsync(SensorReading sensorReading)
+        public async Task<Reading> AddReadingAsync(Reading reading)
         {
-            await _dbContext.SensorReadings.AddAsync(sensorReading);
+            await _dbContext.Readings.AddAsync(reading);
             await _dbContext.SaveChangesAsync();
-            return sensorReading;
+            return reading;
         }
 
-        public async Task<IEnumerable<SensorReading>> GetLastNReadingAsync(SensorReadingTypeEnum type, int count)
+        public async Task<IEnumerable<Reading>> GetLastNReadingAsync(ReadingTypeEnum type, int count)
         {
             if (_dbContext.Database.ProviderName == INMEMORY
-                && (await _dbContext.SensorReadings.FirstOrDefaultAsync()) == null)
+                && (await _dbContext.Readings.FirstOrDefaultAsync()) == null)
             {
                 await SeedData();
             }
 
-            return await _dbContext.SensorReadings
+            return await _dbContext.Readings
                 .Where(_ => _.Type == type.ToString())
                 .OrderByDescending(_ => _.Id)
                 .Take(count)
@@ -41,23 +41,23 @@ namespace SilvermineNordic.Repository.Services
 
         private async Task SeedData()
         {
-            await _dbContext.SensorReadings.AddAsync(new SensorReading()
+            await _dbContext.Readings.AddAsync(new Reading()
             {
                 DateTimestampUtc = DateTime.Now,
                 Humidity = 20,
                 InsertedDateTimestampUtc = DateTime.Now,
                 ReadingDateTimestampUtc = DateTime.Now,
                 TemperatureInCelcius = 30,
-                Type = SensorReadingTypeEnum.Sensor.ToString(),
+                Type = ReadingTypeEnum.Sensor.ToString(),
             });
-            await _dbContext.SensorReadings.AddAsync(new SensorReading()
+            await _dbContext.Readings.AddAsync(new Reading()
             {
                 DateTimestampUtc = DateTime.Now,
                 Humidity = 21,
                 InsertedDateTimestampUtc = DateTime.Now,
                 ReadingDateTimestampUtc = DateTime.Now,
                 TemperatureInCelcius = 31,
-                Type = SensorReadingTypeEnum.Weather.ToString(),
+                Type = ReadingTypeEnum.Weather.ToString(),
             });
             await _dbContext.SaveChangesAsync();
         }

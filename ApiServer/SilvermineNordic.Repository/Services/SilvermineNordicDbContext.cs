@@ -16,7 +16,7 @@ namespace SilvermineNordic.Repository.Services
         public DbSet<CommunicationLog> CommunicationLogs { get; set; }
 
 
-        public DbSet<SensorReading> SensorReadings { get; set; }
+        public DbSet<Reading> Readings { get; set; }
         private readonly ISilvermineNordicConfiguration _configuration;
 
         public SilvermineNordicDbContext(ISilvermineNordicConfiguration configuration)
@@ -51,8 +51,8 @@ namespace SilvermineNordic.Repository.Services
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<SensorReading>().ToTable("SensorReading");
-            modelBuilder.Entity<Threshold>().ToTable("SensorThreshold");
+            modelBuilder.Entity<Reading>().ToTable("Reading");
+            modelBuilder.Entity<Threshold>().ToTable("Threshold");
             modelBuilder.Entity<User>().ToTable("User");
             modelBuilder.Entity<UserOtp>().ToTable("UserOtp");
         }

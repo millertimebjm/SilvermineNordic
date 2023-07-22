@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 
 namespace SilvermineNordic.Repository.Services
 {
-    public interface IRepositorySensorReading
+    public interface IRepositoryReading
     {
-        public Task<SensorReading> AddSensorReadingAsync(SensorReading sensorReading);
-        public Task<IEnumerable<SensorReading>> GetLastNReadingAsync(SensorReadingTypeEnum type, int count);
+        public Task<Reading> AddReadingAsync(Reading sensorReading);
+        public Task<IEnumerable<Reading>> GetLastNReadingAsync(ReadingTypeEnum type, int count);
     }
 }
 
