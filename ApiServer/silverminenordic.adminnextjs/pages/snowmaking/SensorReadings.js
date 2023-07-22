@@ -13,11 +13,11 @@ export default function SensorReadings({ sensorReadingJson }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {sensorReadingJson.map(wf => (
-                        <tr>
-                            <td>{wf.readingDateTimestampUtc}</td>
-                            <td>{wf.temperatureInCelcius}</td>
-                            <td>{wf.humidity}</td>
+                    {sensorReadingJson.map(sr => (
+                        <tr key={sr.id}>
+                            <td>{sr.readingDateTimestampUtc}</td>
+                            <td>{sr.temperatureInCelcius}</td>
+                            <td>{sr.humidity}</td>
                         </tr>
                     ))}
                 </tbody>

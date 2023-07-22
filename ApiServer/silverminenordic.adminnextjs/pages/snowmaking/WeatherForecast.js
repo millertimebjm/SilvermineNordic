@@ -14,8 +14,8 @@ function WeatherForecast({ weatherForecastJson }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {weatherForecastJson.map(wf => (
-                        <tr>
+                    {weatherForecastJson.map((wf, index) => (
+                        <tr key={index}>
                             <td>{wf.dateTimeUtc}</td>
                             <td>{wf.temperatureInCelcius}</td>
                             <td>{wf.humidity}</td>

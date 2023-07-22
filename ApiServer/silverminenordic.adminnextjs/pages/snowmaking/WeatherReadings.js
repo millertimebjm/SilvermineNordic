@@ -13,11 +13,11 @@ export default function WeatherReadings({ weatherReadingJson }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {weatherReadingJson.map(wf => (
-                        <tr>
-                            <td>{wf.readingDateTimestampUtc}</td>
-                            <td>{wf.temperatureInCelcius}</td>
-                            <td>{wf.humidity}</td>
+                    {weatherReadingJson.map((wr) => (
+                        <tr key={wr.id}>
+                            <td>{wr.readingDateTimestampUtc}</td>
+                            <td>{wr.temperatureInCelcius}</td>
+                            <td>{wr.humidity}</td>
                         </tr>
                     ))}
                 </tbody>

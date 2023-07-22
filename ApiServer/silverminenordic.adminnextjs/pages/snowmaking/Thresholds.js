@@ -14,12 +14,12 @@ export default function Thresholds({ thresholdJson }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {thresholdJson.map(wf => (
-                        <tr>
-                            <td>{wf.temperatureInCelciusLowThreshold}</td>
-                            <td>{wf.temperatureInCelciusHighThreshold}</td>
-                            <td>{wf.humidityLowThreshold}</td>
-                            <td>{wf.humidityHighThreshold}</td>
+                    {thresholdJson.map(t => (
+                        <tr key={t.id}>
+                            <td>{t.temperatureInCelciusLowThreshold}</td>
+                            <td>{t.temperatureInCelciusHighThreshold}</td>
+                            <td>{t.humidityLowThreshold}</td>
+                            <td>{t.humidityHighThreshold}</td>
                         </tr>
                     ))}
                 </tbody>
