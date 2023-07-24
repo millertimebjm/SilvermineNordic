@@ -69,3 +69,6 @@ ENV HOSTNAME localhost
 
 #CMD ["node", "server.js"]
 CMD ["node_modules/.bin/next", "start"]
+
+# docker build -t silverminenordic.adminnextjs .
+# docker run -p 3000:3000 silverminenordic.adminnextjs
