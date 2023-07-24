@@ -1,5 +1,5 @@
 import styles from '../styles/SnowMaking.module.css';
-import { CelciusToFahrenheit, RoundToOneDecimal, ConvertUtcToCentral } from './helperFunctions';
+import { CelciusToFahrenheit, RoundToOneDecimal, ConvertUtcToCentral } from '../lib/helperFunctions';
 
 export default function WeatherReadings({ weatherReadingJson }) {
     return (
@@ -14,13 +14,19 @@ export default function WeatherReadings({ weatherReadingJson }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {weatherReadingJson.map((wr) => (
-                        <tr key={wr.id}>
-                            <td>{ConvertUtcToCentral(wr.readingDateTimestampUtc)}</td>
-                            <td>{CelciusToFahrenheit(wr.temperatureInCelcius)}</td>
-                            <td>{RoundToOneDecimal(wr.humidity)}</td>
+                    {weatherReadingJson && weatherReadingJson.length > 0 ? (
+                        weatherReadingJson.map((wr) => (
+                            <tr key={wr.id}>
+                                <td>{ConvertUtcToCentral(wr.readingDateTimestampUtc)}</td>
+                                <td>{CelciusToFahrenheit(wr.temperatureInCelcius)}</td>
+                                <td>{RoundToOneDecimal(wr.humidity)}</td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="3">No data available</td>
                         </tr>
-                    ))}
+                    )}
                 </tbody>
             </table>
         </>

@@ -1,5 +1,5 @@
 import styles from '../styles/SnowMaking.module.css';
-import { CelciusToFahrenheit, RoundToOneDecimal, ConvertUtcToCentral } from './helperFunctions';
+import { CelciusToFahrenheit, RoundToOneDecimal, ConvertUtcToCentral } from '../lib/helperFunctions';
 
 function WeatherForecast({ weatherForecastJson }) {
     return (
@@ -15,14 +15,20 @@ function WeatherForecast({ weatherForecastJson }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {weatherForecastJson.map((wf, index) => (
-                        <tr key={index}>
-                            <td>{ConvertUtcToCentral(wf.dateTimeUtc)}</td>
-                            <td>{CelciusToFahrenheit(wf.temperatureInCelcius)}</td>
-                            <td>{RoundToOneDecimal(wf.humidity)}</td>
-                            <td>{wf.snowfallInCm}</td>
+                    {weatherForecastJson && weatherForecastJson.length > 0 ? (
+                        weatherForecastJson.map((wf, index) => (
+                            <tr key={index}>
+                                <td>{ConvertUtcToCentral(wf.dateTimeUtc)}</td>
+                                <td>{CelciusToFahrenheit(wf.temperatureInCelcius)}</td>
+                                <td>{RoundToOneDecimal(wf.humidity)}</td>
+                                <td>{wf.snowfallInCm}</td>
+                            </tr>
+                        ))
+                    ) : (
+                        <tr>
+                            <td colSpan="4">No data available</td>
                         </tr>
-                    ))}
+                    )}
                 </tbody>
             </table>
         </>
