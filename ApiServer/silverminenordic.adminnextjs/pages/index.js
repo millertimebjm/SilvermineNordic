@@ -7,11 +7,14 @@ import WeatherForecast from './WeatherForecast';
 import WeatherReadings from './WeatherReadings';
 
 export async function getServerSideProps(context) {
+  let domain = "localhost";
+  let port = "9080";
+  let host = "http://" + domain + ":" + port;
   const [weatherForecastData, sensorReadingData, weatherReadingData, thresholdData] = await Promise.all([
-    fetch("http://192.168.100.168:9080/weatherforecast"),
-    fetch("http://192.168.100.168:9080/sensorreading?count=5"),
-    fetch("http://192.168.100.168:9080/weatherreading?count=5"),
-    fetch("http://192.168.100.168:9080/thresholds")
+    fetch(host + "/weatherforecast"),
+    fetch(host + "/sensorreading?count=5"),
+    fetch(host + "/weatherreading?count=5"),
+    fetch(host + "/thresholds")
   ]);
 
   const [weatherForecastJson, sensorReadingJson, weatherReadingJson, thresholdJson] = await Promise.all([
