@@ -20,7 +20,8 @@ var config = new ConfigurationBuilder()
     .Build();
 
 string snowMakingSqlConnectionString = config.GetConnectionString("SnowMakingSqlConnectionString");
-string openWeatherApiKey = config.GetConnectionString("OpenWeatherApiForecastApiKey");
+//string openWeatherApiKey = config.GetConnectionString("OpenWeatherApiForecastApiKey");
+string openWeatherApiKey = config["OpenWeatherApiForecastApiKey"];
 string emailServiceConnectionString = config.GetConnectionString("EmailServiceConnectionString");
 
 var configService = new SilvermineNordicConfigurationService()
