@@ -7,14 +7,15 @@ import WeatherForecast from './WeatherForecast';
 import WeatherReadings from './WeatherReadings';
 
 export async function getServerSideProps(context) {
-  let domain = "localhost";
-  let port = "9080";
-  let host = "http://" + domain + ":" + port;
+  const silvermineNordicApiProtocol = "http";
+  const silvermineNordicApiDomain = process.env.silvermineNordicApiDomain || "localhost";
+  const silvermineNordicApiPort = process.env.silvermineNordicApiPort || "9080";
+  const silvermineNordicApiHost = silvermineNordicApiProtocol + "://" + silvermineNordicApiDomain + ":" + silvermineNordicApiPort;
   const [weatherForecastData, sensorReadingData, weatherReadingData, thresholdData] = await Promise.all([
-    fetch(host + "/weatherforecast"),
-    fetch(host + "/sensorreading?count=5"),
-    fetch(host + "/weatherreading?count=5"),
-    fetch(host + "/thresholds")
+    fetch(silvermineNordicApiHost + "/weatherforecast"),
+    fetch(silvermineNordicApiHost + "/sensorreading/5"),
+    fetch(silvermineNordicApiHost + "/weatherreading/5"),
+    fetch(silvermineNordicApiHost + "/thresholds")
   ]);
 
   const [weatherForecastJson, sensorReadingJson, weatherReadingJson, thresholdJson] = await Promise.all([
