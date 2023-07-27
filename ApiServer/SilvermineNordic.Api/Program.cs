@@ -64,6 +64,7 @@ app.UseCors("NUXT");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    Console.WriteLine($"OpenWeatherForecastApiKey: |{configService.GetOpenWeatherApiKey()}|");
     app.UseSwagger();
     app.UseSwaggerUI();
 }
@@ -85,25 +86,27 @@ if (app.Environment.IsDevelopment())
 //.WithName("GetWeatherForecast")
 //.WithOpenApi();
 
-app.MapGet("/sensorreading/", async (int count) =>
+app.MapGet("/sensorreading/{count?}", async (int? count) =>
 {
     using (var scope = app.Services.CreateScope())
     {
         var sensorReadingService = scope.ServiceProvider.GetRequiredService<IRepositoryReading>();
-        count = count > 100 ? 100 : count;
-        count = count < 1 ? 1 : count;
-        return await sensorReadingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, count);
+        var countNonNull = count ?? 1;
+        countNonNull = countNonNull > 100 ? 100 : countNonNull;
+        countNonNull = countNonNull < 1 ? 1 : countNonNull;
+        return await sensorReadingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, countNonNull);
     }
 }).WithName("GetLastSensorReading");
 
-app.MapGet("/weatherreading/", async (int count) =>
+app.MapGet("/weatherreading/{count?}", async (int? count) =>
 {
     using (var scope = app.Services.CreateScope())
     {
         var sensorReadingService = scope.ServiceProvider.GetRequiredService<IRepositoryReading>();
-        count = count > 100 ? 100 : count;
-        count = count < 1 ? 1 : count;
-        return await sensorReadingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, count);
+        var countNonNull = count ?? 1;
+        countNonNull = countNonNull > 100 ? 100 : countNonNull;
+        countNonNull = countNonNull < 1 ? 1 : countNonNull;
+        return await sensorReadingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, countNonNull);
     }
 }).WithName("GetLastWeatherReading");
 
