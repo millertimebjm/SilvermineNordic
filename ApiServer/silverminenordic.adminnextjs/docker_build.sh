@@ -1,12 +1,38 @@
+#!/bin/bash
+
 # Delete docker container FORCED if it exists
-if [[ ! -z "$(docker ps -qf ancestor=silverminenordic.adminnextjs:1.0.0 -a)" ]]; then
-  docker rm -f $(docker ps -qf ancestor=silverminenordic.adminnextjs:1.0.0 -a)
+# Your image name
+IMAGE_NAME="silverminenordic.adminnextjs"
+
+# Find the container ID by filtering containers based on the image name
+CONTAINER_ID=$(docker ps -q --filter "ancestor=$IMAGE_NAME")
+
+# Check if the container ID is empty, indicating that no container is running from the image
+if [ -z "$CONTAINER_ID" ]; then
+  echo "No container running from the image $IMAGE_NAME."
+else
+  # Stop the container if it's running
+  docker stop "$CONTAINER_ID"
+
+  # Delete the container
+  docker rm "$CONTAINER_ID"
 fi
 
-# Remove the image if it exists
-if [[ ! -z "$(docker image ls -q silverminenordic.adminnextjs:1.0.0)" ]]; then
-  docker rmi $(docker image ls -q silverminenordic.adminnextjs:1.0.0)
+
+
+# Check if the image exists in local Docker images
+if docker images --format "{{.Repository}}" | grep -q "^$IMAGE_NAME$"; then
+  # Delete the image
+  docker rmi "$IMAGE_NAME"
+  echo "Image $IMAGE_NAME deleted successfully."
+else
+  echo "Image $IMAGE_NAME not found. No action needed."
 fi
 
-docker build -t silverminenordic.adminnextjs .
+
+
+docker build --no-cache -t silverminenordic.adminnextjs .
 docker run -d -p 3000:3000 --restart=always silverminenordic.adminnextjs
+
+# Remove all dangling images
+docker rmi --force $(docker images -f "dangling=true" -q)
