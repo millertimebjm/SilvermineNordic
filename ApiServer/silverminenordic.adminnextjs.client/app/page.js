@@ -12,7 +12,7 @@ async function getWeatherForecastJson(silvermineNordicApiHost) {
     const res = await fetch(`${silvermineNordicApiHost}${weatherForecastUrl}`);
     return res.json();
   } catch (e) {
-    logger.error(e);
+    console.log(e);
     return null;
   }
 }
@@ -23,7 +23,7 @@ async function getSensorReadingJson(silvermineNordicApiHost) {
     const res = await fetch(`${silvermineNordicApiHost}${sensorReadingUrl}`);
     return res.json();
   } catch (e) {
-    logger.error(e);
+    console.log(e);
     return null;
   }
 }
@@ -34,7 +34,7 @@ async function getWeatherReadingJson(silvermineNordicApiHost) {
     const res = await fetch(`${silvermineNordicApiHost}${sensorReadingUrl}`);
     return res.json();
   } catch (e) {
-    logger.error(e);
+    console.log(e);
     return null;
   }
 }
@@ -45,7 +45,7 @@ async function getThresholdJson(silvermineNordicApiHost) {
     const res = await fetch(`${silvermineNordicApiHost}${sensorReadingUrl}`);
     return res.json();
   } catch (e) {
-    logger.error(e);
+    console.log(e);
     return null;
   }
 }
