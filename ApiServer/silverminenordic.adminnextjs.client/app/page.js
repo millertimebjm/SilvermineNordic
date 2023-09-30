@@ -8,26 +8,46 @@ import WeatherReadings from './WeatherReadings';
 
 const weatherForecastUrl = "/weatherforecast";
 async function getWeatherForecastJson(silvermineNordicApiHost) {
-  const res = await fetch(`${silvermineNordicApiHost}${weatherForecastUrl}`);
-  return res.json();
+  try {
+    const res = await fetch(`${silvermineNordicApiHost}${weatherForecastUrl}`);
+    return res.json();
+  } catch (e) {
+    logger.error(e);
+    return null;
+  }
 }
 
 const sensorReadingUrl = "/sensorreading/5";
 async function getSensorReadingJson(silvermineNordicApiHost) {
-  const res = await fetch(`${silvermineNordicApiHost}${sensorReadingUrl}`);
-  return res.json();
+  try {
+    const res = await fetch(`${silvermineNordicApiHost}${sensorReadingUrl}`);
+    return res.json();
+  } catch (e) {
+    logger.error(e);
+    return null;
+  }
 }
 
 const weatherReadingUrl = "/weatherreading/5";
 async function getWeatherReadingJson(silvermineNordicApiHost) {
-  const res = await fetch(`${silvermineNordicApiHost}${sensorReadingUrl}`);
-  return res.json();
+  try {
+    const res = await fetch(`${silvermineNordicApiHost}${sensorReadingUrl}`);
+    return res.json();
+  } catch (e) {
+    logger.error(e);
+    return null;
+  }
 }
 
 const thresholdUrl = "/thresholds";
 async function getThresholdJson(silvermineNordicApiHost) {
-  const res = await fetch(`${silvermineNordicApiHost}${sensorReadingUrl}`);
-  return res.json();
+  try {
+    const res = await fetch(`${silvermineNordicApiHost}${sensorReadingUrl}`);
+    return res.json();
+  } catch (e) {
+    logger.error(e);
+    return null;
+  }
 }
 
 export default async function Home() {
