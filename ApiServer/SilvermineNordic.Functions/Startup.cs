@@ -25,7 +25,7 @@ namespace SilvermineNordic.Functions
             //    "OpenWeatherApiForecastApiKey": ""
             //  }
             //}
-            
+
             var config = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
                 .AddJsonFile("appsettings.json", optional: true)
@@ -50,7 +50,7 @@ namespace SilvermineNordic.Functions
                 });
 
             builder.Services.AddDbContext<SilvermineNordicDbContext>();
-            builder.Services.AddScoped<IRepositorySensorReading, EntityFrameworkSensorReadingService>();
+            builder.Services.AddScoped<IRepositoryReading, EntityFrameworkReadingService>();
             builder.Services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
             builder.Services.AddSingleton<ISms, AzureSmsService>();
             builder.Services.AddSingleton<IWeatherForecast, OpenWeatherApiForecastService>();

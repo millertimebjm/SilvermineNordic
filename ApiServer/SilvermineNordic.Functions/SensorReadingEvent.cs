@@ -11,11 +11,11 @@ namespace SilvermineNordic.Functions
     public class SensorReadingEvent
     {
         private readonly ILogger _logger;
-        private readonly IRepositorySensorReading _sensorReadingService;
+        private readonly IRepositoryReading _sensorReadingService;
 
         public SensorReadingEvent(
             ILoggerFactory loggerFactory,
-            IRepositorySensorReading sensorReadingService)
+            IRepositoryReading sensorReadingService)
         {
             _logger = loggerFactory.CreateLogger<SensorReadingEvent>();
             _sensorReadingService = sensorReadingService;
@@ -24,9 +24,9 @@ namespace SilvermineNordic.Functions
         // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=25&humidity=25
         // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=15&humidity=15
         // http://localhost:7113/api/SensorReadingEvent?temperatureInCelcius=-5&humidity=32
-        [Function("SensorReadingEvent")]
+        //[Function("SensorReadingEvent")]
         public async Task<HttpResponseData> RunAsync([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
-        {          
+        {
             var sensorReadingDateTimeUtc = DateTime.UtcNow;
             var queryStringArray = System.Web.HttpUtility.ParseQueryString(req.Url.Query);
             _logger.LogInformation($"C# HTTP trigger function processed a {req.Method.ToUpper()} request.");
@@ -62,9 +62,9 @@ namespace SilvermineNordic.Functions
             {
                 try
                 {
-                    var insertedSensorReading = await _sensorReadingService.AddSensorReadingAsync(new SensorReading()
+                    var insertedSensorReading = await _sensorReadingService.AddReadingAsync(new Reading()
                     {
-                        Type = SensorReadingTypeEnum.Sensor.ToString(),
+                        Type = ReadingTypeEnum.Sensor.ToString(),
                         TemperatureInCelcius = temperatureInCelcius,
                         Humidity = humidity,
                         ReadingDateTimestampUtc = sensorReadingDateTimeUtc,

@@ -11,14 +11,14 @@ namespace SilvermineNordic.Functions
     public class CheckZoneEvent
     {
         private readonly ILogger _logger;
-        private readonly IRepositorySensorReading _sensorReadingService;
+        private readonly IRepositoryReading _sensorReadingService;
         private readonly IRepositoryThreshold _thresholdService;
         private readonly IWeatherForecast _weatherForecastService;
         private readonly ISms _smsService;
         private readonly ISilvermineNordicConfiguration _configurationService;
 
         public CheckZoneEvent(ILoggerFactory loggerFactory,
-            IRepositorySensorReading sensorReadingService,
+            IRepositoryReading sensorReadingService,
             IRepositoryThreshold thresholdService,
             IWeatherForecast weatherForecastService,
             ISms smsService,
@@ -32,17 +32,13 @@ namespace SilvermineNordic.Functions
             _configurationService = conigurationService;
         }
 
-        [Function("CheckZoneEvent")]
+        //[Function("CheckZoneEvent")]
         public async Task RunAsync([TimerTrigger("0 */5 * * * *")] MyInfo myTimer)
         {
             _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.UtcNow} UTC");
-            var lastTwoWeatherReading = await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 2);
-            var lastTwoSensorReading = await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 2);
+            var lastTwoWeatherReading = await _sensorReadingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, 2);
+            var lastTwoSensorReading = await _sensorReadingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, 2);
             var thresholdData = await _thresholdService.GetThresholds();
-
-            //await VerifySensorIntegrity(lastTwoWeatherReading);
-            //await VerifyWeatherIntegrity(lastTwoSensorReading);
-            //await VerifyThresholdIntegrity(thresholdData);
 
             var lastSensorZone = InTheZoneService.IsInZone(thresholdData, lastTwoSensorReading.Last().TemperatureInCelcius, lastTwoSensorReading.Last().Humidity);
             var currentSensorZone = InTheZoneService.IsInZone(thresholdData, lastTwoSensorReading.First().TemperatureInCelcius, lastTwoSensorReading.First().Humidity);
@@ -66,7 +62,7 @@ namespace SilvermineNordic.Functions
             {
                 message = InTheZoneService.GenerateZoneChangeWeatherMessage(lastWeatherZone, currentWeatherZone);
             }
-            
+
             if (string.IsNullOrWhiteSpace(message))
             {
                 return;

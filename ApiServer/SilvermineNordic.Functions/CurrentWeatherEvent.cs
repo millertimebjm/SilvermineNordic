@@ -11,27 +11,27 @@ namespace SilvermineNordic.Functions
     {
         private readonly ILogger _logger;
         private readonly IWeatherForecast _weatherForecastService;
-        private readonly IRepositorySensorReading _sensorReadingService;
+        private readonly IRepositoryReading _sensorReadingService;
 
         public CurrentWeatherEvent(
             ILoggerFactory loggerFactory,
-            IWeatherForecast weatherForecastService, 
-            IRepositorySensorReading sensorReadingService)
+            IWeatherForecast weatherForecastService,
+            IRepositoryReading readingService)
         {
             _logger = loggerFactory.CreateLogger<CurrentWeatherEvent>();
             _weatherForecastService = weatherForecastService;
-            _sensorReadingService = sensorReadingService;
+            _sensorReadingService = readingService;
         }
 
-        [Function("CurrentWeatherEvent")]
+        //[Function("CurrentWeatherEvent")]
         public async Task RunAsync([TimerTrigger("0 */5 * * * *")] MyInfo myTimer)
         {
             _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
             var currentWeather = await _weatherForecastService.GetCurrentWeather();
             _logger.LogInformation($"Current Weather is TemperatureInCelcius: {currentWeather.TemperatureInCelcius} | Humidity: {currentWeather.Humidity}");
-            var reading = await _sensorReadingService.AddSensorReadingAsync(new SensorReading()
+            var reading = await _sensorReadingService.AddReadingAsync(new Reading()
             {
-                Type = SensorReadingTypeEnum.Weather.ToString(),
+                Type = ReadingTypeEnum.Weather.ToString(),
                 TemperatureInCelcius = currentWeather.TemperatureInCelcius,
                 Humidity = currentWeather.Humidity,
                 DateTimestampUtc = currentWeather.DateTimeUtc,
