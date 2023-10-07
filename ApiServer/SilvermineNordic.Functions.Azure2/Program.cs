@@ -31,8 +31,12 @@ var config = new ConfigurationBuilder()
 var host = new HostBuilder()
     .ConfigureAppConfiguration(builder =>
     {
-         string appConfigConnectionString = config[_appConfigEnvironmentVariableName]
-             ?? throw new ArgumentNullException(_appConfigEnvironmentVariableName);
+        string appConfigConnectionString =
+            // Windows config value
+            config[_appConfigEnvironmentVariableName]
+            // Linux config value
+            ?? config[$"Values:{_appConfigEnvironmentVariableName}"]
+            ?? throw new ArgumentNullException(_appConfigEnvironmentVariableName);
         builder.AddAzureAppConfiguration(options =>
         {
             options
