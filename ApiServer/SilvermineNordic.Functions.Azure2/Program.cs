@@ -13,6 +13,11 @@ using SilvermineNordic.Repository.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using SilvermineNordic.Repository;
+using Microsoft.Extensions.Configuration.AzureAppConfiguration;
+using Microsoft.IdentityModel.Tokens;
+
+const string _applicationNameConfigurationService = "SilvermineNordic";
+const string _appConfigEnvironmentVariableName = "AppConfigConnectionString";
 
 HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
@@ -23,22 +28,29 @@ var config = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .Build();
 
-var appConfigConnectionString = "Endpoint=https://snowmakingappconfig.azconfig.io;Id=WPMo;Secret=Yd7MZDYtoLqY0Y3deYOOn4MhfORh9Q7sJptB9UK1dq4=";
-//Console.WriteLine($"AppConfigConnectionString: {config["AppConfigConnectionString"]}");
 var host = new HostBuilder()
     .ConfigureAppConfiguration(builder =>
     {
-        // string appConfigConnectionString = config["AppConfigConnectionString"]
-        //     ?? throw new ArgumentNullException("AppConfigConnectionString");
-        builder.AddAzureAppConfiguration(appConfigConnectionString);
+         string appConfigConnectionString = config[_appConfigEnvironmentVariableName]
+             ?? throw new ArgumentNullException(_appConfigEnvironmentVariableName);
+        builder.AddAzureAppConfiguration(options =>
+        {
+            options
+                .Connect(appConfigConnectionString)
+                .Select($"{_applicationNameConfigurationService}:*", LabelFilter.Null);
+        });
     })
     .ConfigureFunctionsWorkerDefaults()
     .ConfigureServices(services =>
     {
         services.AddDbContext<SilvermineNordicDbContext>();
         services.AddSingleton<IWeatherForecast, OpenWeatherApiForecastService>();
-        services.AddSingleton<ISilvermineNordicConfiguration, SilvermineNordicConfigurationService>();
-        services.AddAzureAppConfiguration();
+        //services.AddAzureAppConfiguration();
+        services.AddOptions<SilvermineNordicConfigurationService>()
+            .Configure<IConfiguration>((settings, configuration) =>
+            {
+                configuration.GetSection(_applicationNameConfigurationService).Bind(settings);
+            });
         services.AddHttpClient();
     })
     .UseDefaultServiceProvider(options => options.ValidateScopes = false)
