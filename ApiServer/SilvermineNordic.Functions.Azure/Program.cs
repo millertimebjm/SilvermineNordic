@@ -49,7 +49,7 @@ var host = new HostBuilder()
     {
         services.AddDbContext<SilvermineNordicDbContext>();
         services.AddSingleton<IWeatherForecast, OpenWeatherApiForecastService>();
-        //services.AddAzureAppConfiguration();
+        services.AddScoped<IRepositoryReading, EntityFrameworkReadingService>();
         services.AddOptions<SilvermineNordicConfigurationService>()
             .Configure<IConfiguration>((settings, configuration) =>
             {
