@@ -1,4 +1,5 @@
-﻿using SilvermineNordic.Common;
+﻿using Microsoft.Extensions.Options;
+using SilvermineNordic.Common;
 using SilvermineNordic.Models;
 using System;
 using System.Collections.Generic;
@@ -12,10 +13,12 @@ namespace SilvermineNordic.Repository.Services
     {
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ISilvermineNordicConfiguration _configuration;
-        public OpenWeatherApiForecastService(IHttpClientFactory httpClientFactory, ISilvermineNordicConfiguration configuration)
+        public OpenWeatherApiForecastService(
+            IHttpClientFactory httpClientFactory,
+            IOptionsSnapshot<SilvermineNordicConfigurationService> options)
         {
             _httpClientFactory = httpClientFactory;
-            _configuration = configuration;
+            _configuration = options.Value;
         }
 
         public async Task<IEnumerable<WeatherModel>> GetWeatherForecast()
@@ -40,6 +43,9 @@ namespace SilvermineNordic.Repository.Services
 
         public async Task<WeatherModel> GetCurrentWeather()
         {
+            if (_configuration.GetOpenWeatherApiKey() == null)
+                throw new ArgumentNullException("OpenWeatherApiKey");
+
             var url = $"https://api.openweathermap.org/data/2.5/weather?lat=44.772712650825966&lon=-91.58243961934646&appid={_configuration.GetOpenWeatherApiKey()}&mode=json&units=metric";
             using var client = _httpClientFactory.CreateClient();
             var openApiWeatherModel = await client.GetFromJsonAsync<OpenWeatherApiCurrentWeatherModel>(url);

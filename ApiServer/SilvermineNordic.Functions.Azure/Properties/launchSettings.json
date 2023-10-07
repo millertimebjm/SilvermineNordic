@@ -1,8 +1,8 @@
 {
   "profiles": {
-    "SilvermineNordic.Functions.Azure": {
+    "SilvermineNordic.Functions.Azure2": {
       "commandName": "Project",
-      "commandLineArgs": "--port 7099",
+      "commandLineArgs": "--port 7094",
       "launchBrowser": false
     }
   }
