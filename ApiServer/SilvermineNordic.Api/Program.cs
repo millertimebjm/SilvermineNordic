@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -20,7 +19,6 @@ var config = new ConfigurationBuilder()
     .Build();
 
 string snowMakingSqlConnectionString = config.GetConnectionString("SnowMakingSqlConnectionString");
-//string openWeatherApiKey = config.GetConnectionString("OpenWeatherApiForecastApiKey");
 string openWeatherApiKey = config["OpenWeatherApiForecastApiKey"];
 string emailServiceConnectionString = config.GetConnectionString("EmailServiceConnectionString");
 
@@ -32,9 +30,7 @@ var configService = new SilvermineNordicConfigurationService()
     InMemoryDatabaseName = "SilvermineNordicDatabase",
 };
 builder.Services.AddSingleton<ISilvermineNordicConfiguration>(_ => configService);
-
 builder.Services.AddDbContext<SilvermineNordicDbContext>(ServiceLifetime.Scoped);
-
 builder.Services.AddScoped<IRepositoryReading, EntityFrameworkReadingService>();
 builder.Services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
 builder.Services.AddScoped<IWeatherForecast, OpenWeatherApiForecastService>();
@@ -42,13 +38,6 @@ builder.Services.AddScoped<IRepositoryUser, EntityFrameworkUserService>();
 builder.Services.AddScoped<IRepositoryUserOtp, EntityFrameworkUserOtpService>();
 builder.Services.AddScoped<IEmailService, AzureEmailService>();
 builder.Services.AddScoped<IRepositoryUserOtp, EntityFrameworkUserOtpService>();
-
-// var sensorReadingService = builder.Services.BuildServiceProvider().GetService<IRepositorySensorReading>();
-// var sensorThresholdService = builder.Services.BuildServiceProvider().GetService<IRepositoryThreshold>();
-// var weatherForecastService = builder.Services.BuildServiceProvider().GetService<IWeatherForecast>();
-// var userService = builder.Services.BuildServiceProvider().GetService<IRepositoryUser>();
-// var userOtpService = builder.Services.BuildServiceProvider().GetService<IRepositoryUserOtp>();
-// var emailService = builder.Services.BuildServiceProvider().GetService<IEmailService>();
 
 builder.Services.AddCors(o => o.AddPolicy("NUXT", builder =>
 {
@@ -68,23 +57,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-//app.UseHttpsRedirection();
-
-//app.MapGet("/weatherforecast", () =>
-//{
-//    var forecast = Enumerable.Range(1, 5).Select(index =>
-//        new WeatherForecast
-//        (
-//            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-//            Random.Shared.Next(-20, 55),
-//            summaries[Random.Shared.Next(summaries.Length)]
-//        ))
-//        .ToArray();
-//    return forecast;
-//})
-//.WithName("GetWeatherForecast")
-//.WithOpenApi();
 
 app.MapGet("/sensorreading/{count?}", async (int? count) =>
 {
