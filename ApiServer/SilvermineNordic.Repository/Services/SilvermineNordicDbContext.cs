@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using SilvermineNordic.Models;
 using System;
 using System.Collections.Generic;
@@ -19,10 +20,11 @@ namespace SilvermineNordic.Repository.Services
         public DbSet<Reading> Readings { get; set; }
         private readonly ISilvermineNordicConfiguration _configuration;
 
-        public SilvermineNordicDbContext(ISilvermineNordicConfiguration configuration)
+        public SilvermineNordicDbContext(
+            IOptionsSnapshot<SilvermineNordicConfigurationService> options)
         : base()
         {
-            _configuration = configuration;
+            _configuration = options.Value;
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -39,14 +41,17 @@ namespace SilvermineNordic.Repository.Services
                 return;
             }
 
-            var inMemoryDatabaseName = _configuration.GetInMemoryDatabaseName();
-            if (!string.IsNullOrWhiteSpace(inMemoryDatabaseName))
-            {
-                optionsBuilder.UseInMemoryDatabase(inMemoryDatabaseName);
-                return;
-            }
+            var inMemoryDatabaseName = _configuration.GetInMemoryDatabaseName()
+                ?? "InMemoryDatabaseName";
+            optionsBuilder.UseInMemoryDatabase(inMemoryDatabaseName);
+            return;
+            // if (!string.IsNullOrWhiteSpace(inMemoryDatabaseName))
+            // {
+            //     optionsBuilder.UseInMemoryDatabase(inMemoryDatabaseName);
+            //     return;
+            // }
 
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
