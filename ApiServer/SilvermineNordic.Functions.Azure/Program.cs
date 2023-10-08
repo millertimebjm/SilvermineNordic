@@ -1,20 +1,9 @@
-// using Microsoft.Extensions.Hosting;
-
-// var host = new HostBuilder()
-//     .ConfigureFunctionsWorkerDefaults()
-//     .Build();
-
-// host.Run();
-
-
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using SilvermineNordic.Repository.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using SilvermineNordic.Repository;
 using Microsoft.Extensions.Configuration.AzureAppConfiguration;
-using Microsoft.IdentityModel.Tokens;
 
 const string _applicationNameConfigurationService = "SilvermineNordic";
 const string _appConfigEnvironmentVariableName = "AppConfigConnectionString";
