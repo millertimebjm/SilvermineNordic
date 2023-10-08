@@ -39,6 +39,7 @@ var host = new HostBuilder()
         services.AddDbContext<SilvermineNordicDbContext>();
         services.AddSingleton<IWeatherForecast, OpenWeatherApiForecastService>();
         services.AddScoped<IRepositoryReading, EntityFrameworkReadingService>();
+        services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
         services.AddOptions<SilvermineNordicConfigurationService>()
             .Configure<IConfiguration>((settings, configuration) =>
             {
