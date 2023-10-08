@@ -37,7 +37,6 @@ builder.Services.AddScoped<IWeatherForecast, OpenWeatherApiForecastService>();
 builder.Services.AddScoped<IRepositoryUser, EntityFrameworkUserService>();
 builder.Services.AddScoped<IRepositoryUserOtp, EntityFrameworkUserOtpService>();
 builder.Services.AddScoped<IEmailService, AzureEmailService>();
-builder.Services.AddScoped<IRepositoryUserOtp, EntityFrameworkUserOtpService>();
 
 builder.Services.AddCors(o => o.AddPolicy("NUXT", builder =>
 {
