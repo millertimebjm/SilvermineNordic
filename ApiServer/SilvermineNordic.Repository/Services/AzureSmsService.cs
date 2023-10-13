@@ -1,4 +1,5 @@
 ﻿using Azure.Communication.Sms;
+using Microsoft.Extensions.Options;
 using System;
 using System.Threading.Tasks;
 
@@ -8,10 +9,13 @@ namespace SilvermineNordic.Repository.Services
     {
         private readonly string _azureSmsConnectionString;
         private readonly string _azureSmsFromPhone;
-        public AzureSmsService(ISilvermineNordicConfiguration configuration) 
+        private readonly ISilvermineNordicConfiguration _configuration;
+        public AzureSmsService(
+            IOptionsSnapshot<SilvermineNordicConfigurationService> options)
         {
-            _azureSmsConnectionString = configuration.GetAzureSmsConnectionString();
-            _azureSmsFromPhone = configuration.GetAzureSmsFromPhone();
+            _configuration = options.Value;
+            _azureSmsConnectionString = _configuration.GetAzureSmsConnectionString();
+            _azureSmsFromPhone = _configuration.GetAzureSmsFromPhone();
         }
 
         public async Task<bool> SendSms(string to, string message)

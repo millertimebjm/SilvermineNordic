@@ -16,7 +16,7 @@ namespace SilvermineNordic.Functions.Azure
             ILoggerFactory loggerFactory,
             IRepositoryThreshold thresholdService)
         {
-            _logger = loggerFactory.CreateLogger<SensorReadingEvent>();
+            _logger = loggerFactory.CreateLogger<ThresholdGet>();
             _thresholdService = thresholdService;
         }
 
