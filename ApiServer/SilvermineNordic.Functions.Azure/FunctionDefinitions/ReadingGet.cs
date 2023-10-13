@@ -16,7 +16,7 @@ namespace SilvermineNordic.Functions.Azure
             ILoggerFactory loggerFactory,
             IRepositoryReading readingService)
         {
-            _logger = loggerFactory.CreateLogger<SensorReadingEvent>();
+            _logger = loggerFactory.CreateLogger<ReadingGet>();
             _readingService = readingService;
         }
 

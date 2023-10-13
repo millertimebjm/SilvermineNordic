@@ -24,5 +24,7 @@ namespace SilvermineNordic.Repository.Services
             await _dbContext.SaveChangesAsync();
             return threshold;
         }
+
+
     }
 }

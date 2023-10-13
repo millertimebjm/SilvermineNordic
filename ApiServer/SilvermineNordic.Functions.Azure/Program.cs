@@ -12,10 +12,25 @@ HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
 
 var config = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: true)
     .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables()
     .Build();
+Console.WriteLine(config.GetValue<string>("Values:AzureWebJobsStorage"));
+string appConfigConnectionString =
+            // Windows config value
+            config[_appConfigEnvironmentVariableName]
+            // Linux config value
+            ?? config[$"Values:{_appConfigEnvironmentVariableName}"]
+            ?? throw new ArgumentNullException(_appConfigEnvironmentVariableName);
+
+config = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables()
+    .AddAzureAppConfiguration(appConfigConnectionString)
+    .Build();
+
+Console.WriteLine(config.GetValue<string>("Values:AzureWebJobsStorage"));
 
 var host = new HostBuilder()
     .ConfigureAppConfiguration(builder =>
@@ -40,6 +55,7 @@ var host = new HostBuilder()
         services.AddSingleton<IWeatherForecast, OpenWeatherApiForecastService>();
         services.AddScoped<IRepositoryReading, EntityFrameworkReadingService>();
         services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
+        services.AddScoped<ISms, AzureSmsService>();
         services.AddOptions<SilvermineNordicConfigurationService>()
             .Configure<IConfiguration>((settings, configuration) =>
             {
