@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SilvermineNordic.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SilvermineNordic.Repository.Services
@@ -13,18 +14,28 @@ namespace SilvermineNordic.Repository.Services
             _dbContext = dbContext;
         }
 
-        public async Task<IEnumerable<Threshold>> GetThresholds()
+        public async Task<IEnumerable<Threshold>> GetThresholds(
+            int? count = null,
+            int? skip = null)
         {
-            return await _dbContext.Thresholds.ToListAsync();
+            return await _dbContext
+                .Thresholds.AsQueryable()
+                .Skip(skip ?? 0)
+                .Take(count ?? int.MaxValue)
+                .ToListAsync();
         }
 
-        public async Task<Threshold> UpdateThreshold(Threshold threshold)
+        public async Task<Threshold> UpsertThreshold(Threshold threshold)
         {
-            _dbContext.Update(threshold);
+            if (threshold.Id > 0)
+            {
+                threshold = _dbContext.Update(threshold).Entity;
+                await _dbContext.SaveChangesAsync();
+                return threshold;
+            }
+            await _dbContext.AddAsync(threshold);
             await _dbContext.SaveChangesAsync();
             return threshold;
         }
-
-
     }
 }
