@@ -24,7 +24,10 @@ namespace SilvermineNordic.Repository.Services
             return reading;
         }
 
-        public async Task<IEnumerable<Reading>> GetLastNReadingAsync(ReadingTypeEnum type, int count)
+        public async Task<IEnumerable<Reading>> GetLastNReadingAsync(
+            ReadingTypeEnum type,
+            int count,
+            int? skip = 0)
         {
             if (_dbContext.Database.ProviderName == INMEMORY
                 && (await _dbContext.Readings.FirstOrDefaultAsync()) == null)
@@ -35,8 +38,10 @@ namespace SilvermineNordic.Repository.Services
             return await _dbContext.Readings
                 .Where(_ => _.Type == type.ToString())
                 .OrderByDescending(_ => _.Id)
+                .Skip(skip ?? 0)
                 .Take(count)
                 .ToListAsync();
+
         }
 
         private async Task SeedData()

@@ -7,12 +7,12 @@ using SilvermineNordic.Repository.Services;
 
 namespace SilvermineNordic.Functions.Azure
 {
-    public class ThresholdGet
+    public class ThresholdUpsert
     {
         private readonly ILogger _logger;
         private readonly IRepositoryThreshold _thresholdService;
 
-        public ThresholdGet(
+        public ThresholdUpsert(
             ILoggerFactory loggerFactory,
             IRepositoryThreshold thresholdService)
         {
@@ -20,17 +20,17 @@ namespace SilvermineNordic.Functions.Azure
             _thresholdService = thresholdService;
         }
 
-        // http://localhost:7071/api/ThresholdGet/5
-        // http://localhost:7071/api/ThresholdGet/5/5
-        [Function("ThresholdGet")]
+        // http://localhost:7071/api/ThresholdUpsert/
+        // http://localhost:7071/api/ThresholdUpsert/
+        // curl -i -X POST -H 'Content-Type: application/json' -d '{"Id":"0", "TemperatureInCelciusHighThreshold": "10.0", "TemperatureInCelciusLowThreshold": "0.0", "HumidityHighThreshold", "11.0", "HumidityLowThreshold": "1.0"}' http://localhost:7071/api/ThresholdUpsert
+        [Function("ThresholdUpsert")]
         public async Task<HttpResponseData> RunAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "ThresholdGet/{count:int?}/{skip:int?}")] HttpRequestData req,
-            int? count,
-            int? skip)
+                [HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req,
+                Threshold threshold)
         {
-            var thresholds = await _thresholdService.GetThresholds();
+            threshold = await _thresholdService.UpsertThreshold(threshold);
             var response = req.CreateResponse(HttpStatusCode.OK);
-            await response.WriteAsJsonAsync(thresholds);
+            await response.WriteAsJsonAsync(threshold);
             return response;
         }
     }
