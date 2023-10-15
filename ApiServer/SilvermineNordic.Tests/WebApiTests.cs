@@ -1,5 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
+using Moq;
 using SilvermineNordic.Models;
 using SilvermineNordic.Repository;
 using SilvermineNordic.Repository.Services;
@@ -8,23 +10,19 @@ namespace SilvermineNordic.Tests
 {
     public class WebApiTests
     {
-        private ISilvermineNordicConfiguration _configuration;
-        private IRepositorySensorReading _sensorReadingService;
+        private IRepositoryReading _readingService;
         private SilvermineNordicDbContext _silvermineNordicDbContext;
 
 
         public WebApiTests()
         {
-            _configuration = new SilvermineNordicConfigurationService()
-            {
-                InMemoryDatabaseName = "test",
-            };
-            _silvermineNordicDbContext = new SilvermineNordicDbContext(_configuration);
-            _sensorReadingService = new EntityFrameworkSensorReadingService(_silvermineNordicDbContext);
+            var iOptionsSnapshotMock = new Mock<IOptionsSnapshot<SilvermineNordicConfigurationService>>();
+            _silvermineNordicDbContext = new SilvermineNordicDbContext(iOptionsSnapshotMock.Object);
+            _readingService = new EntityFrameworkReadingService(_silvermineNordicDbContext);
 
-            _silvermineNordicDbContext.SensorReadings.AddRange(new List<SensorReading>()
+            _silvermineNordicDbContext.Readings.AddRange(new List<Reading>()
                 {
-                    new SensorReading()
+                    new Reading()
                     {
                         //Id = 0,
                         DateTimestampUtc= DateTime.UtcNow.AddMinutes(-11),
@@ -32,9 +30,9 @@ namespace SilvermineNordic.Tests
                         ReadingDateTimestampUtc = DateTime.UtcNow.AddMinutes(-11),
                         TemperatureInCelcius = 30m,
                         Humidity = 50m,
-                        Type = SensorReadingTypeEnum.Weather.ToString(),
+                        Type = ReadingTypeEnum.Weather.ToString(),
                     },
-                    new SensorReading()
+                    new Reading()
                     {
                         //Id = 1,
                         DateTimestampUtc= DateTime.UtcNow.AddMinutes(-10),
@@ -42,8 +40,8 @@ namespace SilvermineNordic.Tests
                         ReadingDateTimestampUtc = DateTime.UtcNow.AddMinutes(-10),
                         TemperatureInCelcius = 30m,
                         Humidity = 50m,
-                        Type = SensorReadingTypeEnum.Sensor.ToString(),
-                    },new SensorReading()
+                        Type = ReadingTypeEnum.Sensor.ToString(),
+                    },new Reading()
                     {
                         //Id = 2,
                         DateTimestampUtc= DateTime.UtcNow.AddMinutes(-6),
@@ -51,9 +49,9 @@ namespace SilvermineNordic.Tests
                         ReadingDateTimestampUtc = DateTime.UtcNow.AddMinutes(-6),
                         TemperatureInCelcius = 30m,
                         Humidity = 50m,
-                        Type = SensorReadingTypeEnum.Weather.ToString(),
+                        Type = ReadingTypeEnum.Weather.ToString(),
                     },
-                    new SensorReading()
+                    new Reading()
                     {
                         //Id = 3,
                         DateTimestampUtc= DateTime.UtcNow.AddMinutes(-5),
@@ -61,9 +59,9 @@ namespace SilvermineNordic.Tests
                         ReadingDateTimestampUtc = DateTime.UtcNow.AddMinutes(-5),
                         TemperatureInCelcius = 30m,
                         Humidity = 50m,
-                        Type = SensorReadingTypeEnum.Sensor.ToString(),
+                        Type = ReadingTypeEnum.Sensor.ToString(),
                     },
-                    new SensorReading()
+                    new Reading()
                     {
                         //Id = 4,
                         DateTimestampUtc= DateTime.UtcNow.AddMinutes(-1),
@@ -71,8 +69,8 @@ namespace SilvermineNordic.Tests
                         ReadingDateTimestampUtc = DateTime.UtcNow.AddMinutes(-1),
                         TemperatureInCelcius = 30m,
                         Humidity = 50m,
-                        Type = SensorReadingTypeEnum.Weather.ToString(),
-                    },new SensorReading()
+                        Type = ReadingTypeEnum.Weather.ToString(),
+                    },new Reading()
                     {
                         //Id = 5,
                         DateTimestampUtc= DateTime.UtcNow,
@@ -80,7 +78,7 @@ namespace SilvermineNordic.Tests
                         ReadingDateTimestampUtc = DateTime.UtcNow,
                         TemperatureInCelcius = 30m,
                         Humidity = 50m,
-                        Type = SensorReadingTypeEnum.Sensor.ToString(),
+                        Type = ReadingTypeEnum.Sensor.ToString(),
                     },
                 });
             _silvermineNordicDbContext.SaveChanges();
@@ -95,34 +93,34 @@ namespace SilvermineNordic.Tests
         [SetUp]
         public void Setup()
         {
-            
+
         }
 
         [Test]
         public async Task GetLatestNReadingsTest1()
         {
-            var readings = await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Sensor, 1);
+            var readings = await _readingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, 1);
             Assert.AreEqual(readings.Count(), 1);
         }
 
         [Test]
         public async Task GetLatestNReadingsTest2()
         {
-            var readings = await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 1);
+            var readings = await _readingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, 1);
             Assert.AreEqual(readings.Count(), 1);
         }
 
         [Test]
         public async Task GetLatestNReadingsTest3()
         {
-            var readings = await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 2);
+            var readings = await _readingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, 2);
             Assert.AreEqual(readings.Count(), 2);
         }
 
         [Test]
         public async Task GetLatestNReadingsTest4()
         {
-            var readings = await _sensorReadingService.GetLastNReadingAsync(SensorReadingTypeEnum.Weather, 2);
+            var readings = await _readingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, 2);
             Assert.AreEqual(readings.Count(), 2);
         }
     }
