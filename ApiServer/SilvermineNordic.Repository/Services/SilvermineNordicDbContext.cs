@@ -34,24 +34,16 @@ namespace SilvermineNordic.Repository.Services
                 return;
             }
 
-            var sqlConnectionString = _configuration.GetSqlConnectionString();
-            if (sqlConnectionString != null)
+            var sqlConnectionString = _configuration?.GetSqlConnectionString();
+            if (!string.IsNullOrWhiteSpace(sqlConnectionString))
             {
                 optionsBuilder.UseSqlServer(sqlConnectionString);
                 return;
             }
 
-            var inMemoryDatabaseName = _configuration.GetInMemoryDatabaseName()
+            var inMemoryDatabaseName = _configuration?.GetInMemoryDatabaseName()
                 ?? "InMemoryDatabaseName";
             optionsBuilder.UseInMemoryDatabase(inMemoryDatabaseName);
-            return;
-            // if (!string.IsNullOrWhiteSpace(inMemoryDatabaseName))
-            // {
-            //     optionsBuilder.UseInMemoryDatabase(inMemoryDatabaseName);
-            //     return;
-            // }
-
-            //throw new NotImplementedException();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

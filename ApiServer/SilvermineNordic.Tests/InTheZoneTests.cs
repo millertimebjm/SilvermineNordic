@@ -8,43 +8,43 @@ namespace SilvermineNordic.Tests
         static object[] SensorReadings =
         {
             new object[] {
-                new SensorReading() { TemperatureInCelcius = 3.0m, Humidity = 20.0m }, true // In The Zone
+                new Reading() { TemperatureInCelcius = 3.0m, Humidity = 20.0m }, true // In The Zone
             },
             new object[] {
-                new SensorReading() { TemperatureInCelcius = 1.0m, Humidity = 15.0m }, true // Low Edge In The Zone
+                new Reading() { TemperatureInCelcius = 1.0m, Humidity = 15.0m }, true // Low Edge In The Zone
             },
             new object[] {
-                new SensorReading() { TemperatureInCelcius = 10.0m, Humidity = 35.0m }, false // High Edge Out Of The Zone
+                new Reading() { TemperatureInCelcius = 10.0m, Humidity = 35.0m }, false // High Edge Out Of The Zone
             },
             new object[] {
-                new SensorReading() { TemperatureInCelcius = 2.5m, Humidity = 30.0m }, false // High Humidity
+                new Reading() { TemperatureInCelcius = 2.5m, Humidity = 30.0m }, false // High Humidity
             },
             new object[] {
-                new SensorReading() { TemperatureInCelcius = 7.5m, Humidity = 10.0m }, false // LowHumidity
+                new Reading() { TemperatureInCelcius = 7.5m, Humidity = 10.0m }, false // LowHumidity
             },
             new object[] {
-                new SensorReading() { TemperatureInCelcius = 15m, Humidity = 30.0m }, false // HighTemperature
+                new Reading() { TemperatureInCelcius = 15m, Humidity = 30.0m }, false // HighTemperature
             },
             new object[] {
-                new SensorReading() { TemperatureInCelcius = 0.0m, Humidity = 20.0m }, false // LowTemperature
+                new Reading() { TemperatureInCelcius = 0.0m, Humidity = 20.0m }, false // LowTemperature
             },
             new object[] {
-                new SensorReading() { TemperatureInCelcius = 15.0m, Humidity = 40.0m }, false // High
+                new Reading() { TemperatureInCelcius = 15.0m, Humidity = 40.0m }, false // High
             },
             new object[] {
-                new SensorReading() { TemperatureInCelcius = 0.0m, Humidity = 10.0m }, false // Low
+                new Reading() { TemperatureInCelcius = 0.0m, Humidity = 10.0m }, false // Low
             },
             new object[] {
-                new SensorReading() { TemperatureInCelcius = 7.5m, Humidity = 20.0m }, false // HighTemperatureLowHumidity
+                new Reading() { TemperatureInCelcius = 7.5m, Humidity = 20.0m }, false // HighTemperatureLowHumidity
             },
             new object[] {
-                new SensorReading() { TemperatureInCelcius = 2.5m, Humidity = 30.0m }, false // LowTemperatureHighHumidity
+                new Reading() { TemperatureInCelcius = 2.5m, Humidity = 30.0m }, false // LowTemperatureHighHumidity
             },
         };
 
 
 
-        private readonly List<Threshold> SensorThresholds = new List<Threshold>()
+        private readonly List<Threshold> Thresholds = new List<Threshold>()
         {
             new Threshold()
             {
@@ -66,9 +66,9 @@ namespace SilvermineNordic.Tests
 
         [Theory]
         [TestCaseSource(nameof(SensorReadings))]
-        public void InTheZoneTest(SensorReading sensorReading, bool inTheZone)
+        public void InTheZoneTest(Reading sensorReading, bool inTheZone)
         {
-            var inTheZoneCalculated = InTheZoneService.IsInZone(SensorThresholds, sensorReading.TemperatureInCelcius, sensorReading.Humidity);
+            var inTheZoneCalculated = InTheZoneService.IsInZone(Thresholds, sensorReading.TemperatureInCelcius, sensorReading.Humidity);
             Assert.AreEqual(inTheZoneCalculated, inTheZone);
         }
 
@@ -241,6 +241,8 @@ namespace SilvermineNordic.Tests
             Assert.AreEqual(nextZoneChangeDateTime, weatherModels.First().DateTimeUtc);
         }
 
+        // Test that each case returns a message
+        // The else case returns an empty message
         [TestCase(false, false, false, true)]
         [TestCase(false, false, true, false)]
         [TestCase(false, true, false, false)]
