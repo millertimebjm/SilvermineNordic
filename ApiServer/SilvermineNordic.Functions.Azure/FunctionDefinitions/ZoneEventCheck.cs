@@ -38,32 +38,88 @@ namespace SilvermineNordic.Functions.Azure
         public async Task Run([TimerTrigger("0 */1 * * * *")] MyInfo myTimer)
         {
             _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.UtcNow} UTC");
-            var lastTwoWeatherReading = await _readingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, 2);
-            var lastTwoSensorReading = await _readingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, 2);
-            var thresholdData = await _thresholdService.GetThresholds();
+            var lastTwoWeatherReadingTask = _readingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, 2);
+            var lastTwoSensorReadingTask = _readingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, 2);
+            var thresholdDataTask = _thresholdService.GetThresholds();
+            await Task.WhenAll(lastTwoWeatherReadingTask, lastTwoSensorReadingTask, thresholdDataTask);
 
-            var lastSensorZone = InTheZoneService.IsInZone(thresholdData, lastTwoSensorReading.Last().TemperatureInCelcius, lastTwoSensorReading.Last().Humidity);
-            var currentSensorZone = InTheZoneService.IsInZone(thresholdData, lastTwoSensorReading.First().TemperatureInCelcius, lastTwoSensorReading.First().Humidity);
+            var (lastSensorZone,
+                currentSensorZone,
+                lastWeatherZone,
+                currentWeatherZone)
+                    = IsInTheZoneChecks(
+                        thresholdDataTask.Result,
+                        lastTwoSensorReadingTask.Result,
+                        lastTwoWeatherReadingTask.Result
+                    );
 
-            var lastWeatherZone = InTheZoneService.IsInZone(thresholdData, lastTwoWeatherReading.Last().TemperatureInCelcius, lastTwoWeatherReading.Last().Humidity);
-            var currentWeatherZone = InTheZoneService.IsInZone(thresholdData, lastTwoWeatherReading.First().TemperatureInCelcius, lastTwoWeatherReading.First().Humidity);
-
-            if (lastSensorZone == currentSensorZone && lastWeatherZone == currentWeatherZone)
+            if (lastSensorZone == currentSensorZone
+                && lastWeatherZone == currentWeatherZone)
             {
                 _logger.LogInformation("No zone change identified.");
                 return;
             }
 
             _logger.LogInformation("A zone change has been identified.");
+            await ZoneChangeNotifyMessage(
+                lastSensorZone,
+                currentSensorZone,
+                lastWeatherZone,
+                currentWeatherZone,
+                lastTwoSensorReadingTask.Result,
+                thresholdDataTask.Result);
+        }
 
+        private (bool, bool, bool, bool) IsInTheZoneChecks(
+            IEnumerable<Threshold> thresholdData,
+            IEnumerable<Reading> lastTwoSensorReading,
+            IEnumerable<Reading> lastTwoWeatherReading)
+        {
+            var lastSensorZone = InTheZoneService.IsInZone(
+                thresholdData,
+                lastTwoSensorReading.Last().TemperatureInCelcius,
+                lastTwoSensorReading.Last().Humidity);
+            var currentSensorZone = InTheZoneService.IsInZone(
+                thresholdData,
+                lastTwoSensorReading.First().TemperatureInCelcius,
+                lastTwoSensorReading.First().Humidity);
+            var lastWeatherZone = InTheZoneService.IsInZone(
+                thresholdData,
+                lastTwoWeatherReading.Last().TemperatureInCelcius,
+                lastTwoWeatherReading.Last().Humidity);
+            var currentWeatherZone = InTheZoneService.IsInZone(
+                thresholdData,
+                lastTwoWeatherReading.First().TemperatureInCelcius,
+                lastTwoWeatherReading.First().Humidity);
+            return (lastSensorZone,
+                currentSensorZone,
+                lastWeatherZone,
+                currentWeatherZone);
+        }
+
+        private async Task ZoneChangeNotifyMessage(
+            bool lastSensorZone,
+            bool currentSensorZone,
+            bool lastWeatherZone,
+            bool currentWeatherZone,
+            IEnumerable<Reading> lastTwoSensorReading,
+            IEnumerable<Threshold> thresholdData)
+        {
             var message = string.Empty;
-            if (lastTwoSensorReading.Any(_ => _.ReadingDateTimestampUtc > DateTime.UtcNow.AddMinutes(-10)))
+            if (lastTwoSensorReading
+                .Any(_ => _.ReadingDateTimestampUtc > DateTime.UtcNow.AddMinutes(-10)))
             {
-                message = InTheZoneService.GenerateZoneChangeSensorWeatherMessage(lastSensorZone, currentSensorZone, lastWeatherZone, currentWeatherZone);
+                message = InTheZoneService.GenerateZoneChangeSensorWeatherMessage(
+                    lastSensorZone,
+                    currentSensorZone,
+                    lastWeatherZone,
+                    currentWeatherZone);
             }
             else
             {
-                message = InTheZoneService.GenerateZoneChangeWeatherMessage(lastWeatherZone, currentWeatherZone);
+                message = InTheZoneService.GenerateZoneChangeWeatherOnlyMessage(
+                    lastWeatherZone,
+                    currentWeatherZone);
             }
 
             if (string.IsNullOrWhiteSpace(message))
@@ -71,7 +127,9 @@ namespace SilvermineNordic.Functions.Azure
                 return;
             }
 
-            var nextZoneChange = await _weatherForecastService.GetNextZoneChange(thresholdData, currentSensorZone || currentWeatherZone);
+            var nextZoneChange = await _weatherForecastService.GetNextZoneChange(
+                thresholdData,
+                currentSensorZone || currentWeatherZone);
             if (nextZoneChange != null)
             {
                 var centralTime = CentralTimeService.GetCentralTime(nextZoneChange.Value);
@@ -94,6 +152,8 @@ namespace SilvermineNordic.Functions.Azure
             _logger.LogInformation("Message sent to valid phone numbers.");
         }
     }
+
+
 
     public class MyInfo
     {
