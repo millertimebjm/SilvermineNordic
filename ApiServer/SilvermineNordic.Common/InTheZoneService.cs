@@ -58,7 +58,7 @@ namespace SilvermineNordic.Common
             return weatherForecastModels[nextWeatherForecastIndex].DateTimeUtc;
         }
 
-        public static string GenerateZoneChangeWeatherMessage(bool lastWeatherZone, bool currentWeatherZone)
+        public static string GenerateZoneChangeWeatherOnlyMessage(bool lastWeatherZone, bool currentWeatherZone)
         {
             if (!lastWeatherZone && currentWeatherZone)
             {
