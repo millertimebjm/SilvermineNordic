@@ -17,7 +17,7 @@ async function getWeatherForecastJson(silvermineNordicApiUrl) {
   }
 }
 
-const sensorReadingUrl = "/sensorreading/5";
+const sensorReadingUrl = "/readingget/sensor/5";
 async function getSensorReadingJson(silvermineNordicApiUrl) {
   try {
     const res = await fetch(`${silvermineNordicApiUrl}${sensorReadingUrl}`);
@@ -28,7 +28,7 @@ async function getSensorReadingJson(silvermineNordicApiUrl) {
   }
 }
 
-const weatherReadingUrl = "/weatherreading/5";
+const weatherReadingUrl = "/readingget/weather/5";
 async function getWeatherReadingJson(silvermineNordicApiUrl) {
   try {
     const res = await fetch(`${silvermineNordicApiUrl}${sensorReadingUrl}`);
@@ -39,10 +39,10 @@ async function getWeatherReadingJson(silvermineNordicApiUrl) {
   }
 }
 
-const thresholdUrl = "/thresholds";
+const thresholdUrl = "/thresholdget";
 async function getThresholdJson(silvermineNordicApiUrl) {
   try {
-    const res = await fetch(`${silvermineNordicApiUrl}${sensorReadingUrl}`);
+    const res = await fetch(`${silvermineNordicApiUrl}${thresholdUrl}`);
     return res.json();
   } catch (e) {
     console.log(e);
@@ -51,12 +51,12 @@ async function getThresholdJson(silvermineNordicApiUrl) {
 }
 
 export default async function Home() {
-  const silvermineNordicApiUrl = process.env.silvermineNordicApiUrl || "http://localhost:9080";
-
+  const silvermineNordicApiUrl = process.env.silvermineNordicApiUrl || "http://localhost:7071/api";
+  var asdf = await getSensorReadingJson(silvermineNordicApiUrl);
   const [weatherForecastJson, sensorReadingJson, weatherReadingJson, thresholdJson] = await Promise.all([
     getWeatherForecastJson(silvermineNordicApiUrl),
     getSensorReadingJson(silvermineNordicApiUrl),
-    getSensorReadingJson(silvermineNordicApiUrl),
+    getWeatherReadingJson(silvermineNordicApiUrl),
     getThresholdJson(silvermineNordicApiUrl)
   ]);
 

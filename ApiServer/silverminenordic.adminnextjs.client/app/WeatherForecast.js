@@ -18,10 +18,10 @@ function WeatherForecast({ weatherForecastJson }) {
                     {weatherForecastJson && weatherForecastJson.length > 0 ? (
                         weatherForecastJson.map((wf, index) => (
                             <tr key={index}>
-                                <td>{ConvertUtcToCentral(wf.dateTimeUtc)}</td>
-                                <td>{CelciusToFahrenheit(wf.temperatureInCelcius)}</td>
-                                <td>{RoundToOneDecimal(wf.humidity)}</td>
-                                <td>{wf.snowfallInCm}</td>
+                                <td>{ConvertUtcToCentral(wf.DateTimeUtc)}</td>
+                                <td>{CelciusToFahrenheit(wf.TemperatureInCelcius)}</td>
+                                <td>{RoundToOneDecimal(wf.Humidity)}</td>
+                                <td>{wf.SnowfallInCm}</td>
                             </tr>
                         ))
                     ) : (

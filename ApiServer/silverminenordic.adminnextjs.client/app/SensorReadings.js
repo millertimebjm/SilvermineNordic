@@ -17,9 +17,9 @@ export default function SensorReadings({ sensorReadingJson }) {
                     {sensorReadingJson && sensorReadingJson.length > 0 ? (
                         sensorReadingJson.map(sr => (
                             <tr key={sr.id}>
-                                <td>{ConvertUtcToCentral(sr.readingDateTimestampUtc)}</td>
-                                <td>{CelciusToFahrenheit(sr.temperatureInCelcius)}</td>
-                                <td>{RoundToOneDecimal(sr.humidity)}</td>
+                                <td>{ConvertUtcToCentral(sr.ReadingDateTimestampUtc)}</td>
+                                <td>{CelciusToFahrenheit(sr.TemperatureInCelcius)}</td>
+                                <td>{RoundToOneDecimal(sr.Humidity)}</td>
                             </tr>
                         ))
                     ) : (

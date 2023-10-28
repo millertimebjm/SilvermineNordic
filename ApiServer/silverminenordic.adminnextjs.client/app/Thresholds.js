@@ -18,10 +18,10 @@ export default function Thresholds({ thresholdJson }) {
                     {thresholdJson && thresholdJson.length > 0 ? (
                         thresholdJson.map(t => (
                             <tr key={t.id}>
-                                <td>{CelciusToFahrenheit(t.temperatureInCelciusLowThreshold)}</td>
-                                <td>{CelciusToFahrenheit(t.temperatureInCelciusHighThreshold)}</td>
-                                <td>{RoundToOneDecimal(t.humidityLowThreshold)}</td>
-                                <td>{RoundToOneDecimal(t.humidityHighThreshold)}</td>
+                                <td>{CelciusToFahrenheit(t.TemperatureInCelciusLowThreshold)}</td>
+                                <td>{CelciusToFahrenheit(t.TemperatureInCelciusHighThreshold)}</td>
+                                <td>{RoundToOneDecimal(t.HumidityLowThreshold)}</td>
+                                <td>{RoundToOneDecimal(t.HumidityHighThreshold)}</td>
                             </tr>
                         ))
                     ) : (
