@@ -24,7 +24,7 @@ namespace SilvermineNordic.Functions.Azure
         public async Task<HttpResponseData> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post")] HttpRequestData req)
         {
             _logger.LogInformation("C# HTTP trigger function WeatherForecast processed a request.");
-            var weather = await _weatherForecastService.GetCurrentWeather();
+            var weather = await _weatherForecastService.GetWeatherForecast();
             var response = req.CreateResponse(HttpStatusCode.OK);
             await response.WriteAsJsonAsync(weather);
             _logger.LogInformation("C# HTTP trigger function complete.");

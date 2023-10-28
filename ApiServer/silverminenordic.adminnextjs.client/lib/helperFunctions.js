@@ -7,15 +7,16 @@ export function RoundToOneDecimal(number) {
 }
 
 export function ConvertUtcToCentral(datetime) {
-    var options = {
-        timeZone: "America/Chicago",
-        year: 'numeric', month: 'numeric', day: 'numeric',
-        hour: 'numeric', minute: 'numeric', second: 'numeric'
-    };
+    return datetime;
+    // var options = {
+    //     timeZone: "America/Chicago",
+    //     year: 'numeric', month: 'numeric', day: 'numeric',
+    //     hour: 'numeric', minute: 'numeric', second: 'numeric'
+    // };
 
-    var formatter = new Intl.DateTimeFormat([], options);
-    var localTime = formatter.format(new Date(datetime));
-    localTime = localTime.replace(",", "");
-    return localTime;
+    // var formatter = new Intl.DateTimeFormat([], options);
+    // var localTime = formatter.format(new Date(datetime));
+    // localTime = localTime.replace(",", "");
+    // return localTime;
     // var currentTime = formatter.format(new Date()); 
 }

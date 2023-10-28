@@ -17,9 +17,9 @@ export default function WeatherReadings({ weatherReadingJson }) {
                     {weatherReadingJson && weatherReadingJson.length > 0 ? (
                         weatherReadingJson.map((wr) => (
                             <tr key={wr.id}>
-                                <td>{ConvertUtcToCentral(wr.readingDateTimestampUtc)}</td>
-                                <td>{CelciusToFahrenheit(wr.temperatureInCelcius)}</td>
-                                <td>{RoundToOneDecimal(wr.humidity)}</td>
+                                <td>{ConvertUtcToCentral(wr.ReadingDateTimestampUtc)}</td>
+                                <td>{CelciusToFahrenheit(wr.TemperatureInCelcius)}</td>
+                                <td>{RoundToOneDecimal(wr.Humidity)}</td>
                             </tr>
                         ))
                     ) : (
