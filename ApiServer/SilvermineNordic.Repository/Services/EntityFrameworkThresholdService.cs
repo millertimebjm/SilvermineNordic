@@ -28,6 +28,9 @@ namespace SilvermineNordic.Repository.Services
 
             return await _dbContext
                 .Thresholds
+                .AsQueryable()
+                .Skip(skip ?? 0)
+                .Take(count ?? 100)
                 .ToListAsync();
         }
 

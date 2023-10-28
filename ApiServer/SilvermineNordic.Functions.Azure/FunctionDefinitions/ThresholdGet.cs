@@ -28,7 +28,7 @@ namespace SilvermineNordic.Functions.Azure
             int? count,
             int? skip)
         {
-            var thresholds = await _thresholdService.GetThresholds();
+            var thresholds = await _thresholdService.GetThresholds(count, skip);
             var response = req.CreateResponse(HttpStatusCode.OK);
             await response.WriteAsJsonAsync(thresholds);
             return response;
