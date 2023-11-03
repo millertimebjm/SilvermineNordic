@@ -2,7 +2,6 @@ using SilvermineNordic.Repository;
 using SilvermineNordic.Models;
 using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Common;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,32 +10,41 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpClient();
 
-var config = new ConfigurationBuilder()
+const string _applicationNameConfigurationService = "SilvermineNordic";
+const string _appConfigEnvironmentVariableName = "AppConfigConnectionString";
+
+builder
+    .Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("appsettings.json", optional: true)
     .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables()
     .Build();
 
-string snowMakingSqlConnectionString = config.GetConnectionString("SnowMakingSqlConnectionString");
-string openWeatherApiKey = config["OpenWeatherApiForecastApiKey"];
-string emailServiceConnectionString = config.GetConnectionString("EmailServiceConnectionString");
+string appConfigConnectionString =
+            // Windows config value
+            builder.Configuration[_appConfigEnvironmentVariableName]
+            // Linux config value
+            ?? builder.Configuration[$"Values:{_appConfigEnvironmentVariableName}"]
+            ?? throw new ArgumentNullException(_appConfigEnvironmentVariableName);
 
-var configService = new SilvermineNordicConfigurationService()
-{
-    SqlConnectionString = snowMakingSqlConnectionString,
-    OpenWeatherApiKey = openWeatherApiKey,
-    EmailServiceConnectionString = emailServiceConnectionString,
-    InMemoryDatabaseName = "SilvermineNordicDatabase",
-};
-builder.Services.AddSingleton<ISilvermineNordicConfiguration>(_ => configService);
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
+    .AddEnvironmentVariables()
+    .AddAzureAppConfiguration(appConfigConnectionString)
+    .Build();
+
+builder.Services.AddOptions<SilvermineNordicConfigurationService>()
+    .Configure<IConfiguration>((settings, configuration) =>
+    {
+        configuration.GetSection(_applicationNameConfigurationService).Bind(settings);
+    });
 builder.Services.AddDbContext<SilvermineNordicDbContext>(ServiceLifetime.Scoped);
 builder.Services.AddScoped<IRepositoryReading, EntityFrameworkReadingService>();
 builder.Services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
 builder.Services.AddScoped<IWeatherForecast, OpenWeatherApiForecastService>();
 builder.Services.AddScoped<IRepositoryUser, EntityFrameworkUserService>();
 builder.Services.AddScoped<IRepositoryUserOtp, EntityFrameworkUserOtpService>();
-builder.Services.AddScoped<IEmailService, AzureEmailService>();
 
 builder.Services.AddCors(o => o.AddPolicy("NUXT", builder =>
 {
@@ -52,12 +60,16 @@ app.UseCors("NUXT");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    Console.WriteLine($"OpenWeatherForecastApiKey: |{configService.GetOpenWeatherApiKey()}|");
+    // Console.WriteLine($"OpenWeatherForecastApiKey: |{configService.GetOpenWeatherApiKey()}|");
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.MapGet("/sensorreading/{count?}", async (int? count) =>
+app.MapGet("/reading/{readingType}/{count?}/{skip?}",
+    async (
+        string readingType,
+        int? count,
+        int? skip) =>
 {
     using (var scope = app.Services.CreateScope())
     {
@@ -65,21 +77,13 @@ app.MapGet("/sensorreading/{count?}", async (int? count) =>
         var countNonNull = count ?? 1;
         countNonNull = countNonNull > 100 ? 100 : countNonNull;
         countNonNull = countNonNull < 1 ? 1 : countNonNull;
-        return await sensorReadingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, countNonNull);
+        var skipNonNull = skip ?? 0;
+        return await sensorReadingService.GetLastNReadingAsync(
+            Enum.Parse<ReadingTypeEnum>(readingType, ignoreCase: true),
+            countNonNull,
+            skipNonNull);
     }
-}).WithName("GetLastSensorReading");
-
-app.MapGet("/weatherreading/{count?}", async (int? count) =>
-{
-    using (var scope = app.Services.CreateScope())
-    {
-        var sensorReadingService = scope.ServiceProvider.GetRequiredService<IRepositoryReading>();
-        var countNonNull = count ?? 1;
-        countNonNull = countNonNull > 100 ? 100 : countNonNull;
-        countNonNull = countNonNull < 1 ? 1 : countNonNull;
-        return await sensorReadingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, countNonNull);
-    }
-}).WithName("GetLastWeatherReading");
+}).WithName("GetRecentReadings");
 
 app.MapGet("/weatherforecast", async () =>
 {
@@ -111,7 +115,7 @@ app.MapGet("/weatherforecast/nextzonechange", async () =>
     }
 }).WithName("GetNextZoneChange");
 
-app.MapGet("thresholds", async () =>
+app.MapGet("threshold", async () =>
 {
     using (var scope = app.Services.CreateScope())
     {
