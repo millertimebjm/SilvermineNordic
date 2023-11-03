@@ -17,7 +17,7 @@ async function getWeatherForecastJson(silvermineNordicApiUrl) {
   }
 }
 
-const sensorReadingUrl = "/readingget/sensor/5";
+const sensorReadingUrl = "/reading/sensor/5";
 async function getSensorReadingJson(silvermineNordicApiUrl) {
   try {
     const res = await fetch(`${silvermineNordicApiUrl}${sensorReadingUrl}`);
@@ -28,7 +28,7 @@ async function getSensorReadingJson(silvermineNordicApiUrl) {
   }
 }
 
-const weatherReadingUrl = "/readingget/weather/5";
+const weatherReadingUrl = "/reading/weather/5";
 async function getWeatherReadingJson(silvermineNordicApiUrl) {
   try {
     const res = await fetch(`${silvermineNordicApiUrl}${sensorReadingUrl}`);
@@ -39,7 +39,7 @@ async function getWeatherReadingJson(silvermineNordicApiUrl) {
   }
 }
 
-const thresholdUrl = "/thresholdget";
+const thresholdUrl = "/threshold";
 async function getThresholdJson(silvermineNordicApiUrl) {
   try {
     const res = await fetch(`${silvermineNordicApiUrl}${thresholdUrl}`);
