@@ -6,7 +6,7 @@ IMAGE_NAME="silverminenordic-api:1.0.0"
 
 
 dotnet publish --os linux --arch x64 /t:PublishContainer -c Release
-docker run -d -p 9080:9080 --restart=always --name silverminenordic-api -e OpenWeatherApiForecastApiKey="$1" silverminenordic-api:1.0.0
+docker run -d -p 9080:9080 --restart=always --name silverminenordic-api -e AppConfigConnectionString="$1" silverminenordic-api:1.0.0
 rm -rf /tmp/Containers
 
 
