@@ -24,6 +24,11 @@ public class ApiMapperService : IApiMapper
 
     public void SetMaps(WebApplication app)
     {
+        app.MapGet("/", () =>
+        {
+            return Results.Ok();
+        });
+
         app.MapGet("/reading/{readingType}/{count?}/{skip?}",
             async (
                 string readingType,
