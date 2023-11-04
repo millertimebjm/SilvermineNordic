@@ -2,8 +2,13 @@ using SilvermineNordic.Repository;
 using SilvermineNordic.Models;
 using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Common;
+<<<<<<< HEAD
 using SilvermineNordic.Api.Services;
 using Microsoft.AspNetCore.Http.Json;
+=======
+using Microsoft.AspNetCore.Http.Json;
+using System.Text.Json;
+>>>>>>> origin/main
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,17 +52,24 @@ builder.Services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService
 builder.Services.AddScoped<IWeatherForecast, OpenWeatherApiForecastService>();
 builder.Services.AddScoped<IRepositoryUser, EntityFrameworkUserService>();
 builder.Services.AddScoped<IRepositoryUserOtp, EntityFrameworkUserOtpService>();
+<<<<<<< HEAD
 builder.Services.AddScoped<IApiMapper, ApiMapperService>();
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
     options.SerializerOptions.PropertyNamingPolicy = null;
 });
+=======
+>>>>>>> origin/main
 builder.Services.AddCors(o => o.AddPolicy("NUXT", builder =>
 {
     builder.AllowAnyOrigin()
            .AllowAnyMethod()
            .AllowAnyHeader();
 }));
+builder.Services.Configure<JsonOptions>(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = null;
+});
 
 var app = builder.Build();
 
