@@ -34,7 +34,7 @@ namespace SilvermineNordic.Functions.Azure
             _configuration = options.Value;
         }
 
-        [Function("ZoneEventCheck")]
+        [Function("CheckZoneChange")]
         public async Task Run([TimerTrigger("0 */1 * * * *")] MyInfo myTimer)
         {
             _logger.LogInformation($"C# Timer trigger function executed at: {DateTime.UtcNow} UTC");
@@ -86,9 +86,22 @@ namespace SilvermineNordic.Functions.Azure
                 return;
             }
 
+            await Notify(
+                message,
+                currentSensorZone,
+                currentWeatherZone,
+                thresholdDataTask);
+        }
+
+        private async Task Notify(
+            string message,
+            bool currentSensorZone,
+            bool currentWeatherZone,
+            Task<IEnumerable<Threshold>> thresholdDataTask)
+        {
             var nextZoneChange = await _weatherForecastService.GetNextZoneChange(
-                thresholdDataTask.Result,
-                currentSensorZone || currentWeatherZone);
+                    thresholdDataTask.Result,
+                    currentSensorZone || currentWeatherZone);
             if (nextZoneChange != null)
             {
                 var centralTime = CentralTimeService.GetCentralTime(nextZoneChange.Value);

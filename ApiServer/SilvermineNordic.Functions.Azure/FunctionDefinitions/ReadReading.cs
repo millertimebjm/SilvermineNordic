@@ -25,9 +25,9 @@ namespace SilvermineNordic.Functions.Azure
         // http://localhost:7071/api/ReadingGet/Weather/5
         // http://localhost:7071/api/ReadingGet/Weather/5/5
         // http://localhost:7071/api/ReadingGet/Sensor/5/10
-        [Function("ReadingGet")]
+        [Function("ReadReading")]
         public async Task<HttpResponseData> RunAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "ReadingGet/{readingType}/{count:int?}/{skip:int?}")] HttpRequestData req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "ReadReading/{readingType}/{count:int?}/{skip:int?}")] HttpRequestData req,
             string readingType,
             int? count,
             int? skip)
