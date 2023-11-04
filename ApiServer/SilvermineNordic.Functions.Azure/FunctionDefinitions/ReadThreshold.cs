@@ -22,9 +22,9 @@ namespace SilvermineNordic.Functions.Azure
 
         // http://localhost:7071/api/ThresholdGet/5
         // http://localhost:7071/api/ThresholdGet/5/5
-        [Function("ThresholdGet")]
+        [Function("ReadThreshold")]
         public async Task<HttpResponseData> RunAsync(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "ThresholdGet/{count:int?}/{skip:int?}")] HttpRequestData req,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "ReadThreshold/{count:int?}/{skip:int?}")] HttpRequestData req,
             int? count,
             int? skip)
         {

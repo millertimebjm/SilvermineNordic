@@ -23,7 +23,7 @@ namespace SilvermineNordic.Functions.Azure
         // http://localhost:7071/api/SensorReadingEvent?temperatureInCelcius=25&humidity=25
         // http://localhost:7071/api/SensorReadingEvent?temperatureInCelcius=15&humidity=15
         // http://localhost:7071/api/SensorReadingEvent?temperatureInCelcius=-5&humidity=32
-        [Function("SensorReadingEvent")]
+        [Function("CreateSensorReadingEvent")]
         public async Task<HttpResponseData> RunAsync(
             [HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequestData req,
             decimal temperatureInCelcius,

@@ -23,7 +23,7 @@ namespace SilvermineNordic.Functions.Azure
         // http://localhost:7071/api/ThresholdUpsert/
         // http://localhost:7071/api/ThresholdUpsert/
         // curl -i -X POST -H 'Content-Type: application/json' -d '{"Id":"0", "TemperatureInCelciusHighThreshold": "10.0", "TemperatureInCelciusLowThreshold": "0.0", "HumidityHighThreshold", "11.0", "HumidityLowThreshold": "1.0"}' http://localhost:7071/api/ThresholdUpsert
-        [Function("ThresholdUpsert")]
+        [Function("UpsertThreshold")]
         public async Task<HttpResponseData> RunAsync(
                 [HttpTrigger(AuthorizationLevel.Function, "post")] HttpRequestData req,
                 Threshold threshold)
