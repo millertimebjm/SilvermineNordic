@@ -71,7 +71,6 @@ app.UseCors("NUXT");
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    // Console.WriteLine($"OpenWeatherForecastApiKey: |{configService.GetOpenWeatherApiKey()}|");
     app.UseSwagger();
     app.UseSwaggerUI();
 }
