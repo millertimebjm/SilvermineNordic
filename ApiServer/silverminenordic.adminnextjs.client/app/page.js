@@ -6,7 +6,6 @@ import SensorReadings from './SensorReadings';
 import Thresholds from './Thresholds';
 import WeatherForecast from './WeatherForecast';
 import WeatherReadings from './WeatherReadings';
-import RefreshButton from './RefreshButton';
 
 async function getWeatherForecastJson(weatherForecastApiUrl) {
   try {
