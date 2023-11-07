@@ -25,13 +25,10 @@ namespace SilvermineNordic.Repository.Services
             {
                 await SeedData();
             }
-
-            return await _dbContext
-                .Thresholds
-                .AsQueryable()
-                .Skip(skip ?? 0)
-                .Take(count ?? 100)
-                .ToListAsync();
+            var queryable = _dbContext.Thresholds.AsQueryable();
+            if ((skip ?? 0) > 0) queryable = queryable.Skip(skip.Value);
+            if ((count ?? 0) > 0) queryable = queryable.Take(count.Value);
+            return await queryable.ToListAsync();
         }
 
         public async Task<Threshold> UpsertThreshold(Threshold threshold)

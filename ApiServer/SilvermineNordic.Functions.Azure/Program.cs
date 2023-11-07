@@ -15,7 +15,7 @@ var config = new ConfigurationBuilder()
     .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables()
     .Build();
-Console.WriteLine(config.GetValue<string>("Values:AzureWebJobsStorage"));
+
 string appConfigConnectionString =
             // Windows config value
             config[_appConfigEnvironmentVariableName]
@@ -29,8 +29,6 @@ config = new ConfigurationBuilder()
     .AddEnvironmentVariables()
     .AddAzureAppConfiguration(appConfigConnectionString)
     .Build();
-
-Console.WriteLine(config.GetValue<string>("Values:AzureWebJobsStorage"));
 
 var host = new HostBuilder()
     .ConfigureAppConfiguration(builder =>
