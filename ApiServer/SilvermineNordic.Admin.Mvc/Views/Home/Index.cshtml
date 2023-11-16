@@ -3,10 +3,10 @@
 @model IndexModel
 
 @{
-    var weatherReadings = await Model.WeatherReadingsTask;
-    var sensorReadings = await Model.SensorReadingsTask;
-    var weatherForecasts = await Model.WeatherForecastTask;
-    var thresholds = await Model.ThresholdsTask;
+    var weatherReadings = Model.WeatherReadingsTask;
+    var sensorReadings = Model.SensorReadingsTask;
+    var weatherForecasts = Model.WeatherForecastTask;
+    var thresholds = Model.ThresholdsTask;
 }
 
 <div class="container">
@@ -39,8 +39,12 @@
                     (weatherReadings.FirstOrDefault()?.ReadingDateTimestampUtc ??
                     DateTime.MinValue))
                         lastReading = weatherReadings.First();
-                    var inTheZone = SilvermineNordic.Common.InTheZoneService.IsInZone(thresholds, lastReading.TemperatureInCelcius,
-                    lastReading.Humidity);
+                    var inTheZone = false;
+                    if (lastReading != null)
+                    {
+                        inTheZone = SilvermineNordic.Common.InTheZoneService.IsInZone(thresholds, lastReading.TemperatureInCelcius,
+                            lastReading.Humidity);
+                    }
                 }
                 <h3 class="card">In The Zone <br />@(inTheZone)</h3>
                 <h3 class="card">Zone Forecast</h3>

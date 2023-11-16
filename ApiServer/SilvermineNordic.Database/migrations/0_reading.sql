@@ -1,8 +1,12 @@
 CREATE TABLE [dbo].[Reading](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[Type] varchar(20) NOT NULL,
 	[DateTimeUtc] [datetime] NOT NULL,
 	[TemperatureInCelcius] [decimal](8, 2) NOT NULL,
-	[Humidity] [decimal](8, 2) NOT NULL
+	[Humidity] [decimal](8, 2) NOT NULL,
+	[DateTimestampUtc] [datetime] NOT NULL DEFAULT getdate(),
+	[InsertedDateTimestampUtc] [datetime] NOT NULL DEFAULT getdate(),
+	[ReadingDateTimestampUtc] [datetime] NOT NULL DEFAULT getdate()
 ) ON [PRIMARY]
 GO
 ALTER TABLE [dbo].[Reading] ADD  CONSTRAINT [PK_Reading] PRIMARY KEY CLUSTERED 
