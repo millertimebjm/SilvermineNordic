@@ -29,10 +29,10 @@ public class HomeController : Controller
     public async Task<IActionResult> Index()
     {
         var model = new IndexModel();
-        model.SensorReadingsTask = _repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, 5);
-        model.WeatherReadingsTask = _repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, 5);
-        model.ThresholdsTask = _repositoryThresholdService.GetThresholds();
-        model.WeatherForecastTask = _weatherForecastService.GetWeatherForecast();
+        model.SensorReadingsTask = await _repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, 5);
+        model.WeatherReadingsTask = await _repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, 5);
+        model.ThresholdsTask = await _repositoryThresholdService.GetThresholds();
+        model.WeatherForecastTask = await _weatherForecastService.GetWeatherForecast();
         return View(model);
     }
 
