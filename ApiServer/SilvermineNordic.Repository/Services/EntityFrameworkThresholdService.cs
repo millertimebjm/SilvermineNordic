@@ -11,21 +11,27 @@ namespace SilvermineNordic.Repository.Services
     {
         private const string INMEMORY = "Microsoft.EntityFrameworkCore.InMemory";
         private readonly SilvermineNordicDbContext _dbContext;
-        public EntityFrameworkThresholdService(SilvermineNordicDbContext dbContext)
+        private readonly SilvermineNordicDbContextFactory _dbContextFactory;
+
+        public EntityFrameworkThresholdService(
+            SilvermineNordicDbContext dbContext,
+            SilvermineNordicDbContextFactory dbContextFactory)
         {
             _dbContext = dbContext;
+            _dbContextFactory = dbContextFactory;
         }
 
         public async Task<IEnumerable<Threshold>> GetThresholds(
             int? count = null,
             int? skip = null)
         {
-            if (_dbContext.Database.ProviderName == INMEMORY
-                && (await _dbContext.Thresholds.FirstOrDefaultAsync()) == null)
+            using var context = _dbContextFactory.Create();
+            if (context.Database.ProviderName == INMEMORY
+                && (await context.Thresholds.FirstOrDefaultAsync()) == null)
             {
                 await SeedData();
             }
-            var queryable = _dbContext.Thresholds.AsQueryable();
+            var queryable = context.Thresholds.AsQueryable();
             if ((skip ?? 0) > 0) queryable = queryable.Skip(skip.Value);
             if ((count ?? 0) > 0) queryable = queryable.Take(count.Value);
             return await queryable.ToListAsync();
@@ -33,20 +39,22 @@ namespace SilvermineNordic.Repository.Services
 
         public async Task<Threshold> UpsertThreshold(Threshold threshold)
         {
+            using var context = _dbContextFactory.Create();
             if (threshold.Id > 0)
             {
-                threshold = _dbContext.Update(threshold).Entity;
-                await _dbContext.SaveChangesAsync();
+                threshold = context.Update(threshold).Entity;
+                await context.SaveChangesAsync();
                 return threshold;
             }
-            await _dbContext.AddAsync(threshold);
-            await _dbContext.SaveChangesAsync();
+            await context.AddAsync(threshold);
+            await context.SaveChangesAsync();
             return threshold;
         }
 
         private async Task SeedData()
         {
-            await _dbContext.Thresholds.AddAsync(new Threshold()
+            using var context = _dbContextFactory.Create();
+            await context.Thresholds.AddAsync(new Threshold()
             {
                 Id = 0,
                 HumidityHighThreshold = 10m,
@@ -54,7 +62,7 @@ namespace SilvermineNordic.Repository.Services
                 TemperatureInCelciusHighThreshold = 11m,
                 TemperatureInCelciusLowThreshold = 1m,
             });
-            await _dbContext.SaveChangesAsync();
+            await context.SaveChangesAsync();
         }
     }
 }
