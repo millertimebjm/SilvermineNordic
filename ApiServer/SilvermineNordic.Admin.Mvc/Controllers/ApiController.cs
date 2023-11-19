@@ -21,20 +21,19 @@ public class ApiController : Controller
 
 /*
 curl -X POST -H "Content-Type: application/json" \
--d '{"temperatureInCelcius": 23, "humidity": 60, "type": "Sensor"}' \
+-d '{"temperatureInCelcius": 23, "humidity": 60}' \
 http://localhost:5025/api/sensorreading
 */
     [Route("api/sensorreading")]
     [HttpPost]
     public async Task<JsonResult> SensorReadingPost(
-        [FromBody] decimal temperatureInCelcius, 
-        [FromBody] decimal humidity) 
+        [FromBody] Reading readingInput) 
     {
         var reading = new Reading()
         {
             Type = "Sensor",
-            TemperatureInCelcius = temperatureInCelcius,
-            Humidity = humidity,
+            TemperatureInCelcius = readingInput.TemperatureInCelcius,
+            Humidity = readingInput.Humidity,
             ReadingDateTimestampUtc = DateTime.UtcNow,
         };
         reading = await _repositoryReadingService.AddReadingAsync(reading);
