@@ -5,8 +5,8 @@ namespace SilvermineNordic.Admin.Mvc.Models;
 
 public class IndexModel
 {
-    public IEnumerable<Reading> SensorReadingsTask { get; set; }
-    public IEnumerable<Reading> WeatherReadingsTask { get; set; }
-    public IEnumerable<Threshold> ThresholdsTask { get; set; }
-    public IEnumerable<WeatherModel> WeatherForecastTask { get; set; }
+    public Task<IEnumerable<Reading>> SensorReadingsTask { get; set; }
+    public Task<IEnumerable<Reading>> WeatherReadingsTask { get; set; }
+    public Task<IEnumerable<Threshold>> ThresholdsTask { get; set; }
+    public Task<IEnumerable<WeatherModel>> WeatherForecastTask { get; set; }
 }

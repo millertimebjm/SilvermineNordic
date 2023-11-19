@@ -3,10 +3,10 @@
 @model IndexModel
 
 @{
-    var weatherReadings = Model.WeatherReadingsTask;
-    var sensorReadings = Model.SensorReadingsTask;
-    var weatherForecasts = Model.WeatherForecastTask;
-    var thresholds = Model.ThresholdsTask;
+    var weatherReadings = await Model.WeatherReadingsTask;
+    var sensorReadings = await Model.SensorReadingsTask;
+    var weatherForecasts = await Model.WeatherForecastTask;
+    var thresholds = await Model.ThresholdsTask;
 }
 
 <div class="container">
@@ -26,145 +26,145 @@
         }
         <h3 class="card">Last Sensor @Html.Raw(lastSensorReadingsText)</h3>
         @{
-                var lastWeatherReadingsText = "";
-                if (weatherReadings.Any())
-                {
-                    lastWeatherReadingsText = $"<br />{weatherReadings.First().TemperatureInCelcius.ConvertCelciusToFahrenheit()}°F {weatherReadings.First().Humidity}%";
-                }
+            var lastWeatherReadingsText = "";
+            if (weatherReadings.Any())
+            {
+                lastWeatherReadingsText = $"<br />{weatherReadings.First().TemperatureInCelcius.ConvertCelciusToFahrenheit()}°F {weatherReadings.First().Humidity}%";
+            }
         }
         <h3 class="card">Last Weather @Html.Raw(lastWeatherReadingsText)</h3>
         @{
-                    var lastReading = sensorReadings.FirstOrDefault();
-                    if ((lastReading?.ReadingDateTimestampUtc ?? DateTime.MinValue) <
-                    (weatherReadings.FirstOrDefault()?.ReadingDateTimestampUtc ??
-                    DateTime.MinValue))
-                        lastReading = weatherReadings.First();
-                    var inTheZone = false;
-                    if (lastReading != null)
-                    {
-                        inTheZone = SilvermineNordic.Common.InTheZoneService.IsInZone(thresholds, lastReading.TemperatureInCelcius,
-                            lastReading.Humidity);
-                    }
-                }
-                <h3 class="card">In The Zone <br />@(inTheZone)</h3>
-                <h3 class="card">Zone Forecast</h3>
-            </div>
-            <div class="grid">
-                <div class="tablecard">
-                    <h3 class="description">Weather Reading</h3>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>DateTime</th>
-                                <th>Temperature</th>
-                                <th>Humidity</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+            var lastReading = sensorReadings.FirstOrDefault();
+            if ((lastReading?.ReadingDateTimestampUtc ?? DateTime.MinValue) <
+            (weatherReadings.FirstOrDefault()?.ReadingDateTimestampUtc ??
+            DateTime.MinValue))
+                lastReading = weatherReadings.First();
+            var inTheZone = false;
+            if (lastReading != null)
+            {
+                inTheZone = SilvermineNordic.Common.InTheZoneService.IsInZone(thresholds, lastReading.TemperatureInCelcius,
+                    lastReading.Humidity);
+            }
+        }
+        <h3 class="card">In The Zone <br />@(inTheZone)</h3>
+        <h3 class="card">Zone Forecast</h3>
+        </div>
+        <div class="grid">
+            <div class="tablecard">
+                <h3 class="description">Weather Reading</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>DateTime</th>
+                            <th>Temperature</th>
+                            <th>Humidity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
 
-                            @foreach (var wr in weatherReadings)
-                            {
-                                <tr key="0">
-                                    <td>@wr.ReadingDateTimestampUtc.ConvertUtcToTimezone("Central Standard Time")</td>
-                                    <td>@wr.TemperatureInCelcius.ConvertCelciusToFahrenheit()</td>
-                                    <td>@wr.Humidity.RoundToOneDecimal()</td>
-                                </tr>
-                            }
-                            @if (!weatherReadings.Any())
-                            {
-                                <tr>
-                                    <td colSpan="4">No data available</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <div class="tablecard">
-                    <h3 class="description">Sensor Readings</h3>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>DateTime</th>
-                                <th>Temperature</th>
-                                <th>Humidity</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var sr in sensorReadings)
-                            {
-                                <tr key="0">
-                                    <td>@sr.ReadingDateTimestampUtc.ConvertUtcToTimezone("Central Standard Time")</td>
-                                    <td>@sr.TemperatureInCelcius.ConvertCelciusToFahrenheit()</td>
-                                    <td>@sr.Humidity.RoundToOneDecimal()</td>
-                                </tr>
-                            }
-                            @if (!sensorReadings.Any())
-                            {
-                                <tr>
-                                    <td colSpan="3">No data available</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-                <div class="tablecard">
-                    <h3 class="description">Weather Forecast</h3>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>DateTime</th>
-                                <th>Temperature</th>
-                                <th>Humidity</th>
-                                <th>SnowfallInCm</th>
-                            </tr>
-                        </thead>
-                        @foreach (var wf in weatherForecasts)
+                        @foreach (var wr in weatherReadings)
                         {
                             <tr key="0">
-                                <td>@wf.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")</td>
-                                <td>@wf.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()</td>
-                                <td>@wf.Humidity.RoundToOneDecimal()</td>
-                                <td>@wf.SnowfallInCm</td>
+                                <td>@wr.ReadingDateTimestampUtc.ConvertUtcToTimezone("Central Standard Time")</td>
+                                <td>@wr.TemperatureInCelcius.ConvertCelciusToFahrenheit()</td>
+                                <td>@wr.Humidity.RoundToOneDecimal()</td>
                             </tr>
                         }
-                        @if (!weatherForecasts.Any())
+                        @if (!weatherReadings.Any())
                         {
                             <tr>
                                 <td colSpan="4">No data available</td>
                             </tr>
                         }
-                        </tbody>
-                    </table>
-                </div>
-                <div class="tablecard">
-                    <h3 class="description">Thresholds</h3>
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Temperature Low</th>
-                                <th>Temperature High</th>
-                                <th>Humidity Low</th>
-                                <th>Humidity High</th>
+                    </tbody>
+                </table>
+            </div>
+            <div class="tablecard">
+                <h3 class="description">Sensor Readings</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>DateTime</th>
+                            <th>Temperature</th>
+                            <th>Humidity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var sr in sensorReadings)
+                        {
+                            <tr key="0">
+                                <td>@sr.ReadingDateTimestampUtc.ConvertUtcToTimezone("Central Standard Time")</td>
+                                <td>@sr.TemperatureInCelcius.ConvertCelciusToFahrenheit()</td>
+                                <td>@sr.Humidity.RoundToOneDecimal()</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var t in thresholds)
-                            {
-                                <tr key="0                    ">
-                                    <td>@t.TemperatureInCelciusLowThreshold.ConvertCelciusToFahrenheit()</td>
-                                    <td>@t.TemperatureInCelciusHighThreshold.ConvertCelciusToFahrenheit()</td>
-                                    <td>@t.HumidityLowThreshold.RoundToOneDecimal()</td>
-                                    <td>@t.HumidityHighThreshold.RoundToOneDecimal()</td>
-                                </tr>
-                            }
-                            @if (!thresholds.Any())
-                            {
-                                <tr>
-                                    <td colSpan="4">No data available</td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                        }
+                        @if (!sensorReadings.Any())
+                        {
+                            <tr>
+                                <td colSpan="3">No data available</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="tablecard">
+                <h3 class="description">Weather Forecast</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>DateTime</th>
+                            <th>Temperature</th>
+                            <th>Humidity</th>
+                            <th>SnowfallInCm</th>
+                        </tr>
+                    </thead>
+                    @foreach (var wf in weatherForecasts)
+                    {
+                        <tr key="0">
+                            <td>@wf.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")</td>
+                            <td>@wf.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()</td>
+                            <td>@wf.Humidity.RoundToOneDecimal()</td>
+                            <td>@wf.SnowfallInCm</td>
+                        </tr>
+                    }
+                    @if (!weatherForecasts.Any())
+                    {
+                        <tr>
+                            <td colSpan="4">No data available</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+            <div class="tablecard">
+                <h3 class="description">Thresholds</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Temperature Low</th>
+                            <th>Temperature High</th>
+                            <th>Humidity Low</th>
+                            <th>Humidity High</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var t in thresholds)
+                        {
+                            <tr key="0                    ">
+                                <td>@t.TemperatureInCelciusLowThreshold.ConvertCelciusToFahrenheit()</td>
+                                <td>@t.TemperatureInCelciusHighThreshold.ConvertCelciusToFahrenheit()</td>
+                                <td>@t.HumidityLowThreshold.RoundToOneDecimal()</td>
+                                <td>@t.HumidityHighThreshold.RoundToOneDecimal()</td>
+                            </tr>
+                        }
+                        @if (!thresholds.Any())
+                        {
+                            <tr>
+                                <td colSpan="4">No data available</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
+    </div>
