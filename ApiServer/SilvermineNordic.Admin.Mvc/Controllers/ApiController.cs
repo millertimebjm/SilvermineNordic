@@ -26,13 +26,17 @@ http://localhost:5025/api/sensorreading
 */
     [Route("api/sensorreading")]
     [HttpPost]
-    public async Task<JsonResult> SensorReadingPost([FromBody] Reading reading) 
+    public async Task<JsonResult> SensorReadingPost(
+        [FromBody] decimal temperatureInCelcius, 
+        [FromBody] decimal humidity) 
     {
-        if (reading.Id > 0)
+        var reading = new Reading()
         {
-            throw new ArgumentException("Id cannot be greater than 0");
-        }
-        reading.ReadingDateTimestampUtc = DateTime.UtcNow;
+            Type = "Sensor",
+            TemperatureInCelcius = temperatureInCelcius,
+            Humidity = humidity,
+            ReadingDateTimestampUtc = DateTime.UtcNow,
+        };
         reading = await _repositoryReadingService.AddReadingAsync(reading);
         return Json(reading);
     }
