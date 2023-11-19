@@ -32,9 +32,11 @@ http://localhost:5025/api/sensorreading
         {
             throw new ArgumentException("Id cannot be greater than 0");
         }
+        reading.ReadingDateTimestampUtc = DateTime.UtcNow;
         reading = await _repositoryReadingService.AddReadingAsync(reading);
         return Json(reading);
     }
+
 /*
 curl -X POST \
 http://localhost:5025/api/weatherreading
