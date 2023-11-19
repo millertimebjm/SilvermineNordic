@@ -37,6 +37,7 @@ builder.Services.AddScoped<IWeatherForecast, OpenWeatherApiForecastService>();
 builder.Services.AddScoped<IRepositoryReading, EntityFrameworkReadingService>();
 builder.Services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
 builder.Services.AddScoped<ISms, AzureSmsService>();
+builder.Services.AddScoped<SilvermineNordicDbContextFactory>();
 builder.Services.AddOptions<SilvermineNordicConfigurationService>()
     .Configure<IConfiguration>((settings, configuration) =>
     {
