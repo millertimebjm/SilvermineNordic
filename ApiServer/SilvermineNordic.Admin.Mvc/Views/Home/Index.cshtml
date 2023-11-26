@@ -21,7 +21,7 @@
             var lastSensorReadingsText = "";
             if (sensorReadings.Any())
             {
-                lastSensorReadingsText = $"<br />{sensorReadings.First().TemperatureInCelcius.ConvertCelciusToFahrenheit()}°F {sensorReadings.First().Humidity}%";
+                lastSensorReadingsText = $"<br />{Math.Round(sensorReadings.First().TemperatureInCelcius.ConvertCelciusToFahrenheit(), 0)}°F {Math.Round(sensorReadings.First().Humidity, 0)}%";
         }
         }
         <h3 class="card">Last Sensor @Html.Raw(lastSensorReadingsText)</h3>
@@ -29,7 +29,7 @@
             var lastWeatherReadingsText = "";
             if (weatherReadings.Any())
             {
-                lastWeatherReadingsText = $"<br />{weatherReadings.First().TemperatureInCelcius.ConvertCelciusToFahrenheit()}°F {weatherReadings.First().Humidity}%";
+                lastWeatherReadingsText = $"<br />{Math.Round(weatherReadings.First().TemperatureInCelcius.ConvertCelciusToFahrenheit(), 0)}°F {Math.Round(weatherReadings.First().Humidity, 0)}%";
             }
         }
         <h3 class="card">Last Weather @Html.Raw(lastWeatherReadingsText)</h3>
@@ -47,7 +47,7 @@
             }
         }
         <h3 class="card">In The Zone <br />@(inTheZone)</h3>
-        <h3 class="card">Zone Forecast</h3>
+        <h3 class="card">Zone Forecast <br />@(((await Model.NextZoneChangeTask).ToString()) ?? "No Forecast")</h3>
         </div>
         <div class="grid">
             <div class="tablecard">

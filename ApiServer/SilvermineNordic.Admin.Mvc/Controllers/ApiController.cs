@@ -59,4 +59,12 @@ http://localhost:5025/api/weatherreading
         reading = await _repositoryReadingService.AddReadingAsync(reading);
         return Json(reading);
     }
+
+    [Route("api/weatherforecast")]
+    [HttpGet]
+    public async Task<JsonResult> WeatherForecastGet() 
+    {
+        var weatherModel = await _weatherService.GetWeatherForecast();
+        return Json(weatherModel);
+    }
 }
