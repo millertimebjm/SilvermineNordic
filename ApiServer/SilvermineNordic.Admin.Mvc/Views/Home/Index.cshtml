@@ -108,35 +108,6 @@
                 </table>
             </div>
             <div class="tablecard">
-                <h3 class="description">Weather Forecast</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>DateTime</th>
-                            <th>Temp</th>
-                            <th>Hum</th>
-                            <th>SnowfallInCm</th>
-                        </tr>
-                    </thead>
-                    @foreach (var wf in weatherForecasts)
-                    {
-                        <tr key="0">
-                            <td>@wf.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")</td>
-                            <td>@wf.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
-                            <td>@wf.Humidity.RoundToOneDecimal()%</td>
-                            <td>@wf.SnowfallInCm</td>
-                        </tr>
-                    }
-                    @if (!weatherForecasts.Any())
-                    {
-                        <tr>
-                            <td colSpan="4">No data available</td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
-            </div>
-            <div class="tablecard">
                 <h3 class="description">Thresholds</h3>
                 <table class="table">
                     <thead>
@@ -163,6 +134,35 @@
                                 <td colSpan="4">No data available</td>
                             </tr>
                         }
+                    </tbody>
+                </table>
+            </div>
+            <div class="tablecard">
+                <h3 class="description">Weather Forecast</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>DateTime</th>
+                            <th>Temp</th>
+                            <th>Hum</th>
+                            <th>SnowfallInCm</th>
+                        </tr>
+                    </thead>
+                    @foreach (var wf in weatherForecasts)
+                    {
+                        <tr key="0">
+                            <td>@wf.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")</td>
+                            <td>@wf.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
+                            <td>@wf.Humidity.RoundToOneDecimal()%</td>
+                            <td>@wf.SnowfallInCm</td>
+                        </tr>
+                    }
+                    @if (!weatherForecasts.Any())
+                    {
+                        <tr>
+                            <td colSpan="4">No data available</td>
+                        </tr>
+                    }
                     </tbody>
                 </table>
             </div>
