@@ -4,6 +4,7 @@ using SilvermineNordic.Admin.Mvc.Models;
 using SilvermineNordic.Repository.Services;
 using System.Threading.Tasks;
 using SilvermineNordic.Models;
+using SilvermineNordic.Common;
 
 namespace SilvermineNordic.Admin.Mvc.Controllers;
 
@@ -33,6 +34,26 @@ public class HomeController : Controller
         model.WeatherReadingsTask = (Task<IEnumerable<Reading>>)_repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, 5);
         model.ThresholdsTask = (Task<IEnumerable<Threshold>>)_repositoryThresholdService.GetThresholds();
         model.WeatherForecastTask = (Task<IEnumerable<WeatherModel>>)_weatherForecastService.GetWeatherForecast();
+        
+        model.NextZoneChangeTask = Task.Run(async () => {
+            var sensorReadings = await model.SensorReadingsTask;
+            var weatherReadings = await model.WeatherReadingsTask;
+            var thresholds = await model.ThresholdsTask;
+
+            var lastReading = sensorReadings.FirstOrDefault();
+            if ((lastReading?.ReadingDateTimestampUtc ?? DateTime.MinValue) <
+            ((weatherReadings).FirstOrDefault()?.ReadingDateTimestampUtc ??
+            DateTime.MinValue))
+                lastReading = weatherReadings.First();
+            var inTheZone = false;
+            if (lastReading != null)
+            {
+                inTheZone = SilvermineNordic.Common.InTheZoneService.IsInZone(thresholds, lastReading.TemperatureInCelcius,
+                    lastReading.Humidity);
+                return InTheZoneService.GetNextZoneChange(await model.WeatherForecastTask, await model.ThresholdsTask, inTheZone);
+            }
+            return (DateTime?)null;
+        });
         return View(model);
     }
 
