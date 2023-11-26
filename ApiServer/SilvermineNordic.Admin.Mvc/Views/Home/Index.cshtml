@@ -56,8 +56,8 @@
                     <thead>
                         <tr>
                             <th>DateTime</th>
-                            <th>Temperature</th>
-                            <th>Humidity</th>
+                            <th>Temp</th>
+                            <th>Hum</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -66,8 +66,8 @@
                         {
                             <tr key="0">
                                 <td>@wr.ReadingDateTimestampUtc.ConvertUtcToTimezone("Central Standard Time")</td>
-                                <td>@wr.TemperatureInCelcius.ConvertCelciusToFahrenheit()</td>
-                                <td>@wr.Humidity.RoundToOneDecimal()</td>
+                                <td>@wr.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
+                                <td>@wr.Humidity.RoundToOneDecimal()%</td>
                             </tr>
                         }
                         @if (!weatherReadings.Any())
@@ -85,8 +85,8 @@
                     <thead>
                         <tr>
                             <th>DateTime</th>
-                            <th>Temperature</th>
-                            <th>Humidity</th>
+                            <th>Temp</th>
+                            <th>Hum</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -94,8 +94,8 @@
                         {
                             <tr key="0">
                                 <td>@sr.ReadingDateTimestampUtc.ConvertUtcToTimezone("Central Standard Time")</td>
-                                <td>@sr.TemperatureInCelcius.ConvertCelciusToFahrenheit()</td>
-                                <td>@sr.Humidity.RoundToOneDecimal()</td>
+                                <td>@sr.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
+                                <td>@sr.Humidity.RoundToOneDecimal()%</td>
                             </tr>
                         }
                         @if (!sensorReadings.Any())
@@ -113,8 +113,8 @@
                     <thead>
                         <tr>
                             <th>DateTime</th>
-                            <th>Temperature</th>
-                            <th>Humidity</th>
+                            <th>Temp</th>
+                            <th>Hum</th>
                             <th>SnowfallInCm</th>
                         </tr>
                     </thead>
@@ -122,8 +122,8 @@
                     {
                         <tr key="0">
                             <td>@wf.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")</td>
-                            <td>@wf.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()</td>
-                            <td>@wf.Humidity.RoundToOneDecimal()</td>
+                            <td>@wf.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
+                            <td>@wf.Humidity.RoundToOneDecimal()%</td>
                             <td>@wf.SnowfallInCm</td>
                         </tr>
                     }
@@ -141,20 +141,20 @@
                 <table class="table">
                     <thead>
                         <tr>
-                            <th>Temperature Low</th>
-                            <th>Temperature High</th>
-                            <th>Humidity Low</th>
-                            <th>Humidity High</th>
+                            <th>Temp Low</th>
+                            <th>Temp High</th>
+                            <th>Hum Low</th>
+                            <th>Hum High</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var t in thresholds)
                         {
                             <tr key="0                    ">
-                                <td>@t.TemperatureInCelciusLowThreshold.ConvertCelciusToFahrenheit()</td>
-                                <td>@t.TemperatureInCelciusHighThreshold.ConvertCelciusToFahrenheit()</td>
-                                <td>@t.HumidityLowThreshold.RoundToOneDecimal()</td>
-                                <td>@t.HumidityHighThreshold.RoundToOneDecimal()</td>
+                                <td>@t.TemperatureInCelciusLowThreshold.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
+                                <td>@t.TemperatureInCelciusHighThreshold.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
+                                <td>@t.HumidityLowThreshold.RoundToOneDecimal()%</td>
+                                <td>@t.HumidityHighThreshold.RoundToOneDecimal()%</td>
                             </tr>
                         }
                         @if (!thresholds.Any())
