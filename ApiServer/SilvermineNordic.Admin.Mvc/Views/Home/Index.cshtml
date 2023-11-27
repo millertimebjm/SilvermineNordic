@@ -145,7 +145,8 @@
                             <th>DateTime</th>
                             <th>Temp</th>
                             <th>Hum</th>
-                            <th>SnowfallInCm</th>
+                            <th>SnowCm</th>
+                            <th>Zone</th>
                         </tr>
                     </thead>
                     @foreach (var wf in weatherForecasts)
@@ -155,6 +156,14 @@
                             <td>@wf.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
                             <td>@wf.Humidity.RoundToOneDecimal()%</td>
                             <td>@wf.SnowfallInCm</td>
+                            @if (wf.InTheZone)
+                            {
+                                <td><span style="color:green; font-size: 20px;">✔</span></td>
+                            }
+                            else 
+                            {
+                                <td></td>
+                            }
                         </tr>
                     }
                     @if (!weatherForecasts.Any())

@@ -33,28 +33,53 @@ public class HomeController : Controller
         model.SensorReadingsTask = (Task<IEnumerable<Reading>>)_repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, 5);
         model.WeatherReadingsTask = (Task<IEnumerable<Reading>>)_repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, 5);
         model.ThresholdsTask = (Task<IEnumerable<Threshold>>)_repositoryThresholdService.GetThresholds();
-        model.WeatherForecastTask = (Task<IEnumerable<WeatherModel>>)_weatherForecastService.GetWeatherForecast();
-        
-        model.NextZoneChangeTask = Task.Run(async () => {
-            var sensorReadings = await model.SensorReadingsTask;
-            var weatherReadings = await model.WeatherReadingsTask;
-            var thresholds = await model.ThresholdsTask;
-
-            var lastReading = sensorReadings.FirstOrDefault();
-            if ((lastReading?.ReadingDateTimestampUtc ?? DateTime.MinValue) <
-            ((weatherReadings).FirstOrDefault()?.ReadingDateTimestampUtc ??
-            DateTime.MinValue))
-                lastReading = weatherReadings.First();
-            var inTheZone = false;
-            if (lastReading != null)
-            {
-                inTheZone = SilvermineNordic.Common.InTheZoneService.IsInZone(thresholds, lastReading.TemperatureInCelcius,
-                    lastReading.Humidity);
-                return InTheZoneService.GetNextZoneChange(await model.WeatherForecastTask, await model.ThresholdsTask, inTheZone);
-            }
-            return (DateTime?)null;
-        });
+        model.WeatherForecastTask = GetWeatherForecastWithZone(model.ThresholdsTask);
+        model.NextZoneChangeTask = GetNextZoneChange(model);
         return View(model);
+    }
+
+    private async Task<IEnumerable<WeatherModelWithZone>> GetWeatherForecastWithZone(
+        Task<IEnumerable<Threshold>> thresholdsTask)
+    {
+        var weatherForecastModel = await _weatherForecastService.GetWeatherForecast();
+        var weatherForecastWithZoneModel = new List<WeatherModelWithZone>();
+        foreach (var forecast in weatherForecastModel)
+        {
+            weatherForecastWithZoneModel.Add(new WeatherModelWithZone()
+            {
+                DateTimeUtc = forecast.DateTimeUtc,
+                TemperatureInCelcius = forecast.TemperatureInCelcius,
+                Humidity = forecast.Humidity,
+                SnowfallInCm = forecast.SnowfallInCm,
+                InTheZone = InTheZoneService.IsInZone(
+                    await thresholdsTask, 
+                    forecast.TemperatureInCelcius, 
+                    forecast.Humidity
+                ),
+            });
+        }
+        return weatherForecastWithZoneModel;
+    }
+
+    private async Task<DateTime?> GetNextZoneChange(IndexModel model)
+    {
+        var sensorReadings = await model.SensorReadingsTask;
+        var weatherReadings = await model.WeatherReadingsTask;
+        var thresholds = await model.ThresholdsTask;
+
+        var lastReading = sensorReadings.FirstOrDefault();
+        if ((lastReading?.ReadingDateTimestampUtc ?? DateTime.MinValue) <
+        ((weatherReadings).FirstOrDefault()?.ReadingDateTimestampUtc ??
+        DateTime.MinValue))
+            lastReading = weatherReadings.First();
+        var inTheZone = false;
+        if (lastReading != null)
+        {
+            inTheZone = SilvermineNordic.Common.InTheZoneService.IsInZone(thresholds, lastReading.TemperatureInCelcius,
+                lastReading.Humidity);
+            return InTheZoneService.GetNextZoneChange(await model.WeatherForecastTask, await model.ThresholdsTask, inTheZone);
+        }
+        return (DateTime?)null;
     }
 
     public IActionResult Privacy()
