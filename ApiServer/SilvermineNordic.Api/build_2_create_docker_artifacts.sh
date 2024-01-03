@@ -2,11 +2,11 @@
 
 # Delete docker container FORCED if it exists
 # Your image name
-IMAGE_NAME="silverminenordic-api:1.0.0"
+IMAGE_NAME="silverminenordic-api:latest"
 
 
 dotnet publish --os linux --arch x64 /t:PublishContainer -c Release
-docker run -d -p 9080:9080 --restart=always --name silverminenordic-api -e AppConfigConnectionString="$1" silverminenordic-api:1.0.0
+docker run -d -p 9080:9080 --restart=always --name silverminenordic-api -e AppConfigConnectionString="$1" silverminenordic-api:latest
 rm -rf /tmp/Containers
 
 
