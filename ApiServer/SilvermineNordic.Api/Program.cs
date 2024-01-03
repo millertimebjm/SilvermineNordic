@@ -42,6 +42,7 @@ builder.Services.AddOptions<SilvermineNordicConfigurationService>()
         configuration.GetSection(_applicationNameConfigurationService).Bind(settings);
     });
 builder.Services.AddDbContext<SilvermineNordicDbContext>(ServiceLifetime.Scoped);
+builder.Services.AddScoped<ISilvermineNordicDbContextFactory, SilvermineNordicDbContextFactory>();
 builder.Services.AddScoped<IRepositoryReading, EntityFrameworkReadingService>();
 builder.Services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
 builder.Services.AddScoped<IWeatherForecast, OpenWeatherApiForecastService>();

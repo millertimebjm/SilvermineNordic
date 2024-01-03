@@ -11,11 +11,11 @@ namespace SilvermineNordic.Repository.Services
     {
         private const string INMEMORY = "Microsoft.EntityFrameworkCore.InMemory";
         private readonly SilvermineNordicDbContext _dbContext;
-        private readonly SilvermineNordicDbContextFactory _dbContextFactory;
+        private readonly ISilvermineNordicDbContextFactory _dbContextFactory;
 
         public EntityFrameworkThresholdService(
             SilvermineNordicDbContext dbContext,
-            SilvermineNordicDbContextFactory dbContextFactory)
+            ISilvermineNordicDbContextFactory dbContextFactory)
         {
             _dbContext = dbContext;
             _dbContextFactory = dbContextFactory;

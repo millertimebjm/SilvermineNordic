@@ -2,7 +2,7 @@ using Microsoft.Extensions.Options;
 
 namespace SilvermineNordic.Repository.Services
 {
-    public class SilvermineNordicDbContextFactory 
+    public class SilvermineNordicDbContextFactory : ISilvermineNordicDbContextFactory
     {
         private readonly IOptionsSnapshot<SilvermineNordicConfigurationService> _options;
 

@@ -10,12 +10,12 @@ namespace SilvermineNordic.Repository.Services
     public class EntityFrameworkReadingService : IRepositoryReading
     {
         private readonly SilvermineNordicDbContext _dbContext;
-        private readonly SilvermineNordicDbContextFactory _dbContextFactory;
+        private readonly ISilvermineNordicDbContextFactory _dbContextFactory;
 
         private const string INMEMORY = "Microsoft.EntityFrameworkCore.InMemory";
         public EntityFrameworkReadingService(
             SilvermineNordicDbContext dbContext,
-            SilvermineNordicDbContextFactory dbContextFactory)
+            ISilvermineNordicDbContextFactory dbContextFactory)
         {
             _dbContext = dbContext;
             _dbContextFactory = dbContextFactory;
