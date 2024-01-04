@@ -11,16 +11,17 @@ namespace SilvermineNordic.Tests
     public class WebApiTests
     {
         private IRepositoryReading _readingService;
-        private SilvermineNordicDbContext _silvermineNordicDbContext;
-
+        //private SilvermineNordicDbContext _silvermineNordicDbContext;
+        private readonly ISilvermineNordicDbContextFactory _silvermineNordicDbContextFactory;
 
         public WebApiTests()
         {
             var iOptionsSnapshotMock = new Mock<IOptionsSnapshot<SilvermineNordicConfigurationService>>();
-            _silvermineNordicDbContext = new SilvermineNordicDbContext(iOptionsSnapshotMock.Object);
-            _readingService = new EntityFrameworkReadingService(_silvermineNordicDbContext);
+            _silvermineNordicDbContextFactory = new SilvermineNordicDbContextFactory(iOptionsSnapshotMock.Object);
+            _readingService = new EntityFrameworkReadingService(_silvermineNordicDbContextFactory);
 
-            _silvermineNordicDbContext.Readings.AddRange(new List<Reading>()
+            var silvermineNordicDbContext = _silvermineNordicDbContextFactory.Create();
+            silvermineNordicDbContext.Readings.AddRange(new List<Reading>()
                 {
                     new Reading()
                     {
@@ -81,13 +82,13 @@ namespace SilvermineNordic.Tests
                         Type = ReadingTypeEnum.Sensor.ToString(),
                     },
                 });
-            _silvermineNordicDbContext.SaveChanges();
+            silvermineNordicDbContext.SaveChanges();
         }
 
         [OneTimeTearDown]
         public void TearDown()
         {
-            _silvermineNordicDbContext.Dispose();
+            //_silvermineNordicDbContext.Dispose();
         }
 
         [SetUp]

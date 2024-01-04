@@ -9,21 +9,18 @@ namespace SilvermineNordic.Repository.Services
 {
     public class EntityFrameworkReadingService : IRepositoryReading
     {
-        private readonly SilvermineNordicDbContext _dbContext;
         private readonly ISilvermineNordicDbContextFactory _dbContextFactory;
 
         private const string INMEMORY = "Microsoft.EntityFrameworkCore.InMemory";
         public EntityFrameworkReadingService(
-            SilvermineNordicDbContext dbContext,
             ISilvermineNordicDbContextFactory dbContextFactory)
         {
-            _dbContext = dbContext;
             _dbContextFactory = dbContextFactory;
         }
 
         public async Task<Reading> AddReadingAsync(Reading reading)
         {
-            using var context = _dbContextFactory.Create();
+            var context = _dbContextFactory.Create();
             await context.Readings.AddAsync(reading);
             await context.SaveChangesAsync();
             return reading;
