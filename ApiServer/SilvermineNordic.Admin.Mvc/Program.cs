@@ -33,6 +33,7 @@ builder.Configuration
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddDbContext<SilvermineNordicDbContext>();
+builder.Services.AddScoped<ISilvermineNordicDbContextFactory, SilvermineNordicDbContextFactory>();
 builder.Services.AddScoped<IWeatherForecast, OpenWeatherApiForecastService>();
 builder.Services.AddScoped<IRepositoryReading, EntityFrameworkReadingService>();
 builder.Services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
