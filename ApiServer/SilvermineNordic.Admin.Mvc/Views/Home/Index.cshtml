@@ -7,6 +7,27 @@
     var sensorReadings = await Model.SensorReadingsTask;
     var weatherForecasts = await Model.WeatherForecastTask;
     var thresholds = await Model.ThresholdsTask;
+
+    var weatherForecastChartData = "";
+    var first = true;
+    var day = weatherForecasts.First().DateTimeUtc.ConvertUtcToTimezone("Central Standard Time").Value.Day;
+    foreach (var weatherForecast in weatherForecasts)
+    {
+        var dayOfTheWeekShort = "";
+        if (day != weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time").Value.Day)
+        {
+            dayOfTheWeekShort = weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time").Value.ToString("ddd") + " ";
+            day = weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time").Value.Day;
+        }
+        var time = $"\"{dayOfTheWeekShort}{weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time").Value.ToString("htt")}\"";
+        if (!first) weatherForecastChartData += ","; 
+        weatherForecastChartData += $@"{{ time: {time}, count: {weatherForecast.SnowfallInCm.ConvertCentimetersToInches().RoundToOneDecimal()} }}";
+        first = false;
+    }
+}
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 }
 
 <div class="container">
@@ -49,6 +70,36 @@
         <h3 class="card">In The Zone <br />@(inTheZone)</h3>
         <h3 class="card">Zone Forecast <br />@(((await Model.NextZoneChangeTask).ToString()) ?? "No Forecast")</h3>
         </div>
+        
+        <div style="width: 800px;"><canvas id="acquisitions"></canvas></div>
+        <script type="text/javascript">
+            const data = [
+                @Html.Raw(weatherForecastChartData)
+            ];
+            const ctx = document.getElementById('acquisitions').getContext('2d');
+
+            const myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(row => row.time),
+                    datasets: [{
+                        label: 'Snow Over Time By Inches',
+                        data: data.map(row => row.count),
+                        backgroundColor: 'rgba(153, 204, 255, 0.2)', // Optional: Set bar color
+                        borderColor: 'rgba(153, 204, 255, 1)', // Optional: Set border color
+                        borderWidth: 1 // Optional: Set border width
+                    }]
+                },
+                options: { // Optional: Customize chart appearance
+                    scales: {
+                        y: {
+                            beginAtZero: true // Optional: Start y-axis at zero
+                        }
+                    }
+                }
+            });
+        </script>
+
         <div class="grid">
             <div class="tablecard">
                 <h3 class="description">Weather Reading</h3>
@@ -61,7 +112,6 @@
                         </tr>
                     </thead>
                     <tbody>
-
                         @foreach (var wr in weatherReadings)
                         {
                             <tr key="0">
@@ -177,3 +227,4 @@
             </div>
         </div>
     </div>
+
