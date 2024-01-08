@@ -71,7 +71,9 @@
         <h3 class="card">Zone Forecast <br />@(((await Model.NextZoneChangeTask).ToString()) ?? "No Forecast")</h3>
         </div>
         
-        <div style="width: 800px;"><canvas id="acquisitions"></canvas></div>
+        @* <div style="width: 800px;"><canvas id="acquisitions"></canvas></div> *@
+        <div style="max-width: 800px; margin: 0 auto; width: 100%;"><canvas id="acquisitions"></canvas></div>
+        
         <script type="text/javascript">
             const data = [
                 @Html.Raw(weatherForecastChartData)
@@ -83,7 +85,7 @@
                 data: {
                     labels: data.map(row => row.time),
                     datasets: [{
-                        label: 'Snow Over Time By Inches',
+                        label: 'Snow Forecast By Inches',
                         data: data.map(row => row.count),
                         backgroundColor: 'rgba(153, 204, 255, 0.2)', // Optional: Set bar color
                         borderColor: 'rgba(153, 204, 255, 1)', // Optional: Set border color
