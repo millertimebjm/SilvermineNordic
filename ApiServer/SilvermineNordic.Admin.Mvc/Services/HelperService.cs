@@ -32,4 +32,9 @@ public static class HelperService
             return null;
         }
     }
+
+    public static decimal ConvertCentimetersToInches(this decimal value)
+    {
+        return (value * 0.3937008m);
+    }
 }

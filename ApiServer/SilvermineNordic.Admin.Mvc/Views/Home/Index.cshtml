@@ -145,7 +145,7 @@
                             <th>DateTime</th>
                             <th>Temp</th>
                             <th>Hum</th>
-                            <th>SnowCm</th>
+                            <th>SnowIn</th>
                             <th>Zone</th>
                         </tr>
                     </thead>
@@ -155,7 +155,7 @@
                             <td>@wf.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")</td>
                             <td>@wf.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
                             <td>@wf.Humidity.RoundToOneDecimal()%</td>
-                            <td>@wf.SnowfallInCm</td>
+                            <td>@wf.SnowfallInCm.ConvertCentimetersToInches().RoundToOneDecimal()</td>
                             @if (wf.InTheZone)
                             {
                                 <td><span style="color:green; font-size: 20px;">✔</span></td>
