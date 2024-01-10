@@ -27,7 +27,7 @@ public class HomeController : Controller
         _repositoryThresholdService = repositoryThresholdService;
     }
 
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
         var model = new IndexModel();
         model.SensorReadingsTask = (Task<IEnumerable<Reading>>)_repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, 5);

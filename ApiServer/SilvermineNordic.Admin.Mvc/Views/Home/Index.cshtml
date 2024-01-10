@@ -14,12 +14,12 @@
     foreach (var weatherForecast in weatherForecasts)
     {
         var dayOfTheWeekShort = "";
-        if (day != weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time").Value.Day)
+        if (day != weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.Day)
         {
-            dayOfTheWeekShort = weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time").Value.ToString("ddd") + " ";
-            day = weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time").Value.Day;
+            dayOfTheWeekShort = weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd") + " ";
+            day = weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.Day ?? 0;
         }
-        var time = $"\"{dayOfTheWeekShort}{weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time").Value.ToString("htt")}\"";
+        var time = $"\"{dayOfTheWeekShort}{weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("htt")}\"";
         if (!first) weatherForecastChartData += ","; 
         weatherForecastChartData += $@"{{ time: {time}, count: {weatherForecast.SnowfallInCm.ConvertCentimetersToInches().RoundToOneDecimal()} }}";
         first = false;
@@ -117,7 +117,7 @@
                         @foreach (var wr in weatherReadings)
                         {
                             <tr key="0">
-                                <td>@wr.ReadingDateTimestampUtc.ConvertUtcToTimezone("Central Standard Time").Value.ToString("ddd h:mm")</td>
+                                <td>@wr.ReadingDateTimestampUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd h:mm")</td>
                                 <td>@wr.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
                                 <td>@wr.Humidity.RoundToOneDecimal()%</td>
                             </tr>
@@ -145,7 +145,7 @@
                         @foreach (var sr in sensorReadings)
                         {
                             <tr key="0">
-                                <td>@sr.ReadingDateTimestampUtc.ConvertUtcToTimezone("Central Standard Time").Value.ToString("ddd h:mm")</td>
+                                <td>@sr.ReadingDateTimestampUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd h:mm")</td>
                                 <td>@sr.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
                                 <td>@sr.Humidity.RoundToOneDecimal()%</td>
                             </tr>
@@ -204,7 +204,7 @@
                     @foreach (var wf in weatherForecasts)
                     {
                         <tr key="0">
-                            <td>@wf.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time").Value.ToString("ddd h:mm")</td>
+                            <td>@wf.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd h:mm")</td>
                             <td>@wf.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
                             <td>@wf.Humidity.RoundToOneDecimal()%</td>
                             <td>@wf.SnowfallInCm.ConvertCentimetersToInches().RoundToOneDecimal()</td>
