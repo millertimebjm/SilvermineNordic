@@ -24,9 +24,9 @@ namespace SilvermineNordic.Repository.Services
             throw new NotImplementedException();
         }
 
-        public async Task<User> GetUserAsync(string email)
+        public async Task<User?> GetUserAsync(string email)
         {
-            return _dbContext.Users.SingleOrDefault(_ => _.Email == email);
+            return await _dbContext.Users.SingleOrDefaultAsync(_ => _.Email == email);
         }
 
         public Task<User> UpdateUserAsync(User user)

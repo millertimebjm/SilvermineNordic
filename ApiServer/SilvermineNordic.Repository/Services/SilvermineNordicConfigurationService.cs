@@ -3,68 +3,68 @@ namespace SilvermineNordic.Repository
 {
     public class SilvermineNordicConfigurationService : ISilvermineNordicConfiguration
     {
-        public string StorageConnectionString { get; set; }
-        public string StorageName { get; set; }
-        public string SqlConnectionString { get; set; }
-        public string OpenWeatherApiKey { get; set; }
-        public string AzureSmsConnectionString { get; set; }
-        public string AzureSmsFromPhone { get; set; }
-        public string SilvermineNordicApiUrl { get; set; }
-        public string ZoneNotificationPhoneNumbers { get; set; }
-        public string EmailServiceConnectionString { get; set; }
-        public string InMemoryDatabaseName { get; set; }
+        public string? StorageConnectionString { get; set; }
+        public string? StorageName { get; set; }
+        public string? SqlConnectionString { get; set; }
+        public string? OpenWeatherApiKey { get; set; }
+        public string? AzureSmsConnectionString { get; set; }
+        public string? AzureSmsFromPhone { get; set; }
+        public string? SilvermineNordicApiUrl { get; set; }
+        public string? ZoneNotificationPhoneNumbers { get; set; }
+        public string? EmailServiceConnectionString { get; set; }
+        public string? InMemoryDatabaseName { get; set; }
 
         public SilvermineNordicConfigurationService()
         {
             
         }
 
-        public string GetSqlConnectionString()
+        public string? GetSqlConnectionString()
         {
             return SqlConnectionString;
         }
 
-        public string GetStorageConnectionString()
+        public string? GetStorageConnectionString()
         {
             return StorageConnectionString;
         }
 
-        public string GetStorageName()
+        public string? GetStorageName()
         {
             return StorageName;
         }
 
-        public string GetOpenWeatherApiKey()
+        public string? GetOpenWeatherApiKey()
         {
             return OpenWeatherApiKey;
         }
 
-        public string GetAzureSmsConnectionString()
+        public string? GetAzureSmsConnectionString()
         {
             return AzureSmsConnectionString;
         }
 
-        public string GetAzureSmsFromPhone()
+        public string? GetAzureSmsFromPhone()
         {
             return AzureSmsFromPhone;
         }
 
-        public string GetSilvermineNordicApiUrl()
+        public string? GetSilvermineNordicApiUrl()
         {
             return SilvermineNordicApiUrl;
         }
 
-        public string GetZoneNotificationPhoneNumbers()
+        public string? GetZoneNotificationPhoneNumbers()
         {
             return ZoneNotificationPhoneNumbers;
         }
 
-        public string GetEmailServiceConnectionString()
+        public string? GetEmailServiceConnectionString()
         {
             return EmailServiceConnectionString;
         }
 
-        public string GetInMemoryDatabaseName()
+        public string? GetInMemoryDatabaseName()
         {
             return InMemoryDatabaseName;
         }

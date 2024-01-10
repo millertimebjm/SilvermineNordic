@@ -41,7 +41,7 @@ namespace SilvermineNordic.Repository.Services
             IQueryable<Reading> queryable = context
                 .Readings.Where(_ => _.Type == type.ToString())
                 .OrderByDescending(_ => _.Id);
-            if ((skip ?? 0) > 0) queryable = queryable.Skip(skip.Value);
+            if (skip != null && skip > 0) queryable = queryable.Skip(skip.Value);
             return await queryable
                 .Take(count)
                 .ToListAsync();

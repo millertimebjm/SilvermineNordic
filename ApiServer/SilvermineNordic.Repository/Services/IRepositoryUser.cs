@@ -8,6 +8,6 @@ namespace SilvermineNordic.Repository.Services
         public Task<User> AddUserAsync(User user);
         public Task<User> UpdateUserAsync(User user);
         public Task DeleteUserAsync(User user);
-        public Task<User> GetUserAsync(string email);
+        public Task<User?> GetUserAsync(string email);
     }
 }

@@ -28,11 +28,11 @@ namespace SilvermineNordic.Repository.Services
             using var client = _httpClientFactory.CreateClient();
             var openApiWeatherModel = await client.GetFromJsonAsync<OpenWeatherApiWeatherForecastListModel>(url);
             var models = new List<WeatherModel>();
-            foreach (var forecast in openApiWeatherModel.List)
+            foreach (var forecast in openApiWeatherModel?.List ?? new List<OpenWeatherApiWeatherForecastModel>())
             {
                 models.Add(new WeatherModel()
                 {
-                    DateTimeUtc = forecast.DateTimeUtc.Value,
+                    DateTimeUtc = forecast.DateTimeUtc ?? DateTime.MinValue,
                     TemperatureInCelcius = forecast.Main.Temp,
                     Humidity = forecast.Main.Humidity,
                     SnowfallInCm = forecast.Snow?.SnowfallAmountInCentimeters ?? 0,
@@ -52,8 +52,8 @@ namespace SilvermineNordic.Repository.Services
             var model = new WeatherModel()
             {
                 DateTimeUtc = DateTime.UtcNow,
-                TemperatureInCelcius = openApiWeatherModel.Main.Temp,
-                Humidity = openApiWeatherModel.Main.Humidity,
+                TemperatureInCelcius = openApiWeatherModel?.Main.Temp ?? 0.0m,
+                Humidity = openApiWeatherModel?.Main.Humidity ?? 0.0m,
             };
             return model;
         }

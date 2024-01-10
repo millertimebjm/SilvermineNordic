@@ -32,8 +32,8 @@ namespace SilvermineNordic.Repository.Services
                 await SeedData();
             }
             var queryable = context.Thresholds.AsQueryable();
-            if ((skip ?? 0) > 0) queryable = queryable.Skip(skip.Value);
-            if ((count ?? 0) > 0) queryable = queryable.Take(count.Value);
+            if (skip != null && skip > 0) queryable = queryable.Skip(skip.Value);
+            if (count != null && count > 0) queryable = queryable.Take(count.Value);
             return await queryable.ToListAsync();
         }
 

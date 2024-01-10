@@ -14,7 +14,7 @@ namespace SilvermineNordic.Repository.Services
             _dbContext = dbContext;
         }
 
-        public async Task<UserOtp> GetUserOtpAsync(Guid otp)
+        public async Task<UserOtp?> GetUserOtpAsync(Guid otp)
         {
 
             var userOtp = _dbContext.UserOtps.SingleOrDefault(_ => _.Otp == otp && !_.Exhausted);
@@ -29,7 +29,7 @@ namespace SilvermineNordic.Repository.Services
             return userOtp;
         }
 
-        public async Task<User> GetUserOtpByAuthKeyAsync(Guid authKey)
+        public async Task<User?> GetUserOtpByAuthKeyAsync(Guid authKey)
         {
             var otp = await _dbContext.UserOtps.SingleOrDefaultAsync(_ => _.AuthKey == authKey);
             if (otp is not null)
@@ -53,12 +53,12 @@ namespace SilvermineNordic.Repository.Services
             return userOtp;
         }
 
-        public async Task DeleteUserOtpAsync(UserOtp otp)
+        public void DeleteUserOtpAsync(UserOtp otp)
         {
             throw new NotImplementedException();
         }
 
-        public async Task UpdateUserOtpAsync(UserOtp otp)
+        public void UpdateUserOtpAsync(UserOtp otp)
         {
             throw new NotImplementedException();
         }

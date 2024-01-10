@@ -7,8 +7,8 @@ namespace SilvermineNordic.Repository.Services
 {
     public class AzureSmsService : ISms
     {
-        private readonly string _azureSmsConnectionString;
-        private readonly string _azureSmsFromPhone;
+        private readonly string? _azureSmsConnectionString;
+        private readonly string? _azureSmsFromPhone;
         private readonly ISilvermineNordicConfiguration _configuration;
         public AzureSmsService(
             IOptionsSnapshot<SilvermineNordicConfigurationService> options)
@@ -29,7 +29,7 @@ namespace SilvermineNordic.Repository.Services
                     message: message
                 );
             }
-            catch (Exception ex)
+            catch
             {
                 return false;
             }
