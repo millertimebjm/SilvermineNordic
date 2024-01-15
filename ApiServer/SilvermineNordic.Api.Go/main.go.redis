@@ -1,15 +1,15 @@
 package main
 
 import (
-	"database/sql"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 	"time"
 
-	_ "github.com/denisenkom/go-mssqldb" // Import the driver
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 )
 
 type WeatherForecastApiResponseModel struct {
@@ -133,10 +133,10 @@ func main() {
 	router.Run("localhost:8080")
 }
 
+var ctx = context.Background()
+
 type Reading struct {
-	Id                   int
-	Type                 string
-	DateTimeUtc          time.Time
+	DateTime             time.Time
 	TemperatureInCelcius float32
 	Humidity             float32
 }
@@ -148,84 +148,38 @@ func postReading(c *gin.Context) {
 			"message": "Error decoding JSON: " + err.Error(),
 		})
 	}
-	db, err := getSqlServerConnection()
+	rdb := RedisClient()
+	err = rdb.HSet(ctx, "Reading:Weather:"+weatherCurrentModel.DateTimeUtc.Format("20060102:150405"), "DateTimeUtc", weatherCurrentModel.DateTimeUtc, "TemperatureInCelcius", weatherCurrentModel.TemperatureInCelcius, "Humidity", weatherCurrentModel.Humidity).Err()
 	if err != nil {
-		fmt.Println("Error connecting to database:", err)
-	}
-
-	sql := `
-	INSERT INTO Reading (Type, DateTimeUtc, TemperatureInCelcius, Humidity)
-	OUTPUT INSERTED.ID	
-	VALUES ('Weather', ?, ?, ?)
-	`
-	rows, err := db.Query(sql,
-		weatherCurrentModel.DateTimeUtc,
-		weatherCurrentModel.TemperatureInCelcius,
-		weatherCurrentModel.Humidity)
-	if err != nil {
-		fmt.Println("Error inserting data:", err)
+		c.IndentedJSON(http.StatusBadRequest, gin.H{
+			"message": "Error decoding JSON: " + err.Error(),
+		})
 		return
 	}
-
-	var id int
-	for rows.Next() {
-		err = rows.Scan(&id)
-		if err != nil {
-			c.IndentedJSON(http.StatusBadRequest, gin.H{
-				"message": "Error getting inserted data: " + err.Error(),
-			})
-		}
-	}
-
-	reading := Reading{
-		Id:                   int(id),
-		Type:                 "Weather",
-		DateTimeUtc:          weatherCurrentModel.DateTimeUtc,
-		TemperatureInCelcius: weatherCurrentModel.TemperatureInCelcius,
-		Humidity:             weatherCurrentModel.Humidity,
-	}
-	c.IndentedJSON(http.StatusOK, reading)
+	c.IndentedJSON(http.StatusOK, weatherCurrentModel)
 }
 
 func getReadings(c *gin.Context) {
-	db, err := getSqlServerConnection()
+	rdb := RedisClient()
+	var cursor uint64
+	var keys []string
+	var err error
+
+	keys, _, err = rdb.Scan(ctx, cursor, "Reading:Weather:*", 10).Result()
 	if err != nil {
-		fmt.Println("Error connecting to database:", err)
+		panic(err)
 	}
 
-	sql := `
-	SELECT Id, Type, DateTimeUtc, TemperatureInCelcius, Humidity 
-	FROM Reading 
-	WHERE Type = 'Weather' 
-	ORDER BY DateTimeUtc DESC
-	`
-	rows, err := db.Query(sql)
-	if err != nil {
-		fmt.Println("Error executing query:", err)
-		return
-	}
-	defer db.Close()
-	defer rows.Close()
+	fmt.Println(keys)
 
-	readings := make([]Reading, 0)
-	for rows.Next() {
-		var reading Reading
-		err := rows.Scan(&reading.Id, &reading.Type, &reading.DateTimeUtc, &reading.TemperatureInCelcius, &reading.Humidity)
-		if err != nil {
-			fmt.Println("Error scanning row:", err)
-			return
-		}
-		fmt.Println(reading)
-		readings = append(readings, reading)
-	}
-	c.IndentedJSON(http.StatusOK, readings)
+	c.IndentedJSON(http.StatusOK, keys)
 }
 
-func getSqlServerConnection() (*sql.DB, error) {
-	connString := "sqlserver://sa:@jenkins.bltmiller.com:1433?database=SilvermineNordicSnowMaking"
-	db, err := sql.Open("mssql", connString)
-	if err != nil {
-		return nil, err
-	}
-	return db, nil
+func RedisClient() *redis.Client {
+	return redis.NewClient(&redis.Options{
+		Addr:     "jenkins.bltmiller.com:6379",
+		Password: "", // no password set
+		DB:       0,  // use default DB
+		Protocol: 3,  // specify 2 for RESP 2 or 3 for RESP 3
+	})
 }
