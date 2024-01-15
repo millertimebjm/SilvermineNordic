@@ -1,12 +1,13 @@
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
 CREATE TABLE [dbo].[Reading](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
-	[Type] varchar(20) NOT NULL,
-	[DateTimeUtc] [datetime2] NOT NULL DEFAULT getdate(),
+	[Type] [varchar](20) NOT NULL,
+	[DateTimeUtc] [datetime2](7) NOT NULL,
 	[TemperatureInCelcius] [decimal](8, 2) NOT NULL,
-	[Humidity] [decimal](8, 2) NOT NULL,
-	[DateTimestampUtc] [datetime2] NOT NULL DEFAULT getdate(),
-	[InsertedDateTimestampUtc] [datetime2] NOT NULL DEFAULT getdate(),
-	[ReadingDateTimestampUtc] [datetime2] NOT NULL DEFAULT getdate()
+	[Humidity] [decimal](8, 2) NOT NULL
 ) ON [PRIMARY]
 GO
 ALTER TABLE [dbo].[Reading] ADD  CONSTRAINT [PK_Reading] PRIMARY KEY CLUSTERED 
