@@ -34,7 +34,7 @@ http://localhost:5025/api/sensorreading
             Type = "Sensor",
             TemperatureInCelcius = readingInput.TemperatureInCelcius,
             Humidity = readingInput.Humidity,
-            ReadingDateTimestampUtc = DateTime.UtcNow,
+            DateTimeUtc = DateTime.UtcNow,
         };
         reading = await _repositoryReadingService.AddReadingAsync(reading);
         return Json(reading);
@@ -52,7 +52,7 @@ http://localhost:5025/api/weatherreading
         var reading = new Reading()
         {
             Type = "Weather",
-            ReadingDateTimestampUtc = weatherModel.DateTimeUtc,
+            DateTimeUtc = weatherModel.DateTimeUtc,
             TemperatureInCelcius = weatherModel.TemperatureInCelcius,
             Humidity = weatherModel.Humidity,
         };

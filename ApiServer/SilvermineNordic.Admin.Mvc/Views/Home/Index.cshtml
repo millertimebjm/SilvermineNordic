@@ -55,8 +55,8 @@
         <h3 class="card">Last Weather @Html.Raw(lastWeatherReadingsText)</h3>
         @{
             var lastReading = sensorReadings.FirstOrDefault();
-            if ((lastReading?.ReadingDateTimestampUtc ?? DateTime.MinValue) <
-            (weatherReadings.FirstOrDefault()?.ReadingDateTimestampUtc ??
+            if ((lastReading?.DateTimeUtc ?? DateTime.MinValue) <
+            (weatherReadings.FirstOrDefault()?.DateTimeUtc ??
             DateTime.MinValue))
                 lastReading = weatherReadings.First();
             var inTheZone = false;
@@ -122,7 +122,7 @@
                         @foreach (var wr in weatherReadings)
                         {
                             <tr key="0">
-                                <td>@wr.ReadingDateTimestampUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd h:mm")</td>
+                                <td>@wr.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd h:mm")</td>
                                 <td>@wr.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
                                 <td>@wr.Humidity.RoundToOneDecimal()%</td>
                             </tr>
@@ -150,7 +150,7 @@
                         @foreach (var sr in sensorReadings)
                         {
                             <tr key="0">
-                                <td>@sr.ReadingDateTimestampUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd h:mm")</td>
+                                <td>@sr.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd h:mm")</td>
                                 <td>@sr.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
                                 <td>@sr.Humidity.RoundToOneDecimal()%</td>
                             </tr>

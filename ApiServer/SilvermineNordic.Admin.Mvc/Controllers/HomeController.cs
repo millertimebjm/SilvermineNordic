@@ -68,8 +68,8 @@ public class HomeController : Controller
         var thresholds = await model.ThresholdsTask;
 
         var lastReading = sensorReadings.FirstOrDefault();
-        if ((lastReading?.ReadingDateTimestampUtc ?? DateTime.MinValue) <
-        ((weatherReadings).FirstOrDefault()?.ReadingDateTimestampUtc ??
+        if ((lastReading?.DateTimeUtc ?? DateTime.MinValue) <
+        ((weatherReadings).FirstOrDefault()?.DateTimeUtc ??
         DateTime.MinValue))
             lastReading = weatherReadings.First();
         var inTheZone = false;

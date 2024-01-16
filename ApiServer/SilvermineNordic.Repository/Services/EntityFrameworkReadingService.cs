@@ -52,19 +52,15 @@ namespace SilvermineNordic.Repository.Services
             using var context = _dbContextFactory.Create();
             await context.Readings.AddAsync(new Reading()
             {
-                DateTimestampUtc = DateTime.UtcNow,
+                DateTimeUtc = DateTime.UtcNow,
                 Humidity = 20,
-                InsertedDateTimestampUtc = DateTime.UtcNow,
-                ReadingDateTimestampUtc = DateTime.UtcNow,
                 TemperatureInCelcius = 30,
                 Type = ReadingTypeEnum.Sensor.ToString(),
             });
             await context.Readings.AddAsync(new Reading()
             {
-                DateTimestampUtc = DateTime.UtcNow,
+                DateTimeUtc = DateTime.UtcNow,
                 Humidity = 21,
-                InsertedDateTimestampUtc = DateTime.UtcNow,
-                ReadingDateTimestampUtc = DateTime.UtcNow,
                 TemperatureInCelcius = 31,
                 Type = ReadingTypeEnum.Weather.ToString(),
             });
