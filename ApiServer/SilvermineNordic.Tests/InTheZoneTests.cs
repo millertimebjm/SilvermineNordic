@@ -69,7 +69,7 @@ namespace SilvermineNordic.Tests
         public void InTheZoneTest(Reading sensorReading, bool inTheZone)
         {
             var inTheZoneCalculated = InTheZoneService.IsInZone(Thresholds, sensorReading.TemperatureInCelcius, sensorReading.Humidity);
-            Assert.AreEqual(inTheZoneCalculated, inTheZone);
+            Assert.That(inTheZoneCalculated, Is.EqualTo(inTheZone));
         }
 
         private List<Threshold> thresholds = new List<Threshold>()
@@ -210,7 +210,7 @@ namespace SilvermineNordic.Tests
                 },
             };
             var nextZoneChangeDateTime = InTheZoneService.GetNextZoneChange(weatherModels, thresholds, false);
-            Assert.AreEqual(nextZoneChangeDateTime, weatherModels.First().DateTimeUtc);
+            Assert.That(nextZoneChangeDateTime, Is.EqualTo(weatherModels.First().DateTimeUtc));
         }
 
         public void GetNextZoneChange_AllHighWeatherModels_True_First()
@@ -238,7 +238,7 @@ namespace SilvermineNordic.Tests
                 },
             };
             var nextZoneChangeDateTime = InTheZoneService.GetNextZoneChange(weatherModels, thresholds, true);
-            Assert.AreEqual(nextZoneChangeDateTime, weatherModels.First().DateTimeUtc);
+            Assert.That(nextZoneChangeDateTime, Is.EqualTo(weatherModels.First().DateTimeUtc));
         }
 
         // Test that each case returns a message
@@ -258,7 +258,7 @@ namespace SilvermineNordic.Tests
         public void GetZoneChangeMessageTest(bool lastSensorZone, bool currentSensorZone, bool lastWeatherZone, bool currentWeatherZone)
         {
             var message = InTheZoneService.GenerateZoneChangeSensorWeatherMessage(lastSensorZone, currentSensorZone, lastWeatherZone, currentWeatherZone);
-            Assert.IsNotEmpty(message);
+            Assert.That(message, !Is.Empty);
         }
     }
 }
