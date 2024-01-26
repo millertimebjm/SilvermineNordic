@@ -13,5 +13,7 @@ namespace SilvermineNordic.Repository
         public string? GetZoneNotificationPhoneNumbers();
         public string? GetEmailServiceConnectionString();
         public string? GetInMemoryDatabaseName();
+        public X509Certificate2? GetCertificatePfx();
+        public string? GetCertificatePassword();
     }
 }

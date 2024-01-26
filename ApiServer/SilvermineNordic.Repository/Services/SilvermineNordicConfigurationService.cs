@@ -1,4 +1,6 @@
 ﻿
+using System.Security.Cryptography.X509Certificates;
+
 namespace SilvermineNordic.Repository
 {
     public class SilvermineNordicConfigurationService : ISilvermineNordicConfiguration
@@ -13,6 +15,8 @@ namespace SilvermineNordic.Repository
         public string? ZoneNotificationPhoneNumbers { get; set; }
         public string? EmailServiceConnectionString { get; set; }
         public string? InMemoryDatabaseName { get; set; }
+        public X509Certificate2? CertificatePfx { get; set; }
+        public string? CertificatePassword { get; set; }
 
         public SilvermineNordicConfigurationService()
         {
@@ -67,6 +71,16 @@ namespace SilvermineNordic.Repository
         public string? GetInMemoryDatabaseName()
         {
             return InMemoryDatabaseName;
+        }
+
+        public X509Certificate2? GetCertificatePfx()
+        {
+            return CertificatePfx;
+        }
+
+        public string? GetCertificatePassword()
+        {
+            return CertificatePassword;
         }
     }
 }
