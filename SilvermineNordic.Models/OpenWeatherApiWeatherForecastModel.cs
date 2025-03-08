@@ -13,7 +13,8 @@ namespace SilvermineNordic.Models
                 return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(dt);
             }
         }
-        public OpenWeatherApiWeatherForecaseMainModel Main { get; set; } = new OpenWeatherApiWeatherForecaseMainModel();
-        public OpenWeatherApiWeatherForecastSnowModel Snow { get; set; } = new OpenWeatherApiWeatherForecastSnowModel();
+        public OpenWeatherApiWeatherForecaseMainModel Main { get; set; } = new();
+        public OpenWeatherApiWeatherForecastPrecipitationModel Snow { get; set; } = new();
+        public OpenWeatherApiWeatherForecastPrecipitationModel Rain { get; set; } = new();
     }
 }

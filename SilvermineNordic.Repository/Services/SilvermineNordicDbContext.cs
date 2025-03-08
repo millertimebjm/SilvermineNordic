@@ -18,33 +18,36 @@ namespace SilvermineNordic.Repository.Services
 
 
         public DbSet<Reading> Readings { get; set; }
-        private readonly ISilvermineNordicConfiguration _configuration;
+        // private readonly ISilvermineNordicConfiguration _configuration;
 
-        public SilvermineNordicDbContext(
-            IOptionsSnapshot<SilvermineNordicConfigurationService> options)
-        : base()
-        {
-            _configuration = options.Value;
-        }
+        // public SilvermineNordicDbContext(
+        //     IOptionsSnapshot<SilvermineNordicConfigurationService> options)
+        // : base()
+        // {
+        //     _configuration = options.Value;
+        // }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (optionsBuilder.IsConfigured)
-            {
-                return;
-            }
+    public SilvermineNordicDbContext(DbContextOptions<SilvermineNordicDbContext> options)
+        : base(options) {}
 
-            var sqlConnectionString = _configuration?.GetSqlConnectionString();
-            if (!string.IsNullOrWhiteSpace(sqlConnectionString))
-            {
-                optionsBuilder.UseSqlServer(sqlConnectionString);
-                return;
-            }
+        // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        // {
+        //     if (optionsBuilder.IsConfigured)
+        //     {
+        //         return;
+        //     }
 
-            var inMemoryDatabaseName = _configuration?.GetInMemoryDatabaseName()
-                ?? "InMemoryDatabaseName";
-            optionsBuilder.UseInMemoryDatabase(inMemoryDatabaseName);
-        }
+        //     var sqlConnectionString = _configuration?.GetSqlConnectionString();
+        //     if (!string.IsNullOrWhiteSpace(sqlConnectionString))
+        //     {
+        //         optionsBuilder.UseSqlServer(sqlConnectionString);
+        //         return;
+        //     }
+
+        //     var inMemoryDatabaseName = _configuration?.GetInMemoryDatabaseName()
+        //         ?? "InMemoryDatabaseName";
+        //     optionsBuilder.UseInMemoryDatabase(inMemoryDatabaseName);
+        // }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

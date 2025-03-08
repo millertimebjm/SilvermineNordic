@@ -9,20 +9,18 @@ namespace SilvermineNordic.Repository.Services
 {
     public class EntityFrameworkReadingService : IRepositoryReading
     {
-        private readonly ISilvermineNordicDbContextFactory _dbContextFactory;
-
-        private const string INMEMORY = "Microsoft.EntityFrameworkCore.InMemory";
+        private readonly SilvermineNordicDbContext _dbContext;
+        
         public EntityFrameworkReadingService(
-            ISilvermineNordicDbContextFactory dbContextFactory)
+            SilvermineNordicDbContext dbContext)
         {
-            _dbContextFactory = dbContextFactory;
+            _dbContext = dbContext;
         }
 
         public async Task<Reading> AddReadingAsync(Reading reading)
         {
-            var context = _dbContextFactory.Create();
-            await context.Readings.AddAsync(reading);
-            await context.SaveChangesAsync();
+            await _dbContext.Readings.AddAsync(reading);
+            await _dbContext.SaveChangesAsync();
             return reading;
         }
 
@@ -31,40 +29,13 @@ namespace SilvermineNordic.Repository.Services
             int count,
             int? skip = 0)
         {
-            using var context = _dbContextFactory.Create();
-            if (context.Database.ProviderName == INMEMORY
-                && (await context.Readings.FirstOrDefaultAsync()) == null)
-            {
-                await SeedData();
-            }
-
-            IQueryable<Reading> queryable = context
+            IQueryable<Reading> queryable = _dbContext
                 .Readings.Where(_ => _.Type == type.ToString())
                 .OrderByDescending(_ => _.Id);
             if (skip != null && skip > 0) queryable = queryable.Skip(skip.Value);
             return await queryable
                 .Take(count)
                 .ToListAsync();
-        }
-
-        private async Task SeedData()
-        {
-            using var context = _dbContextFactory.Create();
-            await context.Readings.AddAsync(new Reading()
-            {
-                DateTimeUtc = DateTime.UtcNow,
-                Humidity = 20,
-                TemperatureInCelcius = 30,
-                Type = ReadingTypeEnum.Sensor.ToString(),
-            });
-            await context.Readings.AddAsync(new Reading()
-            {
-                DateTimeUtc = DateTime.UtcNow,
-                Humidity = 21,
-                TemperatureInCelcius = 31,
-                Type = ReadingTypeEnum.Weather.ToString(),
-            });
-            await context.SaveChangesAsync();
         }
     }
 }

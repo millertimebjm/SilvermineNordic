@@ -34,8 +34,10 @@ namespace SilvermineNordic.Repository.Services
                 {
                     DateTimeUtc = forecast.DateTimeUtc ?? DateTime.MinValue,
                     TemperatureInCelcius = forecast.Main.Temp,
+                    FeelsLikeInCelcius = forecast.Main.Feels_Like,
                     Humidity = forecast.Main.Humidity,
-                    SnowfallInCm = forecast.Snow?.SnowfallAmountInCentimeters ?? 0,
+                    SnowfallInCm = forecast.Snow?.PrecipitationAmountInCentimeters ?? 0,
+                    RainfallInCm = forecast.Rain?.PrecipitationAmountInCentimeters ?? -1,
                 });
             }
             return models;

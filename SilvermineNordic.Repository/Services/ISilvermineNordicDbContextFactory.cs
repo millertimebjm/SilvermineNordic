@@ -1,8 +1,8 @@
 
-namespace SilvermineNordic.Repository.Services
-{
-    public interface ISilvermineNordicDbContextFactory 
-    {
-        SilvermineNordicDbContext Create();
-    }
-}
+// namespace SilvermineNordic.Repository.Services
+// {
+//     public interface ISilvermineNordicDbContextFactory 
+//     {
+//         SilvermineNordicDbContext Create();
+//     }
+// }

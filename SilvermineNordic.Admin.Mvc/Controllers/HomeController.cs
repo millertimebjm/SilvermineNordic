@@ -27,14 +27,19 @@ public class HomeController : Controller
         _repositoryThresholdService = repositoryThresholdService;
     }
 
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
         var model = new IndexModel();
         model.SensorReadingsTask = (Task<IEnumerable<Reading>>)_repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, 5);
+        await model.SensorReadingsTask;
         model.WeatherReadingsTask = (Task<IEnumerable<Reading>>)_repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, 5);
+        await model.WeatherReadingsTask;
         model.ThresholdsTask = (Task<IEnumerable<Threshold>>)_repositoryThresholdService.GetThresholds();
+        await model.ThresholdsTask;
         model.WeatherForecastTask = GetWeatherForecastWithZone(model.ThresholdsTask);
+        await model.WeatherForecastTask;
         model.NextZoneChangeTask = GetNextZoneChange(model);
+        await model.NextZoneChangeTask;
         return View(model);
     }
 
@@ -49,8 +54,10 @@ public class HomeController : Controller
             {
                 DateTimeUtc = forecast.DateTimeUtc,
                 TemperatureInCelcius = forecast.TemperatureInCelcius,
+                FeelsLikeInCelcius = forecast.FeelsLikeInCelcius,
                 Humidity = forecast.Humidity,
                 SnowfallInCm = forecast.SnowfallInCm,
+                RainfallInCm = forecast.RainfallInCm,
                 InTheZone = InTheZoneService.IsInZone(
                     await thresholdsTask, 
                     forecast.TemperatureInCelcius, 

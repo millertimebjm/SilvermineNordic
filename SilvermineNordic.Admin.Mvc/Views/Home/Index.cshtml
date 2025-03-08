@@ -11,16 +11,22 @@
     var weatherForecastChartData = "";
     var first = true;
     var day = DateTime.MinValue.Day;
-    var accumulated = 0.0m;
+    var snowfallAccumulated = 0.0m;
+    var rainfallAccumulated = 0.0m;
     foreach (var weatherForecast in weatherForecasts)
     {
         var dayOfTheWeekShort = weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd") + " ";
         var time = $"\"{dayOfTheWeekShort}{weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("htt")}\"";
         if (!first) weatherForecastChartData += ","; 
         var snowfallInIn = weatherForecast.SnowfallInCm.ConvertCentimetersToInches().RoundToOneDecimal();
-        accumulated += snowfallInIn;
+        snowfallAccumulated += snowfallInIn;
+        var rainfallInIn = weatherForecast.RainfallInCm.ConvertCentimetersToInches().RoundToOneDecimal();
+        rainfallAccumulated += rainfallInIn;
         //weatherForecastChartData += $@"{{ time: {time}, count: {snowfallInIn} }}";
-        weatherForecastChartData += $@"{{ time: {time}, count: {snowfallInIn}, accumulated: {(snowfallInIn > 0 ? accumulated : 0)} }}";
+//        weatherForecastChartData += $@"{{ time: {time}, count: {snowfallInIn}, accumulated: {(snowfallInIn > 0 ? accumulated : 0)} }}";
+        weatherForecastChartData += 
+            $@"{{ time: {time}, snowCount: {snowfallInIn}, snowAccumulated: {(snowfallInIn > 0 ? snowfallAccumulated : 0)}, rainCount: {rainfallInIn}, rainAccumulated: {(rainfallInIn > 0 ? rainfallAccumulated : 0)} }}";
+
         first = false;
     }
 }
@@ -36,6 +42,15 @@
             <button class="button">Refresh</button>
         </h3>
     </div>
+    @* @foreach (var weatherForecast in weatherForecasts)
+    {
+        <text>@weatherForecast.FeelsLikeInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</text>
+    }
+    <br/>
+    @foreach (var weatherForecast in weatherForecasts)
+    {
+        <text>@weatherForecast.RainfallInCm.ConvertCentimetersToInches().RoundToOneDecimal()in</text>
+    } *@
     <div class="grid">
         @{
             var lastSensorReadingsText = "";
@@ -82,21 +97,37 @@
                 type: 'bar',
                 data: {
                     labels: data.map(row => row.time),
-                    datasets: [{
-                        label: 'Snow Forecast By Inches',
-                        data: data.map(row => row.count),
-                        backgroundColor: 'rgba(73, 124, 155, 0.2)', // Optional: Set bar color
-                        borderColor: 'rgba(73, 124, 155, 1)', // Optional: Set border color
-                        borderWidth: 1 // Optional: Set border width
-                    },
-                    {
-                        label: 'Snow Accumulated By Inches',
-                        data: data.map(row => row.accumulated),
-                        backgroundColor: 'rgba(153, 204, 255, 0.2)', // Optional: Set bar color
-                        borderColor: 'rgba(153, 204, 255, 1)', // Optional: Set border color
-                        borderWidth: 1 // Optional: Set border width
-                    }]
-                },
+                    datasets: [
+                        {
+                            label: 'Snow Forecast By Inches',
+                            data: data.map(row => row.snowCount),
+                            backgroundColor: 'rgba(73, 124, 155, 0.2)', // Optional: Set bar color
+                            borderColor: 'rgba(73, 124, 155, 1)', // Optional: Set border color
+                            borderWidth: 1 // Optional: Set border width
+                        },
+                        {
+                            label: 'Snow Accumulated By Inches',
+                            data: data.map(row => row.snowAccumulated),
+                            backgroundColor: 'rgba(153, 204, 255, 0.2)', // Optional: Set bar color
+                            borderColor: 'rgba(153, 204, 255, 1)', // Optional: Set border color
+                            borderWidth: 1 // Optional: Set border width
+                        },
+                        {
+                            label: 'Rain Forecast By Inches',
+                            data: data.map(row => row.rainCount),
+                            backgroundColor: 'rgba(193, 216, 195, 0.2)', // Optional: Set bar color
+                            borderColor: 'rgba(193, 216, 195, 1)', // Optional: Set border color
+                            borderWidth: 1 // Optional: Set border width
+                        },
+                        {
+                            label: 'Rain Accumulated By Inches',
+                            data: data.map(row => row.rainAccumulated),
+                            backgroundColor: 'rgba(106, 156, 137, 0.2)', // Optional: Set bar color
+                            borderColor: 'rgba(106, 156, 137, 1)', // Optional: Set border color
+                            borderWidth: 1 // Optional: Set border width
+                        }
+                    ]
+                }, //rgba(193, 216, 195, 1)
                 options: { // Optional: Customize chart appearance
                     scales: {
                         y: {
@@ -204,6 +235,7 @@
                             <th>Temp</th>
                             <th>Hum</th>
                             <th>SnowIn</th>
+                            <th>RainIn</th>
                             <th>Zone</th>
                         </tr>
                     </thead>
@@ -214,6 +246,7 @@
                             <td>@wf.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
                             <td>@wf.Humidity.RoundToOneDecimal()%</td>
                             <td>@wf.SnowfallInCm.ConvertCentimetersToInches().RoundToOneDecimal()</td>
+                            <td>@wf.RainfallInCm.ConvertCentimetersToInches().RoundToOneDecimal()</td>
                             @if (wf.InTheZone)
                             {
                                 <td><span style="color:green; font-size: 20px;">✔</span></td>
