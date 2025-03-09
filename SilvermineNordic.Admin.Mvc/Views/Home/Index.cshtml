@@ -8,7 +8,8 @@
     var weatherForecasts = await Model.WeatherForecastTask;
     var thresholds = await Model.ThresholdsTask;
 
-    var weatherForecastChartData = "";
+    var weatherForecastPrecipitationChartData = "";
+    var weatherForecastTempChartData = "";
     var first = true;
     var day = DateTime.MinValue.Day;
     var snowfallAccumulated = 0.0m;
@@ -17,19 +18,24 @@
     {
         var dayOfTheWeekShort = weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd") + " ";
         var time = $"\"{dayOfTheWeekShort}{weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("htt")}\"";
-        if (!first) weatherForecastChartData += ","; 
+        if (!first) weatherForecastPrecipitationChartData += ",";
+        if (!first) weatherForecastTempChartData += ",";
         var snowfallInIn = weatherForecast.SnowfallInCm.ConvertCentimetersToInches().RoundToOneDecimal();
         snowfallAccumulated += snowfallInIn;
         var rainfallInIn = weatherForecast.RainfallInCm.ConvertCentimetersToInches().RoundToOneDecimal();
         rainfallAccumulated += rainfallInIn;
         //weatherForecastChartData += $@"{{ time: {time}, count: {snowfallInIn} }}";
 //        weatherForecastChartData += $@"{{ time: {time}, count: {snowfallInIn}, accumulated: {(snowfallInIn > 0 ? accumulated : 0)} }}";
-        weatherForecastChartData += 
+        weatherForecastPrecipitationChartData += 
             $@"{{ time: {time}, snowCount: {snowfallInIn}, snowAccumulated: {(snowfallInIn > 0 ? snowfallAccumulated : 0)}, rainCount: {rainfallInIn}, rainAccumulated: {(rainfallInIn > 0 ? rainfallAccumulated : 0)} }}";
-
+        weatherForecastTempChartData +=
+            $@"{{ time: {time}, temp: {weatherForecast.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()}, feelsLike: {weatherForecast.FeelsLikeInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()} }}";
         first = false;
     }
 }
+
+@* public decimal TemperatureInCelcius { get; set; }
+        public decimal FeelsLikeInCelcius { get; set; } *@
 
 @section scripts {
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -37,20 +43,11 @@
 
 <div class="container">
     <h1 class="title">Silvermine Nordic<br />Snow Making</h1>
-    <div class="grid">
+    @* <div class="grid">
         <h3 class="cardwithoutborder">
             <button class="button">Refresh</button>
         </h3>
     </div>
-    @* @foreach (var weatherForecast in weatherForecasts)
-    {
-        <text>@weatherForecast.FeelsLikeInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</text>
-    }
-    <br/>
-    @foreach (var weatherForecast in weatherForecasts)
-    {
-        <text>@weatherForecast.RainfallInCm.ConvertCentimetersToInches().RoundToOneDecimal()in</text>
-    } *@
     <div class="grid">
         @{
             var lastSensorReadingsText = "";
@@ -83,47 +80,103 @@
         }
         <h3 class="card">In The Zone <br />@(inTheZone)</h3>
         <h3 class="card">Zone Forecast <br />@(((await Model.NextZoneChangeTask)?.ToString("ddd h:mm")) ?? "No Forecast")</h3>
+        </div> *@
+        
+        <div>
+            <row class="col align-items-center">
+                <h1>@weatherForecasts.First().TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToZeroDecimals()</h1>
+            </row>
         </div>
-        
-        <div style="max-width: 800px; margin: 0 auto; width: 100%;"><canvas id="acquisitions"></canvas></div>
-        
-        <script type="text/javascript">
-            const data = [
-                @Html.Raw(weatherForecastChartData)
-            ];
-            const ctx = document.getElementById('acquisitions').getContext('2d');
 
-            const myChart = new Chart(ctx, {
-                type: 'bar',
+        @if (snowfallAccumulated > 0 || rainfallAccumulated > 0)
+        {
+            <div style="max-width: 800px; margin: 0 auto; width: 100%;"><canvas id="precipitationChart"></canvas></div>
+        } 
+        else
+        {
+            <h2>No precipitation in the forecast.</h2>
+        }
+        
+        <div style="max-width: 800px; margin: 0 auto; width: 100%;"><canvas id="tempChart"></canvas></div>
+        
+
+        <script type="text/javascript">
+            const precipitationData = [
+                @Html.Raw(weatherForecastPrecipitationChartData)
+            ];
+
+            const precipitationChart = document.getElementById('precipitationChart')
+            if (precipitationChart) {
+                const ctx = precipitationChart.getContext('2d');
+
+                const precipitationChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: precipitationData.map(row => row.time),
+                        datasets: [
+                            {
+                                label: 'Snow Forecast By Inches',
+                                data: precipitationData.map(row => row.snowCount),
+                                backgroundColor: 'rgba(73, 124, 155, 0.2)', // Optional: Set bar color
+                                borderColor: 'rgba(73, 124, 155, 1)', // Optional: Set border color
+                                borderWidth: 1 // Optional: Set border width
+                            },
+                            {
+                                label: 'Snow Accumulated By Inches',
+                                data: precipitationData.map(row => row.snowAccumulated),
+                                backgroundColor: 'rgba(153, 204, 255, 0.2)', // Optional: Set bar color
+                                borderColor: 'rgba(153, 204, 255, 1)', // Optional: Set border color
+                                borderWidth: 1 // Optional: Set border width
+                            },
+                            {
+                                label: 'Rain Forecast By Inches',
+                                data: precipitationData.map(row => row.rainCount),
+                                backgroundColor: 'rgba(193, 216, 195, 0.2)', // Optional: Set bar color
+                                borderColor: 'rgba(193, 216, 195, 1)', // Optional: Set border color
+                                borderWidth: 1 // Optional: Set border width
+                            },
+                            {
+                                label: 'Rain Accumulated By Inches',
+                                data: precipitationData.map(row => row.rainAccumulated),
+                                backgroundColor: 'rgba(106, 156, 137, 0.2)', // Optional: Set bar color
+                                borderColor: 'rgba(106, 156, 137, 1)', // Optional: Set border color
+                                borderWidth: 1 // Optional: Set border width
+                            }
+                        ]
+                    }, //rgba(193, 216, 195, 1)
+                    options: { // Optional: Customize chart appearance
+                        scales: {
+                            y: {
+                                beginAtZero: true, // Optional: Start y-axis at zero
+                                suggestedMax: 3
+                            }
+                        }
+                    }
+                });
+            }
+            
+            const tempData = [
+                @Html.Raw(weatherForecastTempChartData)
+            ];
+            const tempChartCtx = document.getElementById('tempChart').getContext('2d');
+
+            const tempChart = new Chart(tempChartCtx, {
+                type: 'line',
                 data: {
-                    labels: data.map(row => row.time),
+                    labels: tempData.map(row => row.time),
                     datasets: [
                         {
-                            label: 'Snow Forecast By Inches',
-                            data: data.map(row => row.snowCount),
-                            backgroundColor: 'rgba(73, 124, 155, 0.2)', // Optional: Set bar color
-                            borderColor: 'rgba(73, 124, 155, 1)', // Optional: Set border color
+                            label: 'Temp',
+                            data: tempData.map(row => row.temp),
+                            backgroundColor: 'rgba(126, 96, 191, .2)', // Optional: Set bar color
+                            borderColor: 'rgba(126, 96, 191, 1)', // Optional: Set border color
                             borderWidth: 1 // Optional: Set border width
                         },
                         {
-                            label: 'Snow Accumulated By Inches',
-                            data: data.map(row => row.snowAccumulated),
-                            backgroundColor: 'rgba(153, 204, 255, 0.2)', // Optional: Set bar color
-                            borderColor: 'rgba(153, 204, 255, 1)', // Optional: Set border color
-                            borderWidth: 1 // Optional: Set border width
-                        },
-                        {
-                            label: 'Rain Forecast By Inches',
-                            data: data.map(row => row.rainCount),
-                            backgroundColor: 'rgba(193, 216, 195, 0.2)', // Optional: Set bar color
-                            borderColor: 'rgba(193, 216, 195, 1)', // Optional: Set border color
-                            borderWidth: 1 // Optional: Set border width
-                        },
-                        {
-                            label: 'Rain Accumulated By Inches',
-                            data: data.map(row => row.rainAccumulated),
-                            backgroundColor: 'rgba(106, 156, 137, 0.2)', // Optional: Set bar color
-                            borderColor: 'rgba(106, 156, 137, 1)', // Optional: Set border color
+                            label: 'Feels Like',
+                            data: tempData.map(row => row.feelsLike),
+                            backgroundColor: 'rgba(228, 177, 240, .2)', // Optional: Set bar color
+                            borderColor: 'rgba(228, 177, 240, 1)', // Optional: Set border color
                             borderWidth: 1 // Optional: Set border width
                         }
                     ]
@@ -131,13 +184,14 @@
                 options: { // Optional: Customize chart appearance
                     scales: {
                         y: {
-                            beginAtZero: true, // Optional: Start y-axis at zero
-                            suggestedMax: 3
+                            //beginAtZero: true, // Optional: Start y-axis at zero
+                            suggestedMax: 100,
+                            suggestedMin: 0
                         }
                     }
                 }
             });
-        </script>
+        </script> 
 
         <div class="grid">
             <div class="tablecard">

@@ -14,6 +14,11 @@ public static class HelperService
         return Math.Round(value, 1);
     }
 
+    public static decimal RoundToZeroDecimals(this decimal value)
+    {
+        return Math.Round(value, 0);
+    }
+
     public static DateTime? ConvertUtcToTimezone(this DateTime value, string timezoneString)
     {
         try

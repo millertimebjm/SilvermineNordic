@@ -39,3 +39,7 @@ One-Time Password
 After submitting a Email Address, a UserOtp record is created, generating two GUID's.  The first GUID is sent to the user's email.  After using the link, the second GUID is saved in the User's cookie and the first GUID is considered exhausted.
 
 ## Determining Good Snow Making Weather
+
+Database Migrations:
+`dotnet ef migrations add [NewName]`
+`dotnet ef database update`
