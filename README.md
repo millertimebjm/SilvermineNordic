@@ -43,3 +43,20 @@ After submitting a Email Address, a UserOtp record is created, generating two GU
 Database Migrations:
 `dotnet ef migrations add [NewName]`
 `dotnet ef database update`
+
+
+![partly cloudy](partly_cloudy.png)
+
+![mostly cloudy](mostly_cloudy.png)
+
+![sunny](sunny.png)
+
+![full moon](full_moon.png)
+
+![empty moon](empty_moon.png)
+
+![half moon](half_moon.png)
+
+![waxing moon](waxing_moon.png)
+
+![waning moon](waning_moon.png)

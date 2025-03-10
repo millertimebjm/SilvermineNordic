@@ -63,7 +63,9 @@ public class HomeController : Controller
                     forecast.TemperatureInCelcius, 
                     forecast.Humidity
                 ),
+                CloudPercentage = forecast.CloudPercentage,
             });
+            Console.WriteLine(forecast.CloudPercentage);
         }
         return weatherForecastWithZoneModel;
     }

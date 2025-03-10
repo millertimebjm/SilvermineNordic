@@ -38,6 +38,7 @@ namespace SilvermineNordic.Repository.Services
                     Humidity = forecast.Main.Humidity,
                     SnowfallInCm = forecast.Snow?.PrecipitationAmountInCentimeters ?? 0,
                     RainfallInCm = forecast.Rain?.PrecipitationAmountInCentimeters ?? -1,
+                    CloudPercentage = forecast.Clouds.CloudPercentage,
                 });
             }
             return models;

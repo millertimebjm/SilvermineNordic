@@ -38,7 +38,8 @@
         public decimal FeelsLikeInCelcius { get; set; } *@
 
 @section scripts {
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @* <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> *@
+    <script src="~/js/chart.min.js"></script>
 }
 
 <div class="container">
@@ -84,7 +85,7 @@
         
         <div>
             <row class="col align-items-center">
-                <h1>@weatherForecasts.First().TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToZeroDecimals()</h1>
+                <h1>@weatherForecasts.First().TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToZeroDecimals() F</h1>
             </row>
         </div>
 
@@ -105,9 +106,16 @@
                 @Html.Raw(weatherForecastPrecipitationChartData)
             ];
 
-            const precipitationChart = document.getElementById('precipitationChart')
-            if (precipitationChart) {
-                const ctx = precipitationChart.getContext('2d');
+@* const tempData = [
+                @Html.Raw(weatherForecastTempChartData)
+            ];
+            const tempChartCtx = document.getElementById('tempChart').getContext('2d');
+
+            const tempChart = new Chart(tempChartCtx, { *@
+
+            const precipitationChartDiv = document.getElementById('precipitationChart')
+            if (precipitationChartDiv) {
+                const ctx = precipitationChartDiv.getContext('2d');
 
                 const precipitationChart = new Chart(ctx, {
                     type: 'bar',
@@ -170,7 +178,8 @@
                             data: tempData.map(row => row.temp),
                             backgroundColor: 'rgba(126, 96, 191, .2)', // Optional: Set bar color
                             borderColor: 'rgba(126, 96, 191, 1)', // Optional: Set border color
-                            borderWidth: 1 // Optional: Set border width
+                            borderWidth: 1, // Optional: Set border width
+                            fill: '+1'
                         },
                         {
                             label: 'Feels Like',
