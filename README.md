@@ -1,5 +1,5 @@
 # Silvermine Nordic Snow Making
-Provide accounts for API Access to private values
+Provide weather information both using API and on-site low power IoT device to determine (and predict) snow making weather for notification of good snow-making weather.  Eventually would like to automate the turning on and off of snow making guns during good snow making weather times to facilitate winter snow making for a cross-country trail area.
 
 ## Architecture 
 
@@ -19,18 +19,10 @@ Provide accounts for API Access to private values
     * Email
 * Azure Application Insights
     * API
-* Google Domains
+* Cloudflare Domains
     * SilvermineNordic.com
 
 ![Archiecture Diagram](https://github.com/millertimebjm/ApiServer/blob/main/ApiServer/SilvermineNordicSnowMakingNotification.png)
-
-### Future Plans
-
-* Make a Backend for the Frontend that bundles all the data required for the Model in one API call
-    * Bundle database calls for single round trip, possibly using Dapper QueryMultiple
-* Research URL destinations that are not the default index not working in Static Web Apps
-* Create User Profile display and Notification Edit
-* Create Threshold Editor
 
 ### Password Architecture
 
@@ -43,20 +35,3 @@ After submitting a Email Address, a UserOtp record is created, generating two GU
 Database Migrations:
 `dotnet ef migrations add [NewName]`
 `dotnet ef database update`
-
-
-![partly cloudy](partly_cloudy.png)
-
-![mostly cloudy](mostly_cloudy.png)
-
-![sunny](sunny.png)
-
-![full moon](full_moon.png)
-
-![empty moon](empty_moon.png)
-
-![half moon](half_moon.png)
-
-![waxing moon](waxing_moon.png)
-
-![waning moon](waning_moon.png)
