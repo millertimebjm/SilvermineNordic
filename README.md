@@ -1,5 +1,5 @@
 # Silvermine Nordic Snow Making
-Provide weather information both using API and on-site low power IoT device to determine (and predict) snow making weather for notification of good snow-making weather.  Eventually would like to automate the turning on and off of snow making guns during good snow making weather times to facilitate winter snow making for a cross-country trail area.
+Provide weather information both using API and on-site low power IoT device to determine (and predict) snow making weather for notification of in-the-zone and out-of-zone snow-making weather.  Eventually would like to automate the turning on and off of snow making guns during good snow making weather times to facilitate winter snow making for a cross-country trail area.
 
 ## Architecture 
 
