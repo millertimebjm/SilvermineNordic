@@ -1,10 +1,8 @@
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using SilvermineNordic.Repository.Services;
-using Microsoft.Extensions.DependencyInjection;
 using SilvermineNordic.Repository;
-using Microsoft.Extensions.Configuration.AzureAppConfiguration;
 using Microsoft.EntityFrameworkCore;
+using Serilog;
+using Serilog.Sinks.Grafana.Loki;
 
 const string _applicationNameConfigurationService = "SilvermineNordic";
 const string _appConfigEnvironmentVariableName = "AppConfigConnectionString";
@@ -14,8 +12,7 @@ builder
     .Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
-    .AddEnvironmentVariables()
-    .Build();
+    .AddEnvironmentVariables();
 
 string appConfigConnectionString =
     // Windows config value
@@ -28,8 +25,19 @@ builder.Configuration
     .SetBasePath(Directory.GetCurrentDirectory())
     .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables()
-    .AddAzureAppConfiguration(appConfigConnectionString)
-    .Build();
+    .AddAzureAppConfiguration(appConfigConnectionString);
+
+builder.Host.UseSerilog();
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Console()
+            .WriteTo.GrafanaLoki("http://media.bltmiller.com:3100", 
+                labels: new[]
+                {
+                    new LokiLabel() {Key = "app", Value = "snowmaking"},
+                    new LokiLabel() {Key = "env", Value = "prod"},
+                })
+            .CreateLogger();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
