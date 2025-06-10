@@ -40,16 +40,32 @@
 @section scripts {
     @* <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> *@
     <script src="~/js/chart.min.js"></script>
+    <script type="text/javascript">
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                console.log("Enter key was pressed");
+                let zipCode = document.getElementById("zipCode").value;
+                if (zipCode.length > 0) {
+                    window.location.href = "/?zipCode=" + zipCode;
+                } else {
+                    window.location.href = "/";
+                }
+            }
+        }
+        window.addEventListener("load", function() {
+            document.getElementById("zipCode").value = "@(Model.preferenceModel.zipCode)";
+        });
+    </script>
 }
-@* 
+
 
 <div class="container">
     <div class="zip-code-container">
-        <input type="text" placeholder="Zip or City, State" id="zip-code">
+        <input type="text" placeholder="Zip Code" id="zipCode" onkeypress="handleKeyPress(event)" autocomplete='off'>
     </div>        
     <div>
         @* <row class="col align-items-center"> *@
-            <h2>@weatherForecasts.First().TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToZeroDecimals() F</h1>
+            <h2 style="text-align: center;">@weatherForecasts.First().TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToZeroDecimals() F</h1>
         @* </row> *@
     </div>
 

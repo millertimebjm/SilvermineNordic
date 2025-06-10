@@ -21,10 +21,20 @@ namespace SilvermineNordic.Repository.Services
             _configuration = options.Value;
         }
 
-        public async Task<IEnumerable<WeatherModel>> GetWeatherForecast()
+        public async Task<IEnumerable<WeatherModel>> GetWeatherForecast(Task<ZipModelRoot> zipModelTask)
+        {
+            var zipModel = await zipModelTask;
+            if (zipModel.FirstPlace is null || (zipModel.FirstPlace?.Latitude == "" && zipModel.FirstPlace?.Longitude == ""))
+            {
+                return await GetWeatherForecast();
+            }
+            return await GetWeatherForecastInternal(zipModel.FirstPlace!.Latitude, zipModel.FirstPlace!.Longitude);
+        }
+
+        private async Task<IEnumerable<WeatherModel>> GetWeatherForecastInternal(string lat, string lon)
         {
             //https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
-            var url = $"https://api.openweathermap.org/data/2.5/forecast?lat=44.772712650825966&lon=-91.58243961934646&appid={_configuration.GetOpenWeatherApiKey()}&mode=json&units=metric";
+            var url = $"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={_configuration.GetOpenWeatherApiKey()}&mode=json&units=metric";
             using var client = _httpClientFactory.CreateClient();
             var response = await client.GetAsync(url);
             var data = await response.Content.ReadAsStringAsync();
@@ -52,7 +62,14 @@ namespace SilvermineNordic.Repository.Services
             return models;
         }
 
-        public async Task<WeatherModel> GetCurrentWeather()
+        public async Task<IEnumerable<WeatherModel>> GetWeatherForecast()
+        {
+            return await GetWeatherForecastInternal(
+                "44.772712650825966", "-91.58243961934646"
+            );
+        }
+
+        public Task<WeatherModel> GetCurrentWeather()
         {
             throw new NotImplementedException();
             // if (_configuration.GetOpenWeatherApiKey() == null)

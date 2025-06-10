@@ -7,4 +7,5 @@ public record IndexViewModel(
     Task<IEnumerable<Reading>> WeatherReadingsTask,
     Task<IEnumerable<Threshold>> ThresholdsTask,
     Task<IEnumerable<WeatherModelWithZone>> WeatherForecastTask,
-    Task<DateTime?> NextZoneChangeTask);
+    Task<DateTime?> NextZoneChangeTask,
+    IndexPreferenceModel preferenceModel);

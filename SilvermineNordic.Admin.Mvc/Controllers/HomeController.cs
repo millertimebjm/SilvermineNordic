@@ -4,6 +4,7 @@ using SilvermineNordic.Admin.Mvc.Models;
 using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Models;
 using SilvermineNordic.Common;
+using SilvermineNordic.Repository;
 
 namespace SilvermineNordic.Admin.Mvc.Controllers;
 
@@ -13,27 +14,37 @@ public class HomeController : Controller
     private readonly IRepositoryReading _repositoryReadingService;
     private readonly IWeatherForecast _weatherForecastService;
     private readonly IRepositoryThreshold _repositoryThresholdService;
+    private readonly IZipApi _zipApiService;
 
     public HomeController(
         ILogger<HomeController> logger,
         IRepositoryReading repositoryReadingService,
         IWeatherForecast weatherForecastService,
-        IRepositoryThreshold repositoryThresholdService)
+        IRepositoryThreshold repositoryThresholdService,
+        IZipApi zipApiService)
     {
         _logger = logger;
         _repositoryReadingService = repositoryReadingService;
         _weatherForecastService = weatherForecastService;
         _repositoryThresholdService = repositoryThresholdService;
+        _zipApiService = zipApiService;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(IndexPreferenceModel preferenceModel)
     {
         //var sensorReadingsTask = (Task<IEnumerable<Reading>>)_repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, 5);
+        var zipModel = Task.FromResult(new ZipModelRoot());
+        if (!string.IsNullOrWhiteSpace(preferenceModel.zipCode))
+        {
+            zipModel = _zipApiService.GetLatLong(new ZipModelRoot { ZipCode = preferenceModel.zipCode });
+        }
         IEnumerable<Reading> sensorReadings = new List<Reading>();
         var sensorReadingsTask = Task.FromResult(sensorReadings);
         var weatherReadingsTask = _repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, 5);
         var thresholdsTask = _repositoryThresholdService.GetThresholds();
-        var weatherForecastModelTask = _weatherForecastService.GetWeatherForecast();
+
+        Task<IEnumerable<WeatherModel>> weatherForecastModelTask;
+        weatherForecastModelTask = _weatherForecastService.GetWeatherForecast(zipModel);
         var weatherForecastWithZoneTask = GetWeatherForecastWithZone(
             weatherForecastModelTask,
             thresholdsTask);
@@ -42,7 +53,8 @@ public class HomeController : Controller
             weatherReadingsTask,
             thresholdsTask,
             weatherForecastWithZoneTask,
-            Task.FromResult<DateTime?>(null)
+            Task.FromResult<DateTime?>(null),
+            preferenceModel
         );
         var nextZoneChangeTask = GetNextZoneChange(model);
         model = model with { NextZoneChangeTask = nextZoneChangeTask };
