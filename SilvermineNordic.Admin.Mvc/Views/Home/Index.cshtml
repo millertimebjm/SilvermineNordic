@@ -1,8 +1,9 @@
 ﻿@using SilvermineNordic.Admin.Mvc.Services;
 @using SilvermineNordic.Admin.Mvc.Models;
-@model IndexModel
+@model IndexViewModel
 
 @{
+    ViewData["Title"] = "Weather Charts";
     var weatherReadings = await Model.WeatherReadingsTask;
     var sensorReadings = await Model.SensorReadingsTask;
     var weatherForecasts = await Model.WeatherForecastTask;
@@ -10,6 +11,7 @@
 
     var weatherForecastPrecipitationChartData = "";
     var weatherForecastTempChartData = "";
+    var weatherForecastWindChartData = "";
     var first = true;
     var day = DateTime.MinValue.Day;
     var snowfallAccumulated = 0.0m;
@@ -20,172 +22,89 @@
         var time = $"\"{dayOfTheWeekShort}{weatherForecast.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("htt")}\"";
         if (!first) weatherForecastPrecipitationChartData += ",";
         if (!first) weatherForecastTempChartData += ",";
+        if (!first) weatherForecastWindChartData += ",";
         var snowfallInIn = weatherForecast.SnowfallInCm.ConvertCentimetersToInches().RoundToOneDecimal();
         snowfallAccumulated += snowfallInIn;
         var rainfallInIn = weatherForecast.RainfallInCm.ConvertCentimetersToInches().RoundToOneDecimal();
         rainfallAccumulated += rainfallInIn;
-        //weatherForecastChartData += $@"{{ time: {time}, count: {snowfallInIn} }}";
-//        weatherForecastChartData += $@"{{ time: {time}, count: {snowfallInIn}, accumulated: {(snowfallInIn > 0 ? accumulated : 0)} }}";
         weatherForecastPrecipitationChartData += 
             $@"{{ time: {time}, snowCount: {snowfallInIn}, snowAccumulated: {(snowfallInIn > 0 ? snowfallAccumulated : 0)}, rainCount: {rainfallInIn}, rainAccumulated: {(rainfallInIn > 0 ? rainfallAccumulated : 0)} }}";
         weatherForecastTempChartData +=
             $@"{{ time: {time}, temp: {weatherForecast.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()}, feelsLike: {weatherForecast.FeelsLikeInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()} }}";
+        weatherForecastWindChartData +=
+            $@"{{ time: {time}, windSpeed: {weatherForecast.WindSpeed.RoundToOneDecimal()}, windGust: {weatherForecast.WindGust.RoundToOneDecimal()}, windDirection: {weatherForecast.WindDirection} }}";
         first = false;
     }
 }
-
-@* public decimal TemperatureInCelcius { get; set; }
-        public decimal FeelsLikeInCelcius { get; set; } *@
 
 @section scripts {
     @* <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> *@
     <script src="~/js/chart.min.js"></script>
 }
+@* 
 
 <div class="container">
-    <h1 class="title">Silvermine Nordic<br />Snow Making</h1>
-    @* <div class="grid">
-        <h3 class="cardwithoutborder">
-            <button class="button">Refresh</button>
-        </h3>
+    <div class="zip-code-container">
+        <input type="text" placeholder="Zip or City, State" id="zip-code">
+    </div>        
+    <div>
+        @* <row class="col align-items-center"> *@
+            <h2>@weatherForecasts.First().TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToZeroDecimals() F</h1>
+        @* </row> *@
     </div>
-    <div class="grid">
-        @{
-            var lastSensorReadingsText = "";
-            if (sensorReadings.Any())
-            {
-                lastSensorReadingsText = $"<br />{Math.Round(sensorReadings.First().TemperatureInCelcius.ConvertCelciusToFahrenheit(), 0)}°F {Math.Round(sensorReadings.First().Humidity, 0)}%";
-        }
-        }
-        <h3 class="card">Last Sensor @Html.Raw(lastSensorReadingsText)</h3>
-        @{
-            var lastWeatherReadingsText = "";
-            if (weatherReadings.Any())
-            {
-                lastWeatherReadingsText = $"<br />{Math.Round(weatherReadings.First().TemperatureInCelcius.ConvertCelciusToFahrenheit(), 0)}°F {Math.Round(weatherReadings.First().Humidity, 0)}%";
-            }
-        }
-        <h3 class="card">Last Weather @Html.Raw(lastWeatherReadingsText)</h3>
-        @{
-            var lastReading = sensorReadings.FirstOrDefault();
-            if ((lastReading?.DateTimeUtc ?? DateTime.MinValue) <
-            (weatherReadings.FirstOrDefault()?.DateTimeUtc ??
-            DateTime.MinValue))
-                lastReading = weatherReadings.First();
-            var inTheZone = false;
-            if (lastReading != null)
-            {
-                inTheZone = SilvermineNordic.Common.InTheZoneService.IsInZone(thresholds, lastReading.TemperatureInCelcius,
-                    lastReading.Humidity);
-            }
-        }
-        <h3 class="card">In The Zone <br />@(inTheZone)</h3>
-        <h3 class="card">Zone Forecast <br />@(((await Model.NextZoneChangeTask)?.ToString("ddd h:mm")) ?? "No Forecast")</h3>
-        </div> *@
-        
-        <div>
-            <row class="col align-items-center">
-                <h1>@weatherForecasts.First().TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToZeroDecimals() F</h1>
-            </row>
-        </div>
 
-        @if (snowfallAccumulated > 0 || rainfallAccumulated > 0)
-        {
-            <div style="max-width: 800px; margin: 0 auto; width: 100%;"><canvas id="precipitationChart"></canvas></div>
-        } 
-        else
-        {
-            <h2>No precipitation in the forecast.</h2>
-        }
-        
-        <div style="max-width: 800px; margin: 0 auto; width: 100%;"><canvas id="tempChart"></canvas></div>
-        
+    @if (snowfallAccumulated > 0 || rainfallAccumulated > 0)
+    {
+        <div style="max-width: 800px; margin: 0 auto; width: 100%;"><canvas id="precipitationChart"></canvas></div>
+    } 
+    else
+    {
+        <h2>No precipitation in the forecast.</h2>
+    }
+    <div style="max-width: 800px; margin: 0 auto; width: 100%;"><canvas id="tempChart"></canvas></div>
+    
+    <div style="max-width: 800px; margin: 0 auto; width: 100%;"><canvas id="windChart"></canvas></div>
 
-        <script type="text/javascript">
-            const precipitationData = [
-                @Html.Raw(weatherForecastPrecipitationChartData)
-            ];
+    <script type="text/javascript">
+        const precipitationData = [
+            @Html.Raw(weatherForecastPrecipitationChartData)
+        ];
 
-@* const tempData = [
-                @Html.Raw(weatherForecastTempChartData)
-            ];
-            const tempChartCtx = document.getElementById('tempChart').getContext('2d');
+        const precipitationChartDiv = document.getElementById('precipitationChart')
+        if (precipitationChartDiv) {
+            const ctx = precipitationChartDiv.getContext('2d');
 
-            const tempChart = new Chart(tempChartCtx, { *@
-
-            const precipitationChartDiv = document.getElementById('precipitationChart')
-            if (precipitationChartDiv) {
-                const ctx = precipitationChartDiv.getContext('2d');
-
-                const precipitationChart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: precipitationData.map(row => row.time),
-                        datasets: [
-                            {
-                                label: 'Snow Forecast By Inches',
-                                data: precipitationData.map(row => row.snowCount),
-                                backgroundColor: 'rgba(73, 124, 155, 0.2)', // Optional: Set bar color
-                                borderColor: 'rgba(73, 124, 155, 1)', // Optional: Set border color
-                                borderWidth: 1 // Optional: Set border width
-                            },
-                            {
-                                label: 'Snow Accumulated By Inches',
-                                data: precipitationData.map(row => row.snowAccumulated),
-                                backgroundColor: 'rgba(153, 204, 255, 0.2)', // Optional: Set bar color
-                                borderColor: 'rgba(153, 204, 255, 1)', // Optional: Set border color
-                                borderWidth: 1 // Optional: Set border width
-                            },
-                            {
-                                label: 'Rain Forecast By Inches',
-                                data: precipitationData.map(row => row.rainCount),
-                                backgroundColor: 'rgba(193, 216, 195, 0.2)', // Optional: Set bar color
-                                borderColor: 'rgba(193, 216, 195, 1)', // Optional: Set border color
-                                borderWidth: 1 // Optional: Set border width
-                            },
-                            {
-                                label: 'Rain Accumulated By Inches',
-                                data: precipitationData.map(row => row.rainAccumulated),
-                                backgroundColor: 'rgba(106, 156, 137, 0.2)', // Optional: Set bar color
-                                borderColor: 'rgba(106, 156, 137, 1)', // Optional: Set border color
-                                borderWidth: 1 // Optional: Set border width
-                            }
-                        ]
-                    }, //rgba(193, 216, 195, 1)
-                    options: { // Optional: Customize chart appearance
-                        scales: {
-                            y: {
-                                beginAtZero: true, // Optional: Start y-axis at zero
-                                suggestedMax: 3
-                            }
-                        }
-                    }
-                });
-            }
-            
-            const tempData = [
-                @Html.Raw(weatherForecastTempChartData)
-            ];
-            const tempChartCtx = document.getElementById('tempChart').getContext('2d');
-
-            const tempChart = new Chart(tempChartCtx, {
-                type: 'line',
+            const precipitationChart = new Chart(ctx, {
+                type: 'bar',
                 data: {
-                    labels: tempData.map(row => row.time),
+                    labels: precipitationData.map(row => row.time),
                     datasets: [
                         {
-                            label: 'Temp',
-                            data: tempData.map(row => row.temp),
-                            backgroundColor: 'rgba(126, 96, 191, .2)', // Optional: Set bar color
-                            borderColor: 'rgba(126, 96, 191, 1)', // Optional: Set border color
-                            borderWidth: 1, // Optional: Set border width
-                            fill: '+1'
+                            label: 'Snow Forecast By Inches',
+                            data: precipitationData.map(row => row.snowCount),
+                            backgroundColor: 'rgba(73, 124, 155, 0.2)', // Optional: Set bar color
+                            borderColor: 'rgba(73, 124, 155, 1)', // Optional: Set border color
+                            borderWidth: 1 // Optional: Set border width
                         },
                         {
-                            label: 'Feels Like',
-                            data: tempData.map(row => row.feelsLike),
-                            backgroundColor: 'rgba(228, 177, 240, .2)', // Optional: Set bar color
-                            borderColor: 'rgba(228, 177, 240, 1)', // Optional: Set border color
+                            label: 'Snow Accumulated By Inches',
+                            data: precipitationData.map(row => row.snowAccumulated),
+                            backgroundColor: 'rgba(153, 204, 255, 0.2)', // Optional: Set bar color
+                            borderColor: 'rgba(153, 204, 255, 1)', // Optional: Set border color
+                            borderWidth: 1 // Optional: Set border width
+                        },
+                        {
+                            label: 'Rain Forecast By Inches',
+                            data: precipitationData.map(row => row.rainCount),
+                            backgroundColor: 'rgba(193, 216, 195, 0.2)', // Optional: Set bar color
+                            borderColor: 'rgba(193, 216, 195, 1)', // Optional: Set border color
+                            borderWidth: 1 // Optional: Set border width
+                        },
+                        {
+                            label: 'Rain Accumulated By Inches',
+                            data: precipitationData.map(row => row.rainAccumulated),
+                            backgroundColor: 'rgba(106, 156, 137, 0.2)', // Optional: Set bar color
+                            borderColor: 'rgba(106, 156, 137, 1)', // Optional: Set border color
                             borderWidth: 1 // Optional: Set border width
                         }
                     ]
@@ -193,142 +112,218 @@
                 options: { // Optional: Customize chart appearance
                     scales: {
                         y: {
-                            //beginAtZero: true, // Optional: Start y-axis at zero
-                            suggestedMax: 100,
-                            suggestedMin: 0
+                            beginAtZero: true, // Optional: Start y-axis at zero
+                            suggestedMax: 3
                         }
                     }
                 }
             });
-        </script> 
+        }
+        
+        const tempData = [
+            @Html.Raw(weatherForecastTempChartData)
+        ];
+        const tempChartCtx = document.getElementById('tempChart').getContext('2d');
 
-        <div class="grid">
-            <div class="tablecard">
-                <h3 class="description">Weather Reading</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>DateTime</th>
-                            <th>Temp</th>
-                            <th>Hum</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var wr in weatherReadings)
-                        {
-                            <tr key="0">
-                                <td>@wr.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd h:mm")</td>
-                                <td>@wr.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
-                                <td>@wr.Humidity.RoundToOneDecimal()%</td>
-                            </tr>
-                        }
-                        @if (!weatherReadings.Any())
-                        {
-                            <tr>
-                                <td colSpan="4">No data available</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <div class="tablecard">
-                <h3 class="description">Sensor Readings</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>DateTime</th>
-                            <th>Temp</th>
-                            <th>Hum</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var sr in sensorReadings)
-                        {
-                            <tr key="0">
-                                <td>@sr.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd h:mm")</td>
-                                <td>@sr.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
-                                <td>@sr.Humidity.RoundToOneDecimal()%</td>
-                            </tr>
-                        }
-                        @if (!sensorReadings.Any())
-                        {
-                            <tr>
-                                <td colSpan="3">No data available</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <div class="tablecard">
-                <h3 class="description">Thresholds</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Temp Low</th>
-                            <th>Temp High</th>
-                            <th>Hum Low</th>
-                            <th>Hum High</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var t in thresholds)
-                        {
-                            <tr key="0                    ">
-                                <td>@t.TemperatureInCelciusLowThreshold.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
-                                <td>@t.TemperatureInCelciusHighThreshold.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
-                                <td>@t.HumidityLowThreshold.RoundToOneDecimal()%</td>
-                                <td>@t.HumidityHighThreshold.RoundToOneDecimal()%</td>
-                            </tr>
-                        }
-                        @if (!thresholds.Any())
-                        {
-                            <tr>
-                                <td colSpan="4">No data available</td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <div class="tablecard">
-                <h3 class="description">Weather Forecast</h3>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>DateTime</th>
-                            <th>Temp</th>
-                            <th>Hum</th>
-                            <th>SnowIn</th>
-                            <th>RainIn</th>
-                            <th>Zone</th>
-                        </tr>
-                    </thead>
-                    @foreach (var wf in weatherForecasts)
+        const tempChart = new Chart(tempChartCtx, {
+            type: 'line',
+            data: {
+                labels: tempData.map(row => row.time),
+                datasets: [
+                    {
+                        label: 'Temp',
+                        data: tempData.map(row => row.temp),
+                        backgroundColor: 'rgba(126, 96, 191, .2)', // Optional: Set bar color
+                        borderColor: 'rgba(126, 96, 191, 1)', // Optional: Set border color
+                        borderWidth: 1, // Optional: Set border width
+                        fill: '+1'
+                    },
+                    {
+                        label: 'Feels Like',
+                        data: tempData.map(row => row.feelsLike),
+                        backgroundColor: 'rgba(228, 177, 240, .2)', // Optional: Set bar color
+                        borderColor: 'rgba(228, 177, 240, 1)', // Optional: Set border color
+                        borderWidth: 1 // Optional: Set border width
+                    }
+                ]
+            }, //rgba(193, 216, 195, 1)
+            options: { // Optional: Customize chart appearance
+                scales: {
+                    y: {
+                        //beginAtZero: true, // Optional: Start y-axis at zero
+                        suggestedMax: 100,
+                        suggestedMin: 0
+                    }
+                }
+            }
+        });
+
+        const windData = [
+            @Html.Raw(weatherForecastWindChartData)
+        ];
+        const windChartCtx = document.getElementById('windChart').getContext('2d');
+
+        const windChart = new Chart(windChartCtx, {
+            type: 'line',
+            data: {
+                labels: windData.map(row => row.time),
+                datasets: [
+                    {
+                        label: 'Wind Gust',
+                        data: windData.map(row => row.windGust),
+                        backgroundColor: 'rgba(126, 96, 191, .2)', // Optional: Set bar color
+                        borderColor: 'rgba(126, 96, 191, 1)', // Optional: Set border color
+                        borderWidth: 1, // Optional: Set border width
+                        fill: '+1'
+                    },
+                    {
+                        label: 'Wind',
+                        data: windData.map(row => row.windSpeed),
+                        backgroundColor: 'rgba(228, 177, 240, .2)', // Optional: Set bar color
+                        borderColor: 'rgba(228, 177, 240, 1)', // Optional: Set border color
+                        borderWidth: 1 // Optional: Set border width
+                    }
+                ]
+            }, //rgba(193, 216, 195, 1)
+            options: { // Optional: Customize chart appearance
+                scales: {
+                    y: {
+                        //beginAtZero: true, // Optional: Start y-axis at zero
+                        suggestedMax: 25,
+                        suggestedMin: 0
+                    }
+                }
+            }
+        });
+    </script> 
+
+    @* <div class="grid">
+        <div class="tablecard">
+            <h3 class="description">Weather Reading</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>DateTime</th>
+                        <th>Temp</th>
+                        <th>Hum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var wr in weatherReadings)
                     {
                         <tr key="0">
-                            <td>@wf.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd h:mm")</td>
-                            <td>@wf.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
-                            <td>@wf.Humidity.RoundToOneDecimal()%</td>
-                            <td>@wf.SnowfallInCm.ConvertCentimetersToInches().RoundToOneDecimal()</td>
-                            <td>@wf.RainfallInCm.ConvertCentimetersToInches().RoundToOneDecimal()</td>
-                            @if (wf.InTheZone)
-                            {
-                                <td><span style="color:green; font-size: 20px;">✔</span></td>
-                            }
-                            else 
-                            {
-                                <td></td>
-                            }
+                            <td>@wr.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd h:mm")</td>
+                            <td>@wr.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
+                            <td>@wr.Humidity.RoundToOneDecimal()%</td>
                         </tr>
                     }
-                    @if (!weatherForecasts.Any())
+                    @if (!weatherReadings.Any())
                     {
                         <tr>
                             <td colSpan="4">No data available</td>
                         </tr>
                     }
-                    </tbody>
-                </table>
-            </div>
+                </tbody>
+            </table>
         </div>
+        <div class="tablecard">
+            <h3 class="description">Sensor Readings</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>DateTime</th>
+                        <th>Temp</th>
+                        <th>Hum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var sr in sensorReadings)
+                    {
+                        <tr key="0">
+                            <td>@sr.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd h:mm")</td>
+                            <td>@sr.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
+                            <td>@sr.Humidity.RoundToOneDecimal()%</td>
+                        </tr>
+                    }
+                    @if (!sensorReadings.Any())
+                    {
+                        <tr>
+                            <td colSpan="3">No data available</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="tablecard">
+            <h3 class="description">Thresholds</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Temp Low</th>
+                        <th>Temp High</th>
+                        <th>Hum Low</th>
+                        <th>Hum High</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var t in thresholds)
+                    {
+                        <tr key="0                    ">
+                            <td>@t.TemperatureInCelciusLowThreshold.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
+                            <td>@t.TemperatureInCelciusHighThreshold.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
+                            <td>@t.HumidityLowThreshold.RoundToOneDecimal()%</td>
+                            <td>@t.HumidityHighThreshold.RoundToOneDecimal()%</td>
+                        </tr>
+                    }
+                    @if (!thresholds.Any())
+                    {
+                        <tr>
+                            <td colSpan="4">No data available</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="tablecard">
+            <h3 class="description">Weather Forecast</h3>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>DateTime</th>
+                        <th>Temp</th>
+                        <th>Hum</th>
+                        <th>SnowIn</th>
+                        <th>RainIn</th>
+                        <th>Zone</th>
+                    </tr>
+                </thead>
+                @foreach (var wf in weatherForecasts)
+                {
+                    <tr key="0">
+                        <td>@wf.DateTimeUtc.ConvertUtcToTimezone("Central Standard Time")?.ToString("ddd h:mm")</td>
+                        <td>@wf.TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToOneDecimal()°</td>
+                        <td>@wf.Humidity.RoundToOneDecimal()%</td>
+                        <td>@wf.SnowfallInCm.ConvertCentimetersToInches().RoundToOneDecimal()</td>
+                        <td>@wf.RainfallInCm.ConvertCentimetersToInches().RoundToOneDecimal()</td>
+                        @if (wf.InTheZone)
+                        {
+                            <td><span style="color:green; font-size: 20px;">✔</span></td>
+                        }
+                        else 
+                        {
+                            <td></td>
+                        }
+                    </tr>
+                }
+                @if (!weatherForecasts.Any())
+                {
+                    <tr>
+                        <td colSpan="4">No data available</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div> *@
     </div>
+</div>
 

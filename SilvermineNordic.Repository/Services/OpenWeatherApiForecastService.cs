@@ -4,7 +4,7 @@ using SilvermineNordic.Models;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Json;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SilvermineNordic.Repository.Services
@@ -26,19 +26,27 @@ namespace SilvermineNordic.Repository.Services
             //https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
             var url = $"https://api.openweathermap.org/data/2.5/forecast?lat=44.772712650825966&lon=-91.58243961934646&appid={_configuration.GetOpenWeatherApiKey()}&mode=json&units=metric";
             using var client = _httpClientFactory.CreateClient();
-            var openApiWeatherModel = await client.GetFromJsonAsync<OpenWeatherApiWeatherForecastListModel>(url);
+            var response = await client.GetAsync(url);
+            var data = await response.Content.ReadAsStringAsync();
+            var openApiWeatherModel = JsonSerializer.Deserialize<OpenWeatherApiWeatherForecastRoot>(
+                data,
+                new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+            //var openApiWeatherModel = await client.GetFromJsonAsync<OpenWeatherApiWeatherForecastRoot>(url);
             var models = new List<WeatherModel>();
-            foreach (var forecast in openApiWeatherModel?.List ?? new List<OpenWeatherApiWeatherForecastModel>())
+            foreach (var forecast in openApiWeatherModel?.List ?? new List<OpenWeatherApiWeatherForecastList>())
             {
                 models.Add(new WeatherModel()
                 {
                     DateTimeUtc = forecast.DateTimeUtc ?? DateTime.MinValue,
-                    TemperatureInCelcius = forecast.Main.Temp,
-                    FeelsLikeInCelcius = forecast.Main.Feels_Like,
+                    TemperatureInCelcius = Convert.ToDecimal(forecast.Main.Temp),
+                    FeelsLikeInCelcius = Convert.ToDecimal(forecast.Main.FeelsLike),
                     Humidity = forecast.Main.Humidity,
                     SnowfallInCm = forecast.Snow?.PrecipitationAmountInCentimeters ?? 0,
-                    RainfallInCm = forecast.Rain?.PrecipitationAmountInCentimeters ?? -1,
+                    RainfallInCm = forecast.Rain?.PrecipitationAmountInCentimeters ?? 0,
                     CloudPercentage = forecast.Clouds.CloudPercentage,
+                    WindSpeed = Convert.ToDecimal(forecast.Wind.Speed),
+                    WindGust = Convert.ToDecimal(forecast.Wind.Gust),
+                    WindDirection = forecast.Wind.Deg
                 });
             }
             return models;
@@ -46,19 +54,20 @@ namespace SilvermineNordic.Repository.Services
 
         public async Task<WeatherModel> GetCurrentWeather()
         {
-            if (_configuration.GetOpenWeatherApiKey() == null)
-                throw new ArgumentNullException("OpenWeatherApiKey");
+            throw new NotImplementedException();
+            // if (_configuration.GetOpenWeatherApiKey() == null)
+            //     throw new ArgumentNullException("OpenWeatherApiKey");
 
-            var url = $"https://api.openweathermap.org/data/2.5/weather?lat=44.772712650825966&lon=-91.58243961934646&appid={_configuration.GetOpenWeatherApiKey()}&mode=json&units=metric";
-            using var client = _httpClientFactory.CreateClient();
-            var openApiWeatherModel = await client.GetFromJsonAsync<OpenWeatherApiCurrentWeatherModel>(url);
-            var model = new WeatherModel()
-            {
-                DateTimeUtc = DateTime.UtcNow,
-                TemperatureInCelcius = openApiWeatherModel?.Main.Temp ?? 0.0m,
-                Humidity = openApiWeatherModel?.Main.Humidity ?? 0.0m,
-            };
-            return model;
+            // var url = $"https://api.openweathermap.org/data/2.5/weather?lat=44.772712650825966&lon=-91.58243961934646&appid={_configuration.GetOpenWeatherApiKey()}&mode=json&units=metric";
+            // using var client = _httpClientFactory.CreateClient();
+            // var openApiWeatherModel = await client.GetFromJsonAsync<OpenWeatherApiCurrentWeatherModel>(url);
+            // var model = new WeatherModel()
+            // {
+            //     DateTimeUtc = DateTime.UtcNow,
+            //     TemperatureInCelcius = openApiWeatherModel?.Main.Temp ?? 0.0m,
+            //     Humidity = openApiWeatherModel?.Main.Humidity ?? 0.0m,
+            // };
+            // return model;
         }
 
         public async Task<DateTime?> GetNextZoneChange(IEnumerable<Threshold> thresholds, bool inTheZone)

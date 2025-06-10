@@ -1,8 +1,8 @@
 ﻿
-namespace SilvermineNordic.Models
-{
-    public class OpenWeatherApiCurrentWeatherModel
-    {
-        public OpenWeatherApiWeatherForecaseMainModel Main { get; set; } = new OpenWeatherApiWeatherForecaseMainModel();
-    }
-}
+// namespace SilvermineNordic.Models
+// {
+//     public class OpenWeatherApiCurrentWeatherModel
+//     {
+//         public OpenWeatherApiWeatherForecaseMainModel Main { get; set; } = new OpenWeatherApiWeatherForecaseMainModel();
+//     }
+// }

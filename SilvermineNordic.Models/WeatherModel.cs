@@ -12,5 +12,8 @@ namespace SilvermineNordic.Models
         public decimal SnowfallInCm { get; set; }
         public decimal RainfallInCm { get; set; }
         public int CloudPercentage { get; set; }
+        public decimal WindSpeed { get; set; }
+        public decimal WindDirection { get; set; }
+        public decimal WindGust { get; set; }
     }
 }

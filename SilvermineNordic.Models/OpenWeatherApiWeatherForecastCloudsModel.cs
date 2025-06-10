@@ -1,9 +1,9 @@
-using System.Text.Json.Serialization;
+// using System.Text.Json.Serialization;
 
-namespace SilvermineNordic.Models;
+// namespace SilvermineNordic.Models;
 
-public class OpenWeatherApiWeatherForecastCloudsModel 
-{
-    [JsonPropertyName("all")]
-    public int CloudPercentage { get; set; }
-}
+// public class OpenWeatherApiWeatherForecastCloudsModel 
+// {
+//     [JsonPropertyName("all")]
+//     public int CloudPercentage { get; set; }
+// }

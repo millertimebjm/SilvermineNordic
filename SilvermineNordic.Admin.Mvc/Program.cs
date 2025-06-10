@@ -34,8 +34,8 @@ builder.Configuration
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IWeatherForecast, OpenWeatherApiForecastService>();
-builder.Services.AddScoped<IRepositoryReading, EntityFrameworkReadingService>();
-builder.Services.AddScoped<IRepositoryThreshold, EntityFrameworkThresholdService>();
+builder.Services.AddTransient<IRepositoryReading, EntityFrameworkReadingService>();
+builder.Services.AddTransient<IRepositoryThreshold, EntityFrameworkThresholdService>();
 builder.Services.AddScoped<ISms, AzureSmsService>();
 builder.Services.AddOptions<SilvermineNordicConfigurationService>()
     .Configure<IConfiguration>((settings, configuration) =>
@@ -52,27 +52,6 @@ builder.Services.AddDbContext<SilvermineNordicDbContext>(opts =>
     opts.UseNpgsql(connectionString, options => options.MigrationsAssembly("SilvermineNordic.Admin.Mvc"))
         .EnableSensitiveDataLogging()
         .LogTo(Console.WriteLine, LogLevel.Information), ServiceLifetime.Transient);
-
-
-// protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-//         {
-//             if (optionsBuilder.IsConfigured)
-//             {
-//                 return;
-//             }
-
-//             var sqlConnectionString = _configuration?.GetSqlConnectionString();
-//             if (!string.IsNullOrWhiteSpace(sqlConnectionString))
-//             {
-//                 optionsBuilder.UseSqlServer(sqlConnectionString);
-//                 return;
-//             }
-
-//             var inMemoryDatabaseName = _configuration?.GetInMemoryDatabaseName()
-//                 ?? "InMemoryDatabaseName";
-//             optionsBuilder.UseInMemoryDatabase(inMemoryDatabaseName);
-//         }
-
 
 builder.Services.AddHttpClient();
 builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>

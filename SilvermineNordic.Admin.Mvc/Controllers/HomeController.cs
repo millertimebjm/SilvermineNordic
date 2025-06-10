@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SilvermineNordic.Admin.Mvc.Models;
 using SilvermineNordic.Repository.Services;
-using System.Threading.Tasks;
 using SilvermineNordic.Models;
 using SilvermineNordic.Common;
 
@@ -29,26 +28,34 @@ public class HomeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var model = new IndexModel();
-        model.SensorReadingsTask = (Task<IEnumerable<Reading>>)_repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, 5);
-        await model.SensorReadingsTask;
-        model.WeatherReadingsTask = (Task<IEnumerable<Reading>>)_repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, 5);
-        await model.WeatherReadingsTask;
-        model.ThresholdsTask = (Task<IEnumerable<Threshold>>)_repositoryThresholdService.GetThresholds();
-        await model.ThresholdsTask;
-        model.WeatherForecastTask = GetWeatherForecastWithZone(model.ThresholdsTask);
-        await model.WeatherForecastTask;
-        model.NextZoneChangeTask = GetNextZoneChange(model);
+        //var sensorReadingsTask = (Task<IEnumerable<Reading>>)_repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Sensor, 5);
+        IEnumerable<Reading> sensorReadings = new List<Reading>();
+        var sensorReadingsTask = Task.FromResult(sensorReadings);
+        var weatherReadingsTask = _repositoryReadingService.GetLastNReadingAsync(ReadingTypeEnum.Weather, 5);
+        var thresholdsTask = _repositoryThresholdService.GetThresholds();
+        var weatherForecastModelTask = _weatherForecastService.GetWeatherForecast();
+        var weatherForecastWithZoneTask = GetWeatherForecastWithZone(
+            weatherForecastModelTask,
+            thresholdsTask);
+        var model = new IndexViewModel(
+            sensorReadingsTask,
+            weatherReadingsTask,
+            thresholdsTask,
+            weatherForecastWithZoneTask,
+            Task.FromResult<DateTime?>(null)
+        );
+        var nextZoneChangeTask = GetNextZoneChange(model);
+        model = model with { NextZoneChangeTask = nextZoneChangeTask };
         await model.NextZoneChangeTask;
         return View(model);
     }
 
     private async Task<IEnumerable<WeatherModelWithZone>> GetWeatherForecastWithZone(
+        Task<IEnumerable<WeatherModel>> weatherForecastModel,
         Task<IEnumerable<Threshold>> thresholdsTask)
     {
-        var weatherForecastModel = await _weatherForecastService.GetWeatherForecast();
         var weatherForecastWithZoneModel = new List<WeatherModelWithZone>();
-        foreach (var forecast in weatherForecastModel)
+        foreach (var forecast in await weatherForecastModel)
         {
             weatherForecastWithZoneModel.Add(new WeatherModelWithZone()
             {
@@ -59,18 +66,20 @@ public class HomeController : Controller
                 SnowfallInCm = forecast.SnowfallInCm,
                 RainfallInCm = forecast.RainfallInCm,
                 InTheZone = InTheZoneService.IsInZone(
-                    await thresholdsTask, 
-                    forecast.TemperatureInCelcius, 
+                    await thresholdsTask,
+                    forecast.TemperatureInCelcius,
                     forecast.Humidity
                 ),
                 CloudPercentage = forecast.CloudPercentage,
+                WindDirection = forecast.WindDirection,
+                WindSpeed = forecast.WindSpeed,
+                WindGust = forecast.WindGust,
             });
-            Console.WriteLine(forecast.CloudPercentage);
         }
         return weatherForecastWithZoneModel;
     }
 
-    private async Task<DateTime?> GetNextZoneChange(IndexModel model)
+    private async Task<DateTime?> GetNextZoneChange(IndexViewModel model)
     {
         var sensorReadings = await model.SensorReadingsTask;
         var weatherReadings = await model.WeatherReadingsTask;
