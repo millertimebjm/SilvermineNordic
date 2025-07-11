@@ -1,30 +1,10 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace SilvermineNordic.Models;
-//{
-//     public class OpenWeatherApiWeatherForecastListModel
-//     {
-//         public string Cod { get; set; } = string.Empty;
-//         public int Message { get; set; } = 0;
-//         public int Count { get; set; } = 0;
-//         public List<OpenWeatherApiWeatherForecastModel> List { get; set; } = new List<OpenWeatherApiWeatherForecastModel>();
-//     }
-// }
 
-// public class OpenWeatherApiWeatherForecastPrecipitationModel
-// {
-//     [JsonPropertyName("3h")]
-//     public decimal PrecipitationAmountInCentimeters { get; set; }
-// }
-
-
-
-
-    public class City
+public class City
 {
     public int Id { get; set; }
     public string Name { get; set; } = string.Empty;
