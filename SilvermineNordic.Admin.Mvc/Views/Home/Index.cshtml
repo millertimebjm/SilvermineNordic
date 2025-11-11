@@ -67,7 +67,7 @@
         <input type="text" placeholder="Zip Code" id="zipCode" onkeypress="handleKeyPress(event)" autocomplete='off'>
     </div>        
     <div>
-        <h2 style="text-align: center;">@weatherForecasts.First().TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToZeroDecimals() F / @weatherForecasts.First().FeelsLikeInCelcius.ConvertCelciusToFahrenheit().RoundToZeroDecimals()</h1>
+        <h2 style="text-align: center;">@weatherForecasts.First().TemperatureInCelcius.ConvertCelciusToFahrenheit().RoundToZeroDecimals() F / @weatherForecasts.First().FeelsLikeInCelcius.ConvertCelciusToFahrenheit().RoundToZeroDecimals() F</h1>
     </div>
 
     @if (snowfallAccumulated == 0 && rainfallAccumulated == 0)
