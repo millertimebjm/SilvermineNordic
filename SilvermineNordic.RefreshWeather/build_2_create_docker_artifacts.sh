@@ -6,7 +6,7 @@ IMAGE_NAME="silverminenordic-refreshweather"
 
 
 dotnet publish --os linux --arch x64 /t:PublishContainer -c Release
-docker run -d -p 9070:9070 --restart=always --name silverminenordic-refreshweather -e AppConfigConnectionString="$1" silverminenordic-refreshweather:latest
+docker run -d --restart=always --name silverminenordic-refreshweather -e AppConfigConnectionString="$1" silverminenordic-refreshweather:latest
 rm -rf /tmp/Containers
 
 
