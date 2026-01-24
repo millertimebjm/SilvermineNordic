@@ -16,38 +16,11 @@ namespace SilvermineNordic.Repository.Services
         public DbSet<Threshold> Thresholds { get; set; }
         public DbSet<CommunicationLog> CommunicationLogs { get; set; }
 
-
+        public DbSet<ReadingByZip> ReadingByZips {get; set;}
         public DbSet<Reading> Readings { get; set; }
-        // private readonly ISilvermineNordicConfiguration _configuration;
-
-        // public SilvermineNordicDbContext(
-        //     IOptionsSnapshot<SilvermineNordicConfigurationService> options)
-        // : base()
-        // {
-        //     _configuration = options.Value;
-        // }
 
     public SilvermineNordicDbContext(DbContextOptions<SilvermineNordicDbContext> options)
         : base(options) {}
-
-        // protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        // {
-        //     if (optionsBuilder.IsConfigured)
-        //     {
-        //         return;
-        //     }
-
-        //     var sqlConnectionString = _configuration?.GetSqlConnectionString();
-        //     if (!string.IsNullOrWhiteSpace(sqlConnectionString))
-        //     {
-        //         optionsBuilder.UseSqlServer(sqlConnectionString);
-        //         return;
-        //     }
-
-        //     var inMemoryDatabaseName = _configuration?.GetInMemoryDatabaseName()
-        //         ?? "InMemoryDatabaseName";
-        //     optionsBuilder.UseInMemoryDatabase(inMemoryDatabaseName);
-        // }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -55,6 +28,7 @@ namespace SilvermineNordic.Repository.Services
             modelBuilder.Entity<Threshold>().ToTable("Threshold");
             modelBuilder.Entity<User>().ToTable("User");
             modelBuilder.Entity<UserOtp>().ToTable("UserOtp");
+            modelBuilder.Entity<ReadingByZip>().ToTable("ReadingByZip");
         }
     }
 }
