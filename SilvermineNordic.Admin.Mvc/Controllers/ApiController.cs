@@ -44,21 +44,21 @@ http://localhost:5025/api/sensorreading
 curl -X POST \
 http://localhost:5025/api/weatherreading
 */
-    [Route("api/weatherreading")]
-    [HttpPost]
-    public async Task<JsonResult> WensorReadingPost() 
-    {
-        var weatherModel = await _weatherService.GetCurrentWeather();
-        var reading = new Reading()
-        {
-            Type = "Weather",
-            DateTimeUtc = weatherModel.DateTimeUtc,
-            TemperatureInCelcius = weatherModel.TemperatureInCelcius,
-            Humidity = weatherModel.Humidity,
-        };
-        reading = await _repositoryReadingService.AddReadingAsync(reading);
-        return Json(reading);
-    }
+    // [Route("api/weatherreading")]
+    // [HttpPost]
+    // public async Task<JsonResult> WensorReadingPost() 
+    // {
+    //     var weatherModel = await _weatherService.GetCurrentWeather();
+    //     var reading = new Reading()
+    //     {
+    //         Type = "Weather",
+    //         DateTimeUtc = weatherModel.DateTimeUtc,
+    //         TemperatureInCelcius = weatherModel.TemperatureInCelcius,
+    //         Humidity = weatherModel.Humidity,
+    //     };
+    //     reading = await _repositoryReadingService.AddReadingAsync(reading);
+    //     return Json(reading);
+    // }
 
     [Route("api/weatherforecast")]
     [HttpGet]

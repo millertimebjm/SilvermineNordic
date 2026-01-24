@@ -46,23 +46,20 @@ public class HomeController : Controller
         var weatherReadingsTask = Task.FromResult((IEnumerable<Reading>?)null);
         var thresholdsTask = Task.FromResult((IEnumerable<Threshold>?)null);
 
-        Task<IEnumerable<WeatherModel>> weatherForecastModelTask;
+        Task<IEnumerable<WeatherModel>> weatherForecastModelTask = null;
         var readings = await _readingByZipService.Get(preferenceModel.zipCode);
         if (readings != null)
         {
             weatherForecastModelTask = Task.FromResult(JsonSerializer.Deserialize<IEnumerable<WeatherModel>>(readings.WeatherDataSerialized));
         }
-        else
+
+        if (readings is null || readings?.LastUpdatedUtc < DateTime.UtcNow.AddMinutes(30))
         {
             weatherForecastModelTask = _weatherForecastService.GetWeatherForecast(zipModel);
             var stuff = JsonSerializer.Serialize(await weatherForecastModelTask);
             await _readingByZipService.Upsert(preferenceModel.zipCode, stuff);
         }
         
-        if (readings?.LastUpdatedUtc < DateTime.UtcNow.AddMinutes(30))
-        {
-            weatherForecastModelTask = _weatherForecastService.GetWeatherForecast(zipModel);
-        }
         var weatherForecastWithZoneTask = Task.FromResult((await weatherForecastModelTask).Select(w => new WeatherModelWithZone()
         {
             CloudPercentage = w.CloudPercentage,

@@ -10,6 +10,6 @@ namespace SilvermineNordic.Repository.Services
         Task<IEnumerable<WeatherModel>> GetWeatherForecast();
         Task<IEnumerable<WeatherModel>> GetWeatherForecast(Task<ZipModelRoot> zipModel);
         Task<DateTime?> GetNextZoneChange(IEnumerable<Threshold> thresholds, bool inTheZone);
-        Task<WeatherModel> GetCurrentWeather();
+        // Task<WeatherModel> GetCurrentWeather();
     }
 }
