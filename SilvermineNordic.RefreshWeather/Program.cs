@@ -18,19 +18,21 @@ public class Program
         var readingByZipService = scope.ServiceProvider.GetRequiredService<IReadingByZip>();
         var zipApiService = scope.ServiceProvider.GetRequiredService<IZipApi>();
         var weatherForecastService = scope.ServiceProvider.GetRequiredService<IWeatherForecast>();
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 
         var timer = new PeriodicTimer(TimeSpan.FromMinutes(15));
 
         while (await timer.WaitForNextTickAsync())
         {
-            await DoRefresh(readingByZipService, zipApiService, weatherForecastService);
+            await DoRefresh(readingByZipService, zipApiService, weatherForecastService, logger);
         }   
     }
 
     private static async Task DoRefresh(
         IReadingByZip readingByZipService,
         IZipApi zipApiService,
-        IWeatherForecast weatherForecastService)
+        IWeatherForecast weatherForecastService,
+        ILogger<Program> logger)
     {
         var lookups = await readingByZipService.GetForRefresh();
         var zipModels = lookups.Select(l => new ZipModelRoot() { ZipCode = l });
@@ -41,6 +43,7 @@ public class Program
             var currentWeather = await weatherForecastService.GetWeatherForecast();
             var readingByZip = new ReadingByZip() { WeatherDataSerialized = JsonSerializer.Serialize(currentWeather) };
             await readingByZipService.Upsert(zipModel.ZipCode, readingByZip.WeatherDataSerialized);
+            logger.LogInformation("{DateTime} UTC - Reading updated for {zip}", DateTime.UtcNow, zipModel.ZipCode);
         }
     }
 
@@ -106,6 +109,7 @@ public class Program
         //             new LokiLabel() {Key = "env", Value = "prod"},
         //         })
         //     .CreateLogger();
+        services.AddLogging();
 
         return services.BuildServiceProvider();
     }
