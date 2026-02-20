@@ -14,6 +14,8 @@ public class ZippopotamZipService : IZipApi
         _httpClientFactory = httpClientFactory;
     }
 
+    private static JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
+
     public async Task<ZipModelRoot> GetLatLong(ZipModelRoot model)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(model.ZipCode);
@@ -23,7 +25,7 @@ public class ZippopotamZipService : IZipApi
         var json = await response.Content.ReadAsStringAsync();
         var responseModel = JsonSerializer.Deserialize<ZipModelRoot>(
             json,
-            new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+            _jsonSerializerOptions);
         if (responseModel is null) throw new JsonException("Zippopotam deserialize returned null");
         return responseModel;
     }

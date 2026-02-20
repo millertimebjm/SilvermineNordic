@@ -4,46 +4,45 @@ using SilvermineNordic.Models;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace SilvermineNordic.Repository.Services
 {
-    public class OpenWeatherApiForecastService : IWeatherForecast
+    public class OpenWeatherApiForecastService(
+        IHttpClientFactory _httpClientFactory,
+        IOptionsSnapshot<SilvermineNordicConfigurationService> _options
+    ) : IWeatherForecast
     {
-        private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ISilvermineNordicConfiguration _configuration;
-        public OpenWeatherApiForecastService(
-            IHttpClientFactory httpClientFactory,
-            IOptionsSnapshot<SilvermineNordicConfigurationService> options)
-        {
-            _httpClientFactory = httpClientFactory;
-            _configuration = options.Value;
-        }
+        private static JsonSerializerOptions _jsonSerializerOptions 
+            = new() { PropertyNameCaseInsensitive = true };
 
         public async Task<IEnumerable<WeatherModel>> GetWeatherForecast(Task<ZipModelRoot> zipModelTask)
         {
             var zipModel = await zipModelTask;
-            if (zipModel.FirstPlace is null || (zipModel.FirstPlace?.Latitude == "" && zipModel.FirstPlace?.Longitude == ""))
+            if (zipModel.FirstPlace is null 
+                || string.IsNullOrWhiteSpace(zipModel.FirstPlace.Latitude)
+                || string.IsNullOrWhiteSpace(zipModel.FirstPlace.Longitude))
             {
                 return await GetWeatherForecast();
             }
-            return await GetWeatherForecastInternal(zipModel.FirstPlace!.Latitude, zipModel.FirstPlace!.Longitude);
+            return await GetWeatherForecastInternal(zipModel.FirstPlace.Latitude, zipModel.FirstPlace.Longitude);
         }
 
         private async Task<IEnumerable<WeatherModel>> GetWeatherForecastInternal(string lat, string lon)
         {
             //https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
-            var url = $"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={_configuration.GetOpenWeatherApiKey()}&mode=json&units=metric";
+            var url = $"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={_options.Value.GetOpenWeatherApiKey()}&mode=json&units=metric";
             using var client = _httpClientFactory.CreateClient();
             var response = await client.GetAsync(url);
             var data = await response.Content.ReadAsStringAsync();
-            var openApiWeatherModel = JsonSerializer.Deserialize<OpenWeatherApiWeatherForecastRoot>(
-                data,
-                new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
-            //var openApiWeatherModel = await client.GetFromJsonAsync<OpenWeatherApiWeatherForecastRoot>(url);
+            // var openApiWeatherModel = JsonSerializer.Deserialize<OpenWeatherApiWeatherForecastRoot>(
+            //     data,
+            //     _jsonSerializerOptions);
+            var openApiWeatherModel = await client.GetFromJsonAsync<OpenWeatherApiWeatherForecastRoot>(url, _jsonSerializerOptions);
             var models = new List<WeatherModel>();
-            foreach (var forecast in openApiWeatherModel?.List ?? new List<OpenWeatherApiWeatherForecastList>())
+            foreach (var forecast in openApiWeatherModel?.List ?? [])
             {
                 models.Add(new WeatherModel()
                 {
