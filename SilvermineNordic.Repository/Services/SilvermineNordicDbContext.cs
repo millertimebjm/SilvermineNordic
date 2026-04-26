@@ -51,10 +51,10 @@ namespace SilvermineNordic.Repository.Services
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Reading>().ToTable("Reading");
-            modelBuilder.Entity<Threshold>().ToTable("Threshold");
-            modelBuilder.Entity<User>().ToTable("User");
-            modelBuilder.Entity<UserOtp>().ToTable("UserOtp");
+            // modelBuilder.Entity<Reading>().ToTable("Reading");
+            // modelBuilder.Entity<Threshold>().ToTable("Threshold");
+            // modelBuilder.Entity<User>().ToTable("User");
+            // modelBuilder.Entity<UserOtp>().ToTable("UserOtp");
         }
     }
 }

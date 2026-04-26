@@ -1,8 +1,6 @@
 using SilvermineNordic.Repository.Services;
 using SilvermineNordic.Repository;
 using Microsoft.EntityFrameworkCore;
-using Serilog;
-using Serilog.Sinks.Grafana.Loki;
 
 const string _applicationNameConfigurationService = "SilvermineNordic";
 const string _appConfigEnvironmentVariableName = "AppConfigConnectionString";
@@ -27,17 +25,17 @@ builder.Configuration
     .AddEnvironmentVariables()
     .AddAzureAppConfiguration(appConfigConnectionString);
 
-builder.Host.UseSerilog();
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .WriteTo.Console()
-            .WriteTo.GrafanaLoki("http://media.bltmiller.com:3100", 
-                labels: new[]
-                {
-                    new LokiLabel() {Key = "app", Value = "snowmaking"},
-                    new LokiLabel() {Key = "env", Value = "prod"},
-                })
-            .CreateLogger();
+// builder.Host.UseSerilog();
+//         Log.Logger = new LoggerConfiguration()
+//             .MinimumLevel.Debug()
+//             .WriteTo.Console()
+//             .WriteTo.GrafanaLoki("http://media.bltmiller.com:3100", 
+//                 labels: new[]
+//                 {
+//                     new LokiLabel() {Key = "app", Value = "snowmaking"},
+//                     new LokiLabel() {Key = "env", Value = "prod"},
+//                 })
+//             .CreateLogger();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -45,7 +43,7 @@ builder.Services.AddScoped<IWeatherForecast, OpenWeatherApiForecastService>();
 builder.Services.AddTransient<IRepositoryReading, EntityFrameworkReadingService>();
 builder.Services.AddTransient<IRepositoryThreshold, EntityFrameworkThresholdService>();
 builder.Services.AddScoped<IZipApi, ZippopotamZipService>();
-builder.Services.AddScoped<ISms, AzureSmsService>();
+// builder.Services.AddScoped<ISms, AzureSmsService>();
 builder.Services.AddOptions<SilvermineNordicConfigurationService>()
     .Configure<IConfiguration>((settings, configuration) =>
     {
@@ -55,7 +53,6 @@ builder.Services.AddOptions<SilvermineNordicConfigurationService>()
 var connectionString = builder.Configuration
     .GetValue(typeof(string), $"{_applicationNameConfigurationService}:SqlConnectionString")?
     .ToString();
-Console.WriteLine($"Connection String: {connectionString}");
 if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
 builder.Services.AddDbContext<SilvermineNordicDbContext>(opts => 
     opts.UseNpgsql(connectionString, options => options.MigrationsAssembly("SilvermineNordic.Admin.Mvc"))

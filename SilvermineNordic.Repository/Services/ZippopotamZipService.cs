@@ -20,7 +20,7 @@ public class ZippopotamZipService : IZipApi
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(model.ZipCode);
         if (model.ZipCode.Length != 5 && !int.TryParse(model.ZipCode, out _)) throw new ArgumentException("");
-        var client = _httpClientFactory.CreateClient();
+        using var client = _httpClientFactory.CreateClient();
         var response = await client.GetAsync($"https://api.zippopotam.us/us/{model.ZipCode}");
         var json = await response.Content.ReadAsStringAsync();
         var responseModel = JsonSerializer.Deserialize<ZipModelRoot>(
