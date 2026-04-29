@@ -11,5 +11,6 @@ namespace SilvermineNordic.Admin.Mvc.Models;
 //     IndexPreferenceModel preferenceModel);
 
 public record IndexViewModel(
-    Task<IEnumerable<WeatherModel>> WeatherForecastTask,
+    //Task<IEnumerable<WeatherModel>> WeatherForecastTask,
+    IEnumerable<WeatherModel> WeatherForecastTask,
     IndexPreferenceModel PreferenceModel);

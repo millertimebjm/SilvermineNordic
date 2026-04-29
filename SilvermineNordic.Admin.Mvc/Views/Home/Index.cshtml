@@ -4,7 +4,8 @@
 
 @{
     ViewData["Title"] = "Weather Charts";
-    var weatherForecasts = await Model.WeatherForecastTask;
+    @* var weatherForecasts = await Model.WeatherForecastTask; *@
+    var weatherForecasts = Model.WeatherForecastTask;
 
     var weatherForecastRainChartData = "";
     var weatherForecastSnowChartData = "";

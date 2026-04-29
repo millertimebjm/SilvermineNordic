@@ -18,10 +18,10 @@ public class HomeController(
         {
             zipModel = _zipApiService.GetLatLong(new ZipModelRoot { ZipCode = preferenceModel.ZipCode });
         }
-        Task<IEnumerable<WeatherModel>> weatherForecastModelTask;
-        weatherForecastModelTask = _weatherForecastService.GetWeatherForecast(zipModel);
+        IEnumerable<WeatherModel> weatherForecastModel;
+        weatherForecastModel = await _weatherForecastService.GetWeatherForecast(zipModel);
         var model = new IndexViewModel(
-            weatherForecastModelTask,
+            weatherForecastModel,
             preferenceModel
         );
         return View(model);

@@ -35,13 +35,13 @@ namespace SilvermineNordic.Repository.Services
             //https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API key}
             var url = $"https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={_options.Value.GetOpenWeatherApiKey()}&mode=json&units=metric";
             using var client = _httpClientFactory.CreateClient();
-            var response = await client.GetAsync(url);
-            var data = await response.Content.ReadAsStringAsync();
+            // var response = await client.GetAsync(url);
+            // var data = await response.Content.ReadAsStringAsync();
             // var openApiWeatherModel = JsonSerializer.Deserialize<OpenWeatherApiWeatherForecastRoot>(
             //     data,
             //     _jsonSerializerOptions);
             var openApiWeatherModel = await client.GetFromJsonAsync<OpenWeatherApiWeatherForecastRoot>(url, _jsonSerializerOptions);
-            var models = new List<WeatherModel>();
+            var models = new List<WeatherModel>(openApiWeatherModel?.List?.Count ?? 0);
             foreach (var forecast in openApiWeatherModel?.List ?? [])
             {
                 models.Add(new WeatherModel()
