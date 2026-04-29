@@ -40,8 +40,8 @@ builder.Configuration
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IWeatherForecast, OpenWeatherApiForecastService>();
-builder.Services.AddTransient<IRepositoryReading, EntityFrameworkReadingService>();
-builder.Services.AddTransient<IRepositoryThreshold, EntityFrameworkThresholdService>();
+// builder.Services.AddTransient<IRepositoryReading, EntityFrameworkReadingService>();
+// builder.Services.AddTransient<IRepositoryThreshold, EntityFrameworkThresholdService>();
 builder.Services.AddScoped<IZipApi, ZippopotamZipService>();
 // builder.Services.AddScoped<ISms, AzureSmsService>();
 builder.Services.AddOptions<SilvermineNordicConfigurationService>()
@@ -50,14 +50,14 @@ builder.Services.AddOptions<SilvermineNordicConfigurationService>()
         configuration.GetSection(_applicationNameConfigurationService).Bind(settings);
     });
 
-var connectionString = builder.Configuration
-    .GetValue(typeof(string), $"{_applicationNameConfigurationService}:SqlConnectionString")?
-    .ToString();
-if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
-builder.Services.AddDbContext<SilvermineNordicDbContext>(opts => 
-    opts.UseNpgsql(connectionString, options => options.MigrationsAssembly("SilvermineNordic.Admin.Mvc"))
-        .EnableSensitiveDataLogging()
-        .LogTo(Console.WriteLine, LogLevel.Information), ServiceLifetime.Transient);
+// var connectionString = builder.Configuration
+//     .GetValue(typeof(string), $"{_applicationNameConfigurationService}:SqlConnectionString")?
+//     .ToString();
+// if (connectionString == null) throw new ArgumentNullException(nameof(connectionString));
+// builder.Services.AddDbContext<SilvermineNordicDbContext>(opts => 
+//     opts.UseNpgsql(connectionString, options => options.MigrationsAssembly("SilvermineNordic.Admin.Mvc"))
+//         .EnableSensitiveDataLogging()
+//         .LogTo(Console.WriteLine, LogLevel.Information), ServiceLifetime.Transient);
 
 builder.Services.AddHttpClient();
 builder.Services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
