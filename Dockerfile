@@ -29,6 +29,7 @@ EXPOSE 9070
 # .NET 10 often defaults to port 8080 for non-root users, 
 # so we explicitly set our desired port here.
 ENV ASPNETCORE_URLS=http://+:9070
+ENV DOTNET_gcServer=0
 
 # Copy the published output from the build stage
 COPY --from=build /app/publish .
