@@ -6,14 +6,8 @@ using SilvermineNordic.Models;
 
 namespace SilvermineNordic.Repository;
 
-public class ZippopotamZipService : IZipApi
+public class ZippopotamZipService(IHttpClientFactory _httpClientFactory) : IZipApi
 {
-    private readonly IHttpClientFactory _httpClientFactory;
-    public ZippopotamZipService(IHttpClientFactory httpClientFactory)
-    {
-        _httpClientFactory = httpClientFactory;
-    }
-
     private static JsonSerializerOptions _jsonSerializerOptions = new() { PropertyNameCaseInsensitive = true };
 
     public async Task<ZipModelRoot> GetLatLong(ZipModelRoot model)
